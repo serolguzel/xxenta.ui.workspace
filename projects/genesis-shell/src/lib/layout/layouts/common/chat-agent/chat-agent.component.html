@@ -1,0 +1,155 @@
+<button mat-icon-button (click)="togglePanel()">
+  <mat-icon [svgIcon]="'heroicons_outline:chat-bubble-left-right'"></mat-icon>
+</button>
+<div class="chat-agent-panel fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-lg transform transition-transform duration-400 ease-drawer"
+     [ngClass]="{'translate-x-0': isPanelOpened, 'translate-x-full': !isPanelOpened}">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-4 border-b bg-gray-100">
+        <div class="text-lg font-medium">Orbis AI</div>
+        <button mat-icon-button (click)="togglePanel()">
+            <mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+        </button>
+    </div>
+    <!-- Content -->
+    <div class="flex flex-col h-[calc(100%-64px)]">
+        <!-- Conversation -->
+        <div class="flex-1 overflow-y-auto p-4 bg-gray-50">
+            <div *ngFor="let message of chatHistory; let i = index; let first = first; let last = last"
+                 [ngClass]="{'items-end': message.role === 'user', 'items-start': message.role === 'agent', 
+                             'mt-0.5': i > 0 && chatHistory[i - 1].role === message.role, 
+                             'mt-3': i > 0 && chatHistory[i - 1].role !== message.role}"
+                 class="flex flex-col">
+                <!-- Date separator -->
+                <ng-container *ngIf="first || (chatHistory[i - 1].createdAt | date:'d') !== (message.createdAt | date:'d')">
+                    <div class="-mx-4 my-3 flex items-center justify-center">
+                        <div class="flex-auto border-b"></div>
+                        <div class="text-secondary mx-4 text-sm font-medium">
+                            {{ message.createdAt | date:'longDate' }}
+                        </div>
+                        <div class="flex-auto border-b"></div>
+                    </div>
+                </ng-container>
+                <!-- Message Bubble -->
+                <div class="relative max-w-3/4 rounded-lg px-3 py-2"
+                     [ngClass]="{'bg-blue-500 text-white': message.role === 'user', 'bg-gray-500 text-white': message.role === 'agent'}">
+                    <div class="min-w-4 leading-5">{{ message.message }}</div>
+                    <!-- Speech bubble tail -->
+                    <ng-container *ngIf="last || chatHistory[i + 1].role !== message.role">
+                        <div class="absolute bottom-0 w-3"
+                             [ngClass]="{'-right-1 -mr-px mb-px text-blue-500': message.role === 'user', 
+                                        '-left-1 -ml-px mb-px -scale-x-1 text-gray-500': message.role === 'agent'}">
+                            <ng-container *ngTemplateOutlet="speechBubbleExtension"></ng-container>
+                        </div>
+                    </ng-container>
+                </div>
+                <!-- Time -->
+                <ng-container *ngIf="first || last || chatHistory[i + 1].role !== message.role || chatHistory[i + 1].createdAt !== message.createdAt">
+                    <div class="text-secondary my-0.5 text-sm font-medium"
+                         [ngClass]="{'mr-3': message.role === 'user', 'ml-3': message.role === 'agent'}">
+                        {{ message.createdAt | date:'HH:mm' }}
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+        <!-- Agent Steps -->
+        <div class="p-4 border-t" *ngIf="agentSteps.length > 0">
+            <h3 class="text-md font-semibold">Agent Steps</h3>
+            <div *ngFor="let step of agentSteps" class="flex items-center mt-1">
+                <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                <div>{{ step }}</div>
+            </div>
+        </div>
+        <!-- Result -->
+        <div class="p-4 border-t" *ngIf="data && data.first_name">
+            <h3 class="text-md font-semibold">Result</h3>
+            <table class="w-full text-sm text-left text-gray-500">
+                <tbody>
+                    <tr class="border-b">
+                        <th class="px-2 py-1 font-medium text-gray-900">Name</th>
+                        <td class="px-2 py-1">{{ data.first_name }}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="px-2 py-1 font-medium text-gray-900">Surname</th>
+                        <td class="px-2 py-1">{{ data.last_name}}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="px-2 py-1 font-medium text-gray-900">Transfer Date</th>
+                        <td class="px-2 py-1">{{ data.date }}</td>
+                    </tr>
+                     <tr class="border-b">
+                        <th class="px-2 py-1 font-medium text-gray-900">Pickup Time</th>
+                        <td class="px-2 py-1">{{ data.pickup_time }}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="px-2 py-1 font-medium text-gray-900">Adult</th>
+                        <td class="px-2 py-1">{{ data.adult }}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="px-2 py-1 font-medium text-gray-900">Child</th>
+                        <td class="px-2 py-1">{{ data.child }}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="px-2 py-1 font-medium text-gray-900">From</th>
+                        <td class="px-2 py-1">{{ data.from_location }}</td>
+                    </tr>
+                    <tr class="border-b">
+                        <th class="px-2 py-1 font-medium text-gray-900">To</th>
+                        <td class="px-2 py-1">{{ data.to_location }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Message Input -->
+        <div class="p-4 border-t bg-gray-50">
+            <div class="flex items-center mb-2" *ngIf="file">
+                <span class="ml-2 text-lg font-medium">
+                    <mat-icon [svgIcon]="'xlsx-icon'" class="text-gray-500"></mat-icon>
+                    {{file.name}}
+                </span>
+            </div>
+
+            <div class="flex items-end">
+                <textarea [(ngModel)]="postModel.commandText" placeholder="Type a message..." 
+                          class="flex-1 p-2 border rounded resize-none overflow-hidden"
+                          (input)="resizeTextarea($event)" rows="1"></textarea>
+                <div class="ml-2 flex items-center">
+                    <button mat-icon-button (click)="sendMessage()">
+                        <mat-icon [svgIcon]="'heroicons_outline:paper-airplane'"></mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="recordVoice()" *ngIf="!isRecording">
+                        <mat-icon [svgIcon]="'heroicons_outline:microphone'"></mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="stopRecording()" *ngIf="isRecording">
+                        <mat-icon [svgIcon]="'heroicons_outline:stop'"></mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="attachFile()">
+                        <mat-icon [svgIcon]="'heroicons_outline:paper-clip'"></mat-icon>
+                    </button>
+                </div>
+            </div>
+            <div class="flex items-center mt-2" *ngIf="isRecording">
+                <span class="text-red-600 font-medium">{{ recordTime }}</span>
+            </div>
+            <div class="flex items-center mt-2 space-x-2" *ngIf="recordedAudio">
+                <audio class="flex-1" [src]="recordedAudioUrl" controls></audio>
+                <button mat-icon-button (click)="sendRecordedAudio()">
+                    <mat-icon [svgIcon]="'heroicons_outline:paper-airplane'"></mat-icon>
+                </button>
+                <button mat-icon-button (click)="discardRecordedAudio()">
+                    <mat-icon [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Speech Bubble Tail SVG -->
+<ng-template #speechBubbleExtension>
+    <svg width="100%" height="100%" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <path d="M1.01522827,0.516204834 C-8.83532715,54.3062744 61.7609863,70.5215302 64.8009949,64.3061218 
+                     C68.8074951,54.8859711 30.1663208,52.9997559 37.5036011,0.516204834 L1.01522827,0.516204834 Z"
+                  fill="currentColor" fill-rule="nonzero"></path>
+        </g>
+    </svg>
+</ng-template>

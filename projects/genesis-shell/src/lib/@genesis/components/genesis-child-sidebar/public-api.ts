@@ -1,0 +1,1 @@
+export * from './genesis-child-sidebar.component';

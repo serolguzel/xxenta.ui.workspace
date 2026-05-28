@@ -1,0 +1,46 @@
+<!-- Shortcuts toggle -->
+<button mat-icon-button (click)="openPanel()" #invitationOrigin *ngIf="!buttonText">
+    <mat-icon [svgIcon]="'insert_invitation'"></mat-icon>
+</button>
+
+<button mat-flat-button *ngIf="buttonText" [color]="'primary'" #invitationOrigin (click)="openPanel()">
+    <mat-icon class="icon-size-5" [svgIcon]="'insert_invitation'"></mat-icon>
+    <span class="ml-2">{{buttonText}}</span>
+</button>
+
+<!-- Shortcuts panel -->
+<ng-template #invitationPanel>
+    <div
+        class="fixed inset-0 sm:static sm:inset-auto flex flex-col sm:min-w-90 sm:w-90 sm:rounded-2xl overflow-hidden shadow-lg">
+
+        <!-- Header -->
+        <div class="flex shrink-0 items-center py-4 pr-4 pl-6 bg-primary text-on-primary">
+            <div class="sm:hidden -ml-1 mr-3">
+                <button mat-icon-button (click)="closePanel()">
+                    <mat-icon class="icon-size-5 text-current" [svgIcon]="'heroicons_solid:x-mark'"></mat-icon>
+                </button>
+            </div>
+            <div class="flex items-center text-lg font-medium leading-10">
+                <span class="">
+                    {{title}}
+                </span>
+
+            </div>
+        </div>
+        <div class="relative flex flex-col flex-auto sm:max-h-120 divide-y overflow-y-auto bg-card">
+            <div class="m-3">
+                <dx-form [(formData)]="model" labelMode="floating">
+                    <dxi-item dataField="emails" editorType="dxTagBox" [editorOptions]="{
+                        placeholder: 'Emails',
+                    acceptCustomValue: true,
+                    showClearButton: true
+              }">
+                        <dxo-label text="Emails"></dxo-label>
+                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                    </dxi-item>
+                </dx-form>
+                <dx-toolbar class="mt-2" [items]="invitationToolbars"></dx-toolbar>
+            </div>
+        </div>
+    </div>
+</ng-template>

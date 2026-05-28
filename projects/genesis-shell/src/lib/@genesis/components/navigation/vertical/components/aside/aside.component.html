@@ -1,0 +1,103 @@
+<div
+    class="genesis-vertical-navigation-item-wrapper"
+    [class.genesis-vertical-navigation-item-has-subtitle]="!!item.subtitle"
+    [ngClass]="item.classes?.wrapper">
+
+    <div
+        class="genesis-vertical-navigation-item"
+        [ngClass]="{'genesis-vertical-navigation-item-active': active,
+                    'genesis-vertical-navigation-item-disabled': item.disabled,
+                    'genesis-vertical-navigation-item-active-forced': item.active}"
+        [matTooltip]="item.tooltip || ''">
+
+        <!-- Icon -->
+        <ng-container *ngIf="item.icon">
+            <mat-icon
+                class="genesis-vertical-navigation-item-icon"
+                [ngClass]="item.classes?.icon"
+                [svgIcon]="item.icon"></mat-icon>
+        </ng-container>
+
+        <!-- Title & Subtitle -->
+        <div class="genesis-vertical-navigation-item-title-wrapper">
+            <div class="genesis-vertical-navigation-item-title">
+                <span [ngClass]="item.classes?.title">
+                    {{item.translationKey ? (item.translationKey | transloco) : item.title}}
+                </span>
+            </div>
+            <ng-container *ngIf="item.subtitle">
+                <div class="genesis-vertical-navigation-item-subtitle">
+                    <span [ngClass]="item.classes?.subtitle">
+                        {{item.subtitle}}
+                    </span>
+                </div>
+            </ng-container>
+        </div>
+
+        <!-- Badge -->
+        <ng-container *ngIf="item.badge">
+            <div class="genesis-vertical-navigation-item-badge">
+                <div
+                    class="genesis-vertical-navigation-item-badge-content"
+                    [ngClass]="item.badge.classes">
+                    {{item.badge.title}}
+                </div>
+            </div>
+        </ng-container>
+
+    </div>
+
+</div>
+
+<ng-container *ngIf="!skipChildren">
+
+    <div class="genesis-vertical-navigation-item-children">
+
+        <ng-container *ngFor="let item of item.children; trackBy: trackByFn">
+
+            <!-- Skip the hidden items -->
+            <ng-container *ngIf="(item.hidden && !item.hidden(item)) || !item.hidden">
+
+                <!-- Basic -->
+                <ng-container *ngIf="item.type === 'basic'">
+                    <genesis-vertical-navigation-basic-item
+                        [item]="item"
+                        [name]="name"></genesis-vertical-navigation-basic-item>
+                </ng-container>
+
+                <!-- Collapsable -->
+                <ng-container *ngIf="item.type === 'collapsable'">
+                    <genesis-vertical-navigation-collapsable-item
+                        [item]="item"
+                        [name]="name"
+                        [autoCollapse]="autoCollapse"></genesis-vertical-navigation-collapsable-item>
+                </ng-container>
+
+                <!-- Divider -->
+                <ng-container *ngIf="item.type === 'divider'">
+                    <genesis-vertical-navigation-divider-item
+                        [item]="item"
+                        [name]="name"></genesis-vertical-navigation-divider-item>
+                </ng-container>
+
+                <!-- Group -->
+                <ng-container *ngIf="item.type === 'group'">
+                    <genesis-vertical-navigation-group-item
+                        [item]="item"
+                        [name]="name"></genesis-vertical-navigation-group-item>
+                </ng-container>
+
+                <!-- Spacer -->
+                <ng-container *ngIf="item.type === 'spacer'">
+                    <genesis-vertical-navigation-spacer-item
+                        [item]="item"
+                        [name]="name"></genesis-vertical-navigation-spacer-item>
+                </ng-container>
+
+            </ng-container>
+
+        </ng-container>
+
+    </div>
+
+</ng-container>

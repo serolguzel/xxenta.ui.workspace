@@ -1,0 +1,44 @@
+<div>
+    <div class="mx-6 text-3xl font-bold tracking-tighter" *ngIf="SidebarTitle && ShowSidebarTitle">
+        {{SidebarTitle}}
+    </div>
+    <genesis-vertical-navigation
+        [appearance]="'default'"
+        [navigation]="MenuData"
+        [inner]="true"
+        [mode]="'side'"
+        [name]="'child-sidebar-navigation'"
+        [opened]="true"></genesis-vertical-navigation>
+
+    <!-- <div class="mx-6 mt-2">
+        <div class="flex items-center">
+            <mat-icon
+                class="mr-2 icon-size-5"
+                [svgIcon]="'heroicons_solid:circle-stack'"></mat-icon>
+            <div class="text-lg font-semibold">Storage</div>
+        </div>
+        <div class="flex flex-col flex-auto mt-4">
+            <span class="text-sm leading-none mb-3">19.9 GB of 100 GB used</span>
+            <mat-progress-bar
+                [mode]="'determinate'"
+                [color]="'primary'"
+                [value]="19.9"></mat-progress-bar>
+        </div>
+    </div>
+
+    <div class="mx-6 mt-10">
+        <div class="flex items-center">
+            <mat-icon
+                class="mr-2 icon-size-5"
+                [svgIcon]="'heroicons_solid:users'"></mat-icon>
+            <div class="text-lg font-semibold">Users</div>
+        </div>
+        <div class="flex flex-col flex-auto mt-4">
+            <span class="text-sm leading-none mb-3">8 of 20 users used</span>
+            <mat-progress-bar
+                [mode]="'determinate'"
+                [color]="'accent'"
+                [value]="40"></mat-progress-bar>
+        </div>
+    </div> -->
+</div>

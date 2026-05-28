@@ -1,0 +1,132 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm",
+    "analytics": "087bdd87-8b69-4ad8-b8ad-8f06ccf4b191"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "xxenta.tenant.ui": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/xxenta.tenant.ui",
+      "sourceRoot": "projects/xxenta.tenant.ui/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/xxenta.tenant.ui/src/main.ts",
+            "tsConfig": "projects/xxenta.tenant.ui/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/xxenta.tenant.ui/public"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/xxenta.tenant.ui/public/icons",
+                "output": "assets/icons"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/xxenta.tenant.ui/public/images",
+                "output": "assets/images"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/xxenta.tenant.ui/public/avatars",
+                "output": "assets/avatars"
+              }
+            ],
+            "styles": [
+              "projects/xxenta.tenant.ui/src/styles/styles.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [".", "dist/genesis-shell/src/styles"]
+            },
+            "security": {
+              "allowedHosts": []
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/xxenta.tenant.ui/src/environments/environment.ts",
+                  "with": "projects/xxenta.tenant.ui/src/environments/environment.development.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "xxenta.tenant.ui:build:production"
+            },
+            "development": {
+              "buildTarget": "xxenta.tenant.ui:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    },
+    "genesis-shell": {
+      "projectType": "library",
+      "root": "projects/genesis-shell",
+      "sourceRoot": "projects/genesis-shell/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/genesis-shell/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/genesis-shell/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/genesis-shell/tsconfig.spec.json"
+          }
+        }
+      }
+    }
+  }
+}

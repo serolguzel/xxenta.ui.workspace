@@ -1,0 +1,194 @@
+/* Variables */
+:root {
+    --genesis-vertical-navigation-width: 280px;
+    --genesis-vertical-navigation-dense-width: 80px;
+}
+
+genesis-vertical-navigation {
+
+    /* Dense appearance overrides */
+    &.genesis-vertical-navigation-appearance-dense {
+
+        &:not(.genesis-vertical-navigation-mode-over) {
+            width: var(--genesis-vertical-navigation-dense-width);
+            min-width: var(--genesis-vertical-navigation-dense-width);
+            max-width: var(--genesis-vertical-navigation-dense-width);
+
+            /* Left positioned */
+            &.genesis-vertical-navigation-position-left {
+
+                /* Side mode */
+                &.genesis-vertical-navigation-mode-side {
+                    margin-left: calc(var(--genesis-vertical-navigation-dense-width) * -1);
+                }
+
+                /* Opened */
+                &.genesis-vertical-navigation-opened {
+                    margin-left: 0;
+                }
+            }
+
+            /* Right positioned */
+            &.genesis-vertical-navigation-position-right {
+
+                /* Side mode */
+                &.genesis-vertical-navigation-mode-side {
+                    margin-right: calc(var(--genesis-vertical-navigation-dense-width) * -1);
+                }
+
+                /* Opened */
+                &.genesis-vertical-navigation-opened {
+                    margin-right: 0;
+                }
+
+                /* Aside wrapper */
+                .genesis-vertical-navigation-aside-wrapper {
+                    left: auto;
+                    right: var(--genesis-vertical-navigation-dense-width);
+                }
+
+                &.genesis-vertical-navigation-hover {
+
+                    .genesis-vertical-navigation-aside-wrapper {
+                        left: auto;
+                        right: var(--genesis-vertical-navigation-width);
+                    }
+                }
+            }
+        }
+
+        /* Wrapper */
+        .genesis-vertical-navigation-wrapper {
+
+            /* Content */
+            .genesis-vertical-navigation-content {
+
+                genesis-vertical-navigation-aside-item,
+                genesis-vertical-navigation-basic-item,
+                genesis-vertical-navigation-collapsable-item,
+                genesis-vertical-navigation-group-item {
+
+                    .genesis-vertical-navigation-item-wrapper {
+
+                        .genesis-vertical-navigation-item {
+                            width: calc(var(--genesis-vertical-navigation-dense-width) - 24px);
+                            min-width: calc(var(--genesis-vertical-navigation-dense-width) - 24px);
+                            max-width: calc(var(--genesis-vertical-navigation-dense-width) - 24px);
+
+                            .genesis-vertical-navigation-item-arrow,
+                            .genesis-vertical-navigation-item-badge,
+                            .genesis-vertical-navigation-item-title-wrapper {
+                                transition: opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+                            }
+                        }
+                    }
+                }
+
+                genesis-vertical-navigation-group-item {
+
+                    &:first-of-type {
+                        margin-top: 0;
+                    }
+                }
+            }
+        }
+
+        &:not(.genesis-vertical-navigation-hover):not(.genesis-vertical-navigation-mode-over) {
+
+            /* Wrapper */
+            .genesis-vertical-navigation-wrapper {
+
+                /* Content */
+                .genesis-vertical-navigation-content {
+
+                    .genesis-vertical-navigation-item-wrapper {
+
+                        .genesis-vertical-navigation-item {
+                            padding: 10px 16px;
+
+                            .genesis-vertical-navigation-item-arrow,
+                            .genesis-vertical-navigation-item-badge,
+                            .genesis-vertical-navigation-item-title-wrapper {
+                                white-space: nowrap;
+                                opacity: 0;
+                            }
+                        }
+                    }
+
+                    genesis-vertical-navigation-collapsable-item {
+
+                        .genesis-vertical-navigation-item-children {
+                            display: none;
+                        }
+                    }
+
+                    genesis-vertical-navigation-group-item {
+
+                        > .genesis-vertical-navigation-item-wrapper {
+
+                            .genesis-vertical-navigation-item {
+
+                                &:before {
+                                    content: '';
+                                    position: absolute;
+                                    top: 20px;
+                                    width: 23px;
+                                    border-top-width: 2px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /* Aside wrapper */
+        .genesis-vertical-navigation-aside-wrapper {
+            left: var(--genesis-vertical-navigation-dense-width);
+        }
+
+        /* Hover */
+        &.genesis-vertical-navigation-hover {
+
+            .genesis-vertical-navigation-wrapper {
+                width: var(--genesis-vertical-navigation-width);
+
+                .genesis-vertical-navigation-content {
+
+                    .genesis-vertical-navigation-item-wrapper {
+
+                        .genesis-vertical-navigation-item {
+                            width: calc(var(--genesis-vertical-navigation-width) - 24px);
+                            min-width: calc(var(--genesis-vertical-navigation-width) - 24px);
+                            max-width: calc(var(--genesis-vertical-navigation-width) - 24px);
+
+                            .genesis-vertical-navigation-item-arrow,
+                            .genesis-vertical-navigation-item-badge,
+                            .genesis-vertical-navigation-item-title-wrapper {
+                                white-space: nowrap;
+                                animation: removeWhiteSpaceNoWrap 1ms linear 350ms;
+                                animation-fill-mode: forwards;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .genesis-vertical-navigation-aside-wrapper {
+                left: var(--genesis-vertical-navigation-width);
+            }
+        }
+    }
+}
+
+@keyframes removeWhiteSpaceNoWrap {
+    0% {
+        white-space: nowrap
+    }
+    99% {
+        white-space: nowrap
+    }
+    100% {
+        white-space: normal;
+    }
+}

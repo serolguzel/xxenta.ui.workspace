@@ -1,0 +1,55 @@
+.dx-datagrid-content .dx-datagrid-table .dx-row>td,
+.dx-datagrid-content .dx-datagrid-table .dx-row>tr>td {
+    vertical-align: inherit !important;
+}
+
+.dx-datagrid-headers .dx-datagrid-table .dx-row>td,
+.dx-treelist-headers .dx-treelist-table .dx-row>td {
+    border-bottom: 1px solid #ddd;
+    padding: 12px;
+    text-align: center !important;
+}
+
+.dx-treelist-header-panel {
+    border-bottom: none !important;
+}
+
+.dx-freespace-row>td {
+    border-left: none !important;
+    border-right: none !important;
+}
+
+.dx-texteditor.dx-editor-outlined,
+.dx-button,
+.dx-texteditor,
+.dx-checkbox-icon,
+.dx-popup-wrapper>.dx-overlay-content {
+    border-radius: 4px !important;
+}
+
+// .dx-texteditor-input {
+//     padding: 9px 11px 10px;
+// }
+
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button {
+    border-radius: 4px !important;
+}
+
+.mat-dropdown-menu {
+    padding-left: 20px !important;
+    padding-right: 0 !important;
+
+    .mat-icon-down {
+        border-left: 1px solid rgb(203 213 225 / var(--tw-border-opacity, 1)) !important;
+        float: right !important;
+        height: 40px !important;
+    }
+}
+.dx-datagrid-borders .dx-datagrid-rowsview,
+.dx-datagrid-headers+.dx-datagrid-rowsview,
+.dx-datagrid-rowsview.dx-datagrid-after-headers{
+    border-top: none !important;
+}

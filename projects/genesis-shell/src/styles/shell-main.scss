@@ -1,0 +1,12 @@
+@use './appearances/default.scss';
+@use './appearances/compact.scss';
+@use './appearances/dense.scss';
+@use './appearances/thin.scss';
+
+@use './tailwind.scss';
+@use './themes.scss';
+@use './main.scss';
+
+@use './pretty-json/pretty-print-json.dark-mode.scss' as pretty-json-dark;
+@use './pretty-json/pretty-print-json.prefers.scss' as pretty-json-prefers;
+@use './pretty-json/pretty-print-json.scss' as pretty-json;

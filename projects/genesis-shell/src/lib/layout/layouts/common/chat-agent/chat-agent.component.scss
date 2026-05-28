@@ -1,0 +1,18 @@
+.chat-agent-panel {
+  z-index: 20;
+}
+
+.chat-agent-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+textarea {
+  min-height: 2rem;
+  max-height: 10rem;
+}

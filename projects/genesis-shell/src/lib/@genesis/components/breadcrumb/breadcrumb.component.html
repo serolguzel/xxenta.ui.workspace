@@ -1,0 +1,14 @@
+<nav class="flex items-center">
+    <ng-container *ngFor="let breadcrumb of breadcrumbs; let last = last">
+        <ng-container *ngIf="!last">
+            <a class="whitespace-nowrap text-primary-500 font-medium"
+                [routerLink]="breadcrumb.url">{{ breadcrumb.label }}</a>
+            <mat-icon
+                class="icon-size-5 text-secondary"
+                [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+        </ng-container>
+        <ng-container *ngIf="last">
+            <span class="font-medium whitespace-nowrap text-secondary">{{breadcrumb.label}}</span>
+        </ng-container>
+    </ng-container>
+</nav>

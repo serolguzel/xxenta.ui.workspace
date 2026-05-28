@@ -1,0 +1,20 @@
+<div class="sm:flex flex-wrap items-center font-medium" *ngFor="let item of Breadcrumbs; let i = index;">
+    <div *ngIf="i == 0">
+        <a class="whitespace-nowrap text-primary-500" [routerLink]="item.link" [queryParams]="item.queryParams">
+            {{item.title}}
+        </a>
+    </div>
+    <div *ngIf="i > 0 && (i+1) < Breadcrumbs.length && (i+1) != Breadcrumbs.length"
+        class="flex items-center ml-1 whitespace-nowrap">
+        <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+        <a class="ml-1 text-primary-500" [routerLink]="item.link" [queryParams]="item.queryParams">
+            {{item.title}}
+        </a>
+    </div>
+    <div *ngIf="(i+1) == Breadcrumbs.length" class="flex items-center ml-1 whitespace-nowrap">
+        <mat-icon class="icon-size-5 text-secondary" [svgIcon]="'heroicons_mini:chevron-right'"></mat-icon>
+        <span class="ml-1 text-secondary">
+            {{item.title}}
+        </span>
+    </div>
+</div>

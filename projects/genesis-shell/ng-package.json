@@ -1,0 +1,11 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "assets": [
+    "src/styles/**/*.scss",
+    "src/styles/shell-main.css"
+  ],
+  "dest": "../../dist/genesis-shell",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  }
+}
