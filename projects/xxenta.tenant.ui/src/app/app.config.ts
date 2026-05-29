@@ -6,16 +6,22 @@ import { LuxonDateAdapter } from '@angular/material-luxon-adapter';
 import { routes } from './app.routes';
 import { provideGenesis } from './genesis.provider';
 import { provideToastr } from 'ngx-toastr';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
 import { API_CONFIG_GEN, APP_CONFIG_GEN, AUTH_CONFIG_GEN, AuthInterceptor } from 'genesis-coreservice';
 import { environment } from '../environments/environment';
 import { provideIcons, provideTranslocoShell } from 'genesis-shell';
+import { mockApiServices } from './mock-api';
 
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideHttpClient(),
     provideBrowserGlobalErrorListeners(),
     provideAnimations(),
+     provideRouter(routes,
+      withPreloading(PreloadAllModules),
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+    ),
     provideToastr({
       timeOut: 15000,
       enableHtml: true
@@ -25,10 +31,6 @@ export const appConfig: ApplicationConfig = {
       useClass: AuthInterceptor,
       multi: true
     },
-    provideRouter(routes,
-      withPreloading(PreloadAllModules),
-      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
-    ),
     // Material Date Adapter
     {
       provide: DateAdapter,
@@ -66,6 +68,10 @@ export const appConfig: ApplicationConfig = {
     // Genesis
     provideIcons(),
     provideGenesis({
+      mockApi: {
+        delay: 0,
+        services: mockApiServices,
+      },
       genesis: {
         layout: 'classy',
         scheme: 'light',

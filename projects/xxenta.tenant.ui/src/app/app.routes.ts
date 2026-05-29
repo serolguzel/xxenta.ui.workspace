@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from 'genesis-coreservice';
 import { CallbackComponent, LayoutComponent, LoginComponent, LogoutComponent } from 'genesis-shell';
+import { initialDataResolver } from './app.resolvers';
 
 export const routes: Routes = [
     { 
@@ -23,6 +24,9 @@ export const routes: Routes = [
     {
         path: '',
         component: LayoutComponent,
+        resolve: {
+            initialData: initialDataResolver
+        },
         canActivate: [AuthGuard],
         children: [
             {

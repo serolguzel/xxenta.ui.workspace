@@ -1,5 +1,5 @@
 import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
-import { ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Provider } from '@angular/core';
+import { APP_INITIALIZER, ENVIRONMENT_INITIALIZER, EnvironmentProviders, inject, Provider } from '@angular/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { genesisLoadingInterceptor, GenesisLoadingService } from 'genesis-coreservice';
 import {
@@ -10,6 +10,7 @@ import {
     GenesisSplashScreenService,
     GenesisUtilsService
 } from 'genesis-shell';
+import { GENESIS_MOCK_API_DEFAULT_DELAY, mockApiInterceptor } from './mock-api/mock-api-services';
 // import { MatDialogModule } from '@angular/material/dialog';
 
 export type GenesisProviderConfig = {
@@ -19,7 +20,6 @@ export type GenesisProviderConfig = {
     },
     genesis?: GenesisConfig
 }
-
 /**
  * Genesis provider
  */
@@ -33,6 +33,10 @@ export const provideGenesis = (config: GenesisProviderConfig): Array<Provider | 
             useValue: {
                 appearance: 'fill',
             },
+        },
+         {
+            provide : GENESIS_MOCK_API_DEFAULT_DELAY,
+            useValue: config?.mockApi?.delay ?? 0,
         },
         {
             provide : GENESIS_CONFIG,
@@ -74,6 +78,20 @@ export const provideGenesis = (config: GenesisProviderConfig): Array<Provider | 
             multi   : true,
         }
     ];
+
+     // Mock Api services
+    if ( config?.mockApi?.services )
+    {
+        providers.push(
+            provideHttpClient(withInterceptors([mockApiInterceptor])),
+            {
+                provide   : APP_INITIALIZER,
+                deps      : [...config.mockApi.services],
+                useFactory: () => (): any => null,
+                multi     : true,
+            },
+        );
+    }
 
     // Return the providers
     return providers;

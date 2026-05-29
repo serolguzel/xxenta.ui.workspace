@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AuthServiceModule, CoreServiceModule } from 'genesis-coreservice';
 import { ServiceModule } from 'genesis-shell';
 
 @Component({
@@ -8,7 +9,9 @@ import { ServiceModule } from 'genesis-shell';
   styleUrl: './app.scss',
   imports: [
     RouterOutlet,
-    ServiceModule
+    ServiceModule,
+    AuthServiceModule,
+    CoreServiceModule
   ]
 })
 export class App {
