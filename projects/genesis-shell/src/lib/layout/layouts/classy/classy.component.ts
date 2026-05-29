@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+import { NgIf, NgClass } from '@angular/common';
 import { Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -25,6 +25,8 @@ import { GenesisChatAgentComponent } from '../common/chat-agent/chat-agent.compo
 import { InvitationComponent } from '../common/invitation/invitation.component';
 import { SearchComponent } from '../common/search/search.component';
 import { GenesisFullscreenComponent } from '../../../@genesis/fullscreen/fullscreen.component';
+import { GenesisConfig, GenesisConfigService } from '../../../@genesis';
+import { ThemeSwitchComponent } from '../common/theme-switch/theme-switch.component';
 
 @Component({
   selector: 'classy-layout',
@@ -36,24 +38,24 @@ import { GenesisFullscreenComponent } from '../../../@genesis/fullscreen/fullscr
     MatIconModule,
     MatButtonModule,
     RouterOutlet,
-
     GenesisLoadingBarComponent,
     GenesisVerticalNavigationComponent,
     InvitationComponent,
     NotificationsComponent,
     UserComponent,
-
     LanguagesComponent,
     ShortcutsComponent,
     ApplicationsComponent,
     SearchComponent,
     GenesisChatAgentComponent,
+    ThemeSwitchComponent,
     GenesisFullscreenComponent
     // SearchComponent, 
-
     // MessagesComponent, 
     // QuickChatComponent
-  ],
+    ,
+    NgClass
+],
   providers: [
     GenesisLoadingService
   ]
@@ -63,6 +65,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
   isAppsPanel: boolean = false;
   navigation: Navigation = <Navigation>{};
   user: UserModel = <UserModel>{};
+  config?: GenesisConfig;
   private readonly unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(
@@ -71,6 +74,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
     private readonly genesisMediaWatcherService: GenesisMediaWatcherService,
     private readonly genesisNavigationService: GenesisNavigationService,
     private readonly appsService: AppsService,
+    private readonly configService: GenesisConfigService,
     @Inject(APP_CONFIG_GEN) public appConfig: IAppConfig
   ) {
   }
@@ -80,6 +84,12 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.configService.config$
+      .pipe(takeUntil(this.unsubscribeAll))
+      .subscribe((config: GenesisConfig) => {
+        this.config = config;
+      });
+
     this.authService.getProfile().then((user: UserModel) => {
       this.user = user;
     });

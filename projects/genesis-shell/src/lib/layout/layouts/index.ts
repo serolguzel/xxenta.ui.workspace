@@ -27,3 +27,6 @@ export * from './common/user/user.component';
 // Chat agent
 export * from './common/chat-agent/chat-agent.component';
 export * from './common/chat-agent/chat-agent.service';
+
+// Theme switch
+export * from './common/theme-switch/theme-switch.component';

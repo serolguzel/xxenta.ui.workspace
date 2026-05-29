@@ -13,3 +13,6 @@ export * from './services/index';
 export * from './version/index';
 
 export * from './fullscreen/index';
+
+// Auth
+export * from './auth/index';

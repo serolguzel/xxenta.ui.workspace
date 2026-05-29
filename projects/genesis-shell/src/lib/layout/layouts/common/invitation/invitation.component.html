@@ -29,17 +29,7 @@
         </div>
         <div class="relative flex flex-col flex-auto sm:max-h-120 divide-y overflow-y-auto bg-card">
             <div class="m-3">
-                <dx-form [(formData)]="model" labelMode="floating">
-                    <dxi-item dataField="emails" editorType="dxTagBox" [editorOptions]="{
-                        placeholder: 'Emails',
-                    acceptCustomValue: true,
-                    showClearButton: true
-              }">
-                        <dxo-label text="Emails"></dxo-label>
-                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                    </dxi-item>
-                </dx-form>
-                <dx-toolbar class="mt-2" [items]="invitationToolbars"></dx-toolbar>
+                <ng-container></ng-container>
             </div>
         </div>
     </div>

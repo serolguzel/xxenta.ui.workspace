@@ -1,6 +1,6 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { CommonModule, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { MatButton, MatButtonModule } from '@angular/material/button';
@@ -9,11 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { InvitationService } from './invitation.service';
 import { InvitationModel } from './invitation.types';
-import { DxButtonModule, DxFormModule, DxTagBoxModule, DxToolbarModule } from 'devextreme-angular';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
@@ -34,10 +32,6 @@ import { TranslocoModule } from '@jsverse/transloco';
         MatFormFieldModule, 
         MatInputModule, 
         MatSlideToggleModule,
-        DxFormModule,
-        DxTagBoxModule,
-        DxButtonModule,
-        DxToolbarModule,
         TranslocoModule
     ],
 })

@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterModule } from '@angular/router';
 
-import {GenesisConfigService} from 'genesis-shell';
+import { GenesisConfig, GenesisConfigService, Scheme } from 'genesis-shell';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-dashboard',
@@ -9,50 +12,37 @@ import {GenesisConfigService} from 'genesis-shell';
     styleUrls: ['./dashboard.component.scss'],
     standalone: true,
     imports: [
-     
+        MatIconModule,
+        MatButtonModule,
+        RouterModule
     ],
     providers: [
 
     ]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+    config?: GenesisConfig;
+    private unsubscribeAll: Subject<any> = new Subject<any>();
+
     constructor(
-        private router: Router,
-        private activatedRoute: ActivatedRoute,
         private configService: GenesisConfigService
     ) {
 
     }
     ngOnInit(): void {
+        this.configService.config$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe((config: GenesisConfig) => {
+                this.config = config;
+            });
+    }
+    ngOnDestroy(): void {
+        this.unsubscribeAll.next(null);
+        this.unsubscribeAll.complete();
     }
 
-    onItemClick = (e: any, data: any) => {
-        switch (e.itemData.value) {
-            case 1:
-                this.router.navigate([`detail/${data.key}`], { relativeTo: this.activatedRoute });
-                break;
-            case 2:
-                this.router.navigate([`/transfer/reservations/flight-reservations/flight-booking/${data.data.voucher}`], { relativeTo: this.activatedRoute });
-                break;
-        }
+    setScheme(scheme: Scheme): void {
+        this.configService.config = { scheme };
     }
-    switchTheme () {
-        this.configService.config = 'dark';
-    }
-
-    onReservationClick = () => {
-
-    };
-
-    onTransferPlanClick = () => {
-
-    };
-
-    onGuestTrafficPlanClick = () => {
-
-    };
-
-    goToReservationClick = (value: string) => {
-
-    };
 }
+

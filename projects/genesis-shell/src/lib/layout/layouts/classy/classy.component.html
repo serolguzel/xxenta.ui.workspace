@@ -2,7 +2,7 @@
 <genesis-loading-bar [autoMode]="true"></genesis-loading-bar>
 
 <!-- Navigation -->
-<genesis-vertical-navigation class="light bg-gray-100 print:hidden" [mode]="isScreenSmall ? 'over' : 'side'"
+<genesis-vertical-navigation class="ligth:bg-gray-100 dark:bg-gray-900 print:hidden" [ngClass]="{'light': config.scheme === 'light', 'dark': config.scheme === 'dark'}" [mode]="isScreenSmall ? 'over' : 'side'"
   [name]="'mainNavigation'" [navigation]="navigation.default" [opened]="!isScreenSmall">
   <!-- Navigation header hook -->
   <ng-container genesisVerticalNavigationContentHeader>
@@ -57,6 +57,7 @@
     </button>
     <!-- Components -->
     <div class="flex items-center pl-2 ml-auto space-x-0.5 sm:space-x-2">
+      <theme-switch></theme-switch>
       <search [appearance]="'bar'" *ngIf="appConfig.showSearch"></search>
       <invitation *ngIf="appConfig.showInvitation"></invitation>
       <notifications *ngIf="appConfig.showNotification"></notifications>

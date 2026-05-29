@@ -32,7 +32,7 @@ export const environment = {
     showNotification: true,
     showApps: true,
     showChatAgent: false,
-    defaultRoute: 'guide/dashboard',
+    defaultRoute: 'dashboard',
     userProfileRoute: 'http://localhost:4700/profile/dashboard',
     userSettingRoute: 'http://localhost:4700/profile/payments',
     paymentUrl: 'http://localhost:4700/profile/subscriptions'

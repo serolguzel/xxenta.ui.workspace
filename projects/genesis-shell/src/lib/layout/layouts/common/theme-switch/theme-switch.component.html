@@ -1,0 +1,9 @@
+<!-- Apps toggle -->
+<button mat-icon-button (click)="setScheme()">
+    @if (config?.scheme === 'dark') {
+        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:sun'"></mat-icon>
+    }
+    @if (config?.scheme === 'light') {
+        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:moon'"></mat-icon>
+    }
+</button>
