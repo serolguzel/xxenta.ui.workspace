@@ -1,0 +1,157 @@
+{
+  "generic": {
+    "message": {
+      "warning": "Uyarı"
+    }
+  },
+  "labels": {
+    "is-tenant": "Kiracı mı",
+    "is-deleted": "Silindi mi",
+    "cancel": "İptal",
+    "search": "Ara...",
+    "cancel-confirm": "İptal etmek istediğinizden emin misiniz?",
+    "cancel-reservation": "Rezervasyonu İptal Et",
+    "cancellation-note": "İptal Notu",
+    "change-flight-times": "Uçuş Saatlerini Değiştir",
+    "change-terminal": "Terminal Değiştir",
+    "tenants": "Kiracılar",
+    "sub-apps": "Alt Uygulamalar & Servisler",
+    "email": "E-posta",
+    "user-type": "Kullanıcı Türü",
+    "gender": "Cinsiyet",
+    "first-name": "Ad",
+    "last-name": "Soyad",
+    "active-user": "Aktif Kullanıcı",
+    "identity-number": "Kimlik Numarası",
+    "phone-number": "Telefon Numarası",
+    "phone-country-code": "Telefon Ülke Kodu",
+    "phone-codes": "Ülke Kodları",
+    "partners": "Partnerler",
+    "operators": "Operatörler",
+    "hotels": "Oteller",
+    "users": "Kullanıcılar",
+    "customers": "Müşteriler",
+    "companies": "Şirketler",
+    "company-name": "Şirket Adı",
+    "countries": "Ülkeler",
+    "vehicle-types": "Araç Türleri",
+    "transfer-types": "Transfer Türleri",
+    "airports": "Havaalanları",
+    "flights": "Uçuşlar",
+    "regions": "Bölgeler",
+    "airlines": "Havayolları",
+    "transfer-routes": "Transfer Rotaları",
+    "airports-hotels": "Havaalanları & Oteller",
+    "none": "Yok",
+    "east": "Doğu",
+    "west": "Batı",
+    "north": "Kuzey",
+    "south": "Güney",
+    "cardinal-direction": "Yön",
+    "vehicle": "Araç",
+    "vehicles": "Araçlar",
+    "vehicle-type": "Araç Türü",
+    "transfer-type": "Transfer Türü",
+    "organization": "Organizasyon",
+    "organizations": "Organizasyonlar",
+    "send-notification": "Bildirim Gönder",
+    "notification-text": "Bildirim Metni",
+    "monthly-pp-cost.title": "Aylık Kişi Başı Maliyet",
+    "api-resources": "API Kaynakları",
+    "api-resource": "API Kaynağı",
+    "scopes": "Kapsamlar",
+    "api-scopes": "API Kapsamları",
+    "api-scope": "API Kapsamı",
+    "claims": "Talepler",
+    "claim": "Talep",
+    "client-permissions": "İstemci İzinleri",
+    "client-permission": "İstemci İzni",
+    "clients": "İstemciler",
+    "configurations": "Yapılandırmalar",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "integrations": "Entegrasyonlar",
+    "select-role": "Rol Seçin",
+    "role-permissions": "Rol İzinleri",
+    "dashboard": "Kontrol Paneli",
+    "client-id": "client_id",
+    "client-secret": "client_secret",
+    "grant-type": "grant_type",
+    "scope": "scope",
+    "back": "Geri",
+    "username": "Kullanıcı Adı",
+    "email-confirm": "E-posta onayı",
+    "navigations": "Navigasyonlar",
+    "apps": "Uygulamalar",
+    "app": "Uygulama",
+    "column-chooser": "Sütun Seçici"
+  },
+  "messages": {
+    "required": "Bu alan zorunludur"
+  },
+  "validation": {
+    "required": "Zorunlu Alan!",
+    "name-exists": "Bu isim zaten mevcut!",
+    "code-exists": "Bu kod zaten mevcut!"
+  },
+  "descriptions": {
+    "no-data": "Veri bulunamadı",
+    "drop-here": "Dosyanızı buraya sürükleyip bırakın",
+    "click-to-upload": "…veya dosya seçmek için tıklayın."
+  },
+  "navigation": {
+    "homepage": "Ana Sayfa",
+    "reservations": "Rezervasyonlar",
+    "airport-planning": "Havalimanı Planlama",
+    "transfer-tracking": "Transfer Takibi",
+    "transfer-planning": "Transfer Planlama",
+    "divider-1": "divider_1",
+    "contracts": "Sözleşmeler",
+    "contract-extras": "Sözleşme Ekstraları",
+    "definitions-title": "Tanımlamalar",
+    "definitions": {
+      "drivers": "Şoförler",
+      "vehicles": "Araçlar",
+      "partners": "Partnerler",
+      "operators": "Operatörler",
+      "vehicle-types": "Araç Türleri",
+      "transfer-types": "Transfer Türleri",
+      "terminals": "Terminaller",
+      "flights": "Uçuşlar",
+      "extras": "Ekstralar",
+      "seasons": "Sezonlar"
+    },
+    "divider-2": "divider_2",
+    "reports": "Raporlar",
+    "data-import-title": "Veri İçe Aktarma",
+    "data-import": {
+      "transfer": "Transfer Veri İçe Aktarma",
+      "flight": "Uçuş Veri İçe Aktarma"
+    },
+    "divider-3": "divider_3",
+    "settings": "Ayarlar",
+    "uetds-city-mapping": "UETDS Şehir Eşleştirme",
+    "uetds-service-info": "UETDS Servis Bilgisi",
+    "uetds-logs": "UETDS Kayıtları"
+  },
+  "tenant": {
+    "api-resources": {
+      "name-placeholder": "API kaynak adını girin",
+      "secret-warning": "Lütfen gizli anahtarı kaydedin. Tekrar gösterilmeyecektir.",
+      "validation": {
+        "name-exists": "Bu API kaynak adı zaten mevcut"
+      }
+    },
+    "apps-customer-using": {
+      "application": "Uygulama",
+      "customer": "Müşteri",
+      "title": "Müşterilerin Kullandığı Uygulamalar"
+    },
+    "navigations": {
+      "popup-title": "Navigasyon Yönetimi"
+    },
+    "validation": {
+      "code-exists": "Bu kod zaten mevcut"
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "generic": {
+    "message": {
+      "warning": "Waarschuwing"
+    }
+  },
+  "labels": {
+    "is-tenant": "Is huurder",
+    "is-deleted": "Is verwijderd",
+    "cancel": "Annuleren",
+    "search": "Zoeken...",
+    "cancel-confirm": "Weet u zeker dat u wilt annuleren?",
+    "cancel-reservation": "Reservering annuleren",
+    "cancellation-note": "Annuleringsnotitie",
+    "change-flight-times": "Vluchttijden wijzigen",
+    "change-terminal": "Terminal wijzigen",
+    "tenants": "Huurders",
+    "sub-apps": "Sub-toepassingen & Diensten",
+    "email": "E-mail",
+    "user-type": "Gebruikerstype",
+    "gender": "Geslacht",
+    "first-name": "Voornaam",
+    "last-name": "Achternaam",
+    "active-user": "Actieve gebruiker",
+    "identity-number": "Identiteitsnummer",
+    "phone-number": "Telefoonnummer",
+    "phone-country-code": "Landcode telefoon",
+    "phone-codes": "Landcodes",
+    "partners": "Partners",
+    "operators": "Operators",
+    "hotels": "Hotels",
+    "users": "Gebruikers",
+    "customers": "Klanten",
+    "companies": "Bedrijven",
+    "company-name": "Bedrijfsnaam",
+    "countries": "Landen",
+    "vehicle-types": "Voertuigtypen",
+    "transfer-types": "Transfertypen",
+    "airports": "Luchthavens",
+    "flights": "Vluchten",
+    "regions": "Regio's",
+    "airlines": "Luchtvaartmaatschappijen",
+    "transfer-routes": "Transferroutes",
+    "airports-hotels": "Luchthavens & Hotels",
+    "none": "Geen",
+    "east": "Oost",
+    "west": "West",
+    "north": "Noord",
+    "south": "Zuid",
+    "cardinal-direction": "Richting",
+    "vehicle": "Voertuig",
+    "vehicles": "Voertuigen",
+    "vehicle-type": "Voertuigtype",
+    "transfer-type": "Transfertype",
+    "organization": "Organisatie",
+    "organizations": "Organisaties",
+    "send-notification": "Melding verzenden",
+    "notification-text": "Meldingstekst",
+    "monthly-pp-cost.title": "Maandelijkse kosten per persoon",
+    "api-resources": "API-bronnen",
+    "api-resource": "API-bron",
+    "scopes": "Bereiken",
+    "api-scopes": "API-bereiken",
+    "api-scope": "API-bereik",
+    "claims": "Claims",
+    "claim": "Claim",
+    "client-permissions": "Clientmachtigingen",
+    "client-permission": "Clientmachtiging",
+    "clients": "Clients",
+    "configurations": "Configuraties",
+    "save": "Opslaan",
+    "delete": "Verwijderen",
+    "integrations": "Integraties",
+    "select-role": "Selecteer rol",
+    "role-permissions": "Rolmachtigingen",
+    "dashboard": "Dashboard",
+    "client-id": "client_id",
+    "client-secret": "client_secret",
+    "grant-type": "grant_type",
+    "scope": "scope",
+    "back": "Terug",
+    "username": "Gebruikersnaam",
+    "email-confirm": "E-mail bevestigen",
+    "navigations": "Navigaties",
+    "apps": "Toepassingen",
+    "app": "Toepassing",
+    "column-chooser": "Kolomkiezer"
+  },
+  "messages": {
+    "required": "Dit veld is verplicht"
+  },
+  "validation": {
+    "required": "Verplicht veld!",
+    "name-exists": "Deze naam bestaat al!",
+    "code-exists": "Deze code bestaat al!"
+  },
+  "descriptions": {
+    "no-data": "Geen gegevens beschikbaar",
+    "drop-here": "Sleep uw bestand hierheen",
+    "click-to-upload": "…of klik om bestanden te bladeren."
+  },
+  "navigation": {
+    "homepage": "Startpagina",
+    "reservations": "Reserveringen",
+    "airport-planning": "Luchthavenplanning",
+    "transfer-tracking": "Transfer volgen",
+    "transfer-planning": "Transferplanning",
+    "divider-1": "divider_1",
+    "contracts": "Contracten",
+    "contract-extras": "Contractextras",
+    "definitions-title": "Definities",
+    "definitions": {
+      "drivers": "Chauffeurs",
+      "vehicles": "Voertuigen",
+      "partners": "Partners",
+      "operators": "Operators",
+      "vehicle-types": "Voertuigtypen",
+      "transfer-types": "Transfertypen",
+      "terminals": "Terminals",
+      "flights": "Vluchten",
+      "extras": "Extras",
+      "seasons": "Seizoenen"
+    },
+    "divider-2": "divider_2",
+    "reports": "Rapporten",
+    "data-import-title": "Gegevensimport",
+    "data-import": {
+      "transfer": "Transfer gegevensimport",
+      "flight": "Vlucht gegevensimport"
+    },
+    "divider-3": "divider_3",
+    "settings": "Instellingen",
+    "uetds-city-mapping": "UETDS Stadstoewijzing",
+    "uetds-service-info": "UETDS Service-informatie",
+    "uetds-logs": "UETDS Logboeken"
+  },
+  "tenant": {
+    "api-resources": {
+      "name-placeholder": "Voer de naam van de API-bron in",
+      "secret-warning": "Sla de geheime sleutel op. Deze wordt niet opnieuw weergegeven.",
+      "validation": {
+        "name-exists": "Deze API-bronnaam bestaat al"
+      }
+    },
+    "apps-customer-using": {
+      "application": "Toepassing",
+      "customer": "Klant",
+      "title": "Toepassingen gebruikt door klanten"
+    },
+    "navigations": {
+      "popup-title": "Navigatiebeheer"
+    },
+    "validation": {
+      "code-exists": "Deze code bestaat al"
+    }
+  }
+}

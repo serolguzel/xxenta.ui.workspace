@@ -1,20 +1,48 @@
-<div class="flex flex-col flex-auto min-w-0">
-
-    <!-- Header -->
+<div class="flex flex-col flex-auto min-w-0 pb-8 bg-zinc-100">
+    <!-- Main -->
     <div class="bg-card">
         <div class="flex flex-col w-full max-w-screen-xl mx-auto px-6 sm:px-8">
-            <div class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-8 sm:my-12">
-                <div class="flex flex-auto items-center min-w-0">
-                    <h2 class="text-2xl md:text-5xl font-semibold tracking-tight leading-7 md:leading-snug truncate">Dashboard</h2>
-                </div>
+            <div class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-4 sm:my-8">
+                <dx-toolbar>
+                    <dxi-item location="before" locateInMenu="auto" widget="dxButton"
+                        [options]="btnGenerateSubscrtion"></dxi-item>
+
+                    <dxi-item location="after" locateInMenu="auto" widget="dxButton"
+                        [options]="btnPushCustomerToAccounting"></dxi-item>
+
+                    <dxi-item location="after" locateInMenu="auto" widget="dxButton"
+                        [options]="btnPushToAccounting"></dxi-item>
+                </dx-toolbar>
             </div>
         </div>
     </div>
-    
-     <!-- Main -->
     <div class="flex-auto border-t -mt-px pt-4 sm:pt-6">
         <div class="w-full max-w-screen-xl mx-auto">
-        <h1>fkakfalfkk</h1>
+            <div class="sm:px-2">
+                <div class="grid xs:grid-cols-1 sm:grid-cols-6 gap-6 mb-6 ">
+                    <div class="col-span-2 bg-card shadow rounded-2xl overflow-hidden p-6">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate mb-4">{{
+                            'labels.send-notification' | transloco }}</div>
+
+                        <div class="flex flex-col flex-auto mt-6">
+                            <dx-form #hotelForm id="form" [formData]="model" labelLocation="top" labelMode="floating">
+                                <dxi-item dataField="text" editorType="dxTextArea"
+                                    [label]="{text: 'labels.notification-text' | transloco}">
+                                    <dxi-validation-rule type="required"
+                                        [message]="'messages.required' | transloco"></dxi-validation-rule>
+                                </dxi-item>
+                            </dx-form>
+                            <dx-toolbar class="mt-4">
+                                <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
+                            </dx-toolbar>
+                        </div>
+                    </div>
+                    <div class="col-span-4 bg-card shadow rounded-2xl overflow-hidden p-6">
+                        <div class="text-lg font-medium tracking-tight leading-6 truncate mb-4">{{
+                            'labels.monthly-pp-cost.title' | transloco }}</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

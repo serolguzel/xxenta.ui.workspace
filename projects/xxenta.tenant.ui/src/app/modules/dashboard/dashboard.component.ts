@@ -1,10 +1,15 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterModule } from '@angular/router';
-
-import { GenesisConfig, GenesisConfigService, Scheme } from 'genesis-shell';
-import { Subject, takeUntil } from 'rxjs';
+import {
+    DxFormComponent,
+    DxFormModule,
+    DxToolbarModule,
+} from 'devextreme-angular';
+import { AUTH_CONFIG_GEN, IAuthConfig } from 'genesis-coreservice';
+import { SendNotificationToAllClients } from '../services/models/tenant.models';
+import { TenantService } from '../services/tenant.service';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 @Component({
     selector: 'app-dashboard',
@@ -12,37 +17,65 @@ import { Subject, takeUntil } from 'rxjs';
     styleUrls: ['./dashboard.component.scss'],
     standalone: true,
     imports: [
-        MatIconModule,
         MatButtonModule,
-        RouterModule
+        MatIconModule,
+        DxFormModule,
+        DxToolbarModule,
+        TranslocoModule,
     ],
-    providers: [
-
-    ]
+    providers: [TenantService],
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-    config?: GenesisConfig;
-    private unsubscribeAll: Subject<any> = new Subject<any>();
+export class DashboardComponent {
+    @ViewChild(DxFormComponent, { static: false }) form?: DxFormComponent;
+    model: SendNotificationToAllClients = <SendNotificationToAllClients>{
+        text: '',
+    };
+    btnSave = {
+        icon: 'save',
+        text: this.translocoService.translate('labels.save'),
+        type: 'default',
+        onClick: this.send.bind(this),
+    };
+    btnPushToAccounting = {
+        icon: 'pulldown',
+        text: this.translocoService.translate('labels.push-to-accounting'),
+        onClick: this.pushToAccounting.bind(this)
+    };
+
+    btnPushCustomerToAccounting = {
+        icon: 'pulldown',
+        text: this.translocoService.translate('labels.customer-push-to-accounting'),
+        onClick: this.pushCustomersToAccounting.bind(this)
+    };
+
+    btnGenerateSubscrtion = {
+        icon: 'coffee',
+        text: this.translocoService.translate('labels.generate-subscription'),
+        onClick: this.generateSubscription.bind(this)
+    };
 
     constructor(
-        private configService: GenesisConfigService
-    ) {
+        private tenantService: TenantService,
+        private translocoService: TranslocoService,
+        @Inject(AUTH_CONFIG_GEN) public authConfig: IAuthConfig,
+    ) { }
 
-    }
-    ngOnInit(): void {
-        this.configService.config$
-            .pipe(takeUntil(this.unsubscribeAll))
-            .subscribe((config: GenesisConfig) => {
-                this.config = config;
-            });
-    }
-    ngOnDestroy(): void {
-        this.unsubscribeAll.next(null);
-        this.unsubscribeAll.complete();
+    send() {
+        var valid = this.form?.instance.validate().isValid;
+        if (valid) {
+            this.tenantService.SendNotificationToAllClients(this.model);
+        }
     }
 
-    setScheme(scheme: Scheme): void {
-        this.configService.config = { scheme };
+    pushToAccounting() {
+        this.tenantService.PricePushToAccountingProcess();
+    }
+
+    pushCustomersToAccounting() {
+        this.tenantService.CustomerPushToAccountingProcess();
+    }
+
+    generateSubscription() {
+        this.tenantService.AddPaymentProcess();
     }
 }
-

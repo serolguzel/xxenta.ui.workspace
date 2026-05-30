@@ -1,0 +1,21 @@
+<div class="w-full flex flex-col">
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-4 sm:px-10 border-b bg-card dark:bg-transparent">
+        <!-- Actions -->
+        <div class="flex shrink-0 items-center">
+            <genesis-breadcrumbs [Breadcrumbs]="breadcrumbs" class="flex"></genesis-breadcrumbs>
+        </div>
+    </div>
+
+    <div class="flex-auto p-6 sm:p-10 bg-white">
+        <div class="w-full max-w-3xl">
+            <client-form 
+                [data]="client" 
+                [options]="{
+                    showOwnerLookup: true
+                }"
+                [hasSaveButton]="hasCreate"
+                (onSaveClick)="save($event)"></client-form>
+        </div>
+    </div>
+</div>

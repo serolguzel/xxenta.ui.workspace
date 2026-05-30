@@ -1,0 +1,36 @@
+<dx-data-grid id="gridContainer" 
+[dataSource]="dataSource"
+[remoteOperations]="false"
+[showColumnLines]="false"
+[showBorders]="true"
+[showRowLines]="true"
+[rowAlternationEnabled]="true"
+[hoverStateEnabled]="true"
+[allowColumnResizing]="true"
+[columnHidingEnabled]="true">
+
+<dxo-toolbar>
+  <dxi-item location="before">
+      <div *dxTemplate>
+          <div class="text-2xl tracking-tight">
+              Pax Counter
+          </div>
+      </div>
+  </dxi-item>
+  <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
+  <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+  <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+</dxo-toolbar>
+
+  <dxo-search-panel [visible]="true"></dxo-search-panel>
+  <dxo-filter-row [visible]="true"></dxo-filter-row>
+  <dxo-group-panel [visible]="false"></dxo-group-panel>
+
+  <dxi-column dataField="total" dataType="number"></dxi-column>
+  <dxi-column dataField="beginDate" dataType="date" format="dd.MM.yyyy"></dxi-column>
+  <dxi-column dataField="endDate" dataType="date" format="dd.MM.yyyy"></dxi-column>
+  <dxi-column dataField="createDate" dataType="date" format="dd.MM.yyyy HH:mm"></dxi-column>
+
+  <dxo-paging [pageSize]="20"></dxo-paging>
+  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+</dx-data-grid>

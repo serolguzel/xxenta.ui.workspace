@@ -1,0 +1,65 @@
+<div class="w-full max-w-3xl">
+  <client-form [data]="client" 
+  [options]="{
+      showAllowedGrantType: true,
+      showOwnerLookup: true,
+      showAllowedScope: true,
+      showOperatorCode: true
+    }"
+    [hasSaveButton]="hasCreate"
+    [hasDeleteButton]="hasDeleteButton"
+    [deleteButtonVisible]="true"
+    [tenantsLookUpOptions]="tenantsLookUpOptions"
+    (onSaveClick)="onSaveClick($event)"
+    (onDeleteClick)="deleteItem($event)">
+     <div class="mt-6">
+                <div class="mt-6 border-t border-gray-100">
+                  <dl class="divide-y divide-gray-100">
+                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                      <dt class="text-sm font-medium leading-6 text-gray-900">{{ 'labels.client-id' | transloco }}*</dt>
+                      <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        {{client.clientId}}
+                      </dd>
+                    </div>
+                  </dl>
+              
+                  <dl class="divide-y divide-gray-100">
+                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                      <dt class="text-sm font-medium leading-6 text-gray-900">{{ 'labels.client-secret' | transloco }}*</dt>
+                      <dd class="flex justify-between items-center mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        <div>
+                          <span *ngIf="client.clientSecrets.length > 0">{{client.clientSecrets[0].value}}</span>
+                        </div>
+                        <dx-button icon="refresh" (onClick)="generateClinetSecret($event)"></dx-button>
+                      </dd>
+                    </div>
+                  </dl>
+              
+                  <dl class="divide-y divide-gray-100">
+                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                      <dt class="text-sm font-medium leading-6 text-gray-900">{{ 'labels.grant-type' | transloco }}*</dt>
+                      <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        <div *ngFor="let type of client.allowedGrantTypes; let i = index;">
+                          {{type}}
+                        </div>
+                      </dd>
+                    </div>
+                  </dl>
+              
+              
+                  <dl class="divide-y divide-gray-100">
+                    <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                      <dt class="text-sm font-medium leading-6 text-gray-900">{{ 'labels.scope' | transloco }}</dt>
+                      <dd class="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        <span *ngFor="let s of client.allowedScopes; let i = index;">
+                          {{s}}
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
+              
+                </div>
+              </div>
+  </client-form>
+        
+</div>

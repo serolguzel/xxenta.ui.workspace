@@ -1,0 +1,98 @@
+<dx-data-grid id="gridContainer" 
+            [dataSource]="dataSource"
+            [remoteOperations]="false"
+            [showColumnLines]="false"
+            [showBorders]="true"
+            [showRowLines]="true"
+            [rowAlternationEnabled]="true"
+            [hoverStateEnabled]="true"
+            [allowColumnResizing]="true"
+            [columnHidingEnabled]="false"
+            (onInitNewRow)="onInitNewRow($event)"
+            (onRowUpdating)="onRowUpdating($event)">
+          
+              <dxo-search-panel [visible]="true"></dxo-search-panel>
+              <dxo-filter-row [visible]="true"></dxo-filter-row>
+              <dxo-group-panel [visible]="false"></dxo-group-panel>
+
+              <dxo-toolbar>
+                <dxi-item location="before">
+                  <div *dxTemplate>
+                    <div class="text-2xl tracking-tight">
+                        {{ 'labels.navigations' | transloco }}
+                    </div>
+                  </div>
+                </dxi-item>
+                <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
+                <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+                <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+              </dxo-toolbar>
+
+              <dxo-editing 
+              mode="popup"
+              [allowUpdating]="true"
+              [allowAdding]="true"
+              [allowDeleting]="false"
+              [useIcons]="true">
+              <dxo-popup
+                  [title]="'labels.navigation-management' | transloco"
+                  [showTitle]="true"
+                  [width]="600"
+                  [height]="500"
+                  [resizeEnabled]="true"
+                  [position]="{ my: 'center', at: 'center'}">
+              </dxo-popup>
+              <dxo-form [colCount]="1" labelMode="floating">
+                  <dxi-item dataField="title">
+                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                  </dxi-item>
+                  <dxi-item dataField="subtitle"></dxi-item>
+
+                  <dxi-item itemType="group" [colCount]="2">
+                    <dxi-item dataField="type" editorType="dxSelectBox" [editorOptions]="{
+                      dataSource: navigationTypes,
+                    }">
+                      <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <dxi-item dataField="icon">
+                      <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
+                      </dxi-validation-rule>
+                    </dxi-item>
+                    <dxi-item dataField="active"></dxi-item>
+                    <dxi-item dataField="disabled"></dxi-item>
+                  </dxi-item>
+                  <dxi-item dataField="roles" editorType="dxTagBox" [editorOptions]="{
+                    dataSource: roles,
+                    valueExpr: 'id',
+                    displayExpr: 'name',
+                    showClearButton: true,
+                    showSelectionControls: true,
+                    applyValueMode: 'useButtons'
+                }">
+                  </dxi-item>
+                  <dxi-item dataField="link">
+                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                  </dxi-item>
+                  
+              </dxo-form>
+          </dxo-editing>
+
+              
+              <dxi-column dataField="title" dataType="string"></dxi-column>
+              <dxi-column dataField="subtitle" dataType="string"></dxi-column>
+              <dxi-column dataField="type" dataType="string"></dxi-column>
+              <dxi-column dataField="active" dataType="boolean"></dxi-column>
+              <dxi-column dataField="disabled" dataType="boolean"></dxi-column>
+              <dxi-column dataField="tootip" dataType="string"></dxi-column>
+              <dxi-column dataField="link" dataType="string"></dxi-column>
+              <dxi-column dataField="icon" dataType="string"></dxi-column>
+              <dxi-column dataField="isDeleted" dataType="boolean"></dxi-column>
+              <dxi-column dataField="roles" dataType="array" [visible]="false"></dxi-column>
+
+              <dxo-paging [pageSize]="20"></dxo-paging>
+              <dxo-pager 
+                [showPageSizeSelector]="true" 
+                [showInfo]="true" 
+                [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+          </dx-data-grid>

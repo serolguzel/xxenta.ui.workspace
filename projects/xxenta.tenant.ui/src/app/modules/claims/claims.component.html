@@ -1,0 +1,64 @@
+<div class="p-6">
+    <dx-data-grid id="gridContainer" 
+    [dataSource]="dataSource"
+    [remoteOperations]="false"
+    [showColumnLines]="false"
+    [showBorders]="true"
+    [showRowLines]="true"
+    [rowAlternationEnabled]="true"
+    [hoverStateEnabled]="true"
+    [allowColumnResizing]="true"
+    [columnHidingEnabled]="true"
+    (onRowUpdating)="onRowUpdating($event)">
+  
+      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+      <dxo-group-panel [visible]="false"></dxo-group-panel>
+  
+      <dxo-toolbar>
+          <dxi-item location="before">
+            <div *dxTemplate>
+              <div class="text-2xl tracking-tight">{{ 'labels.claims' | transloco }}</div>
+            </div>
+          </dxi-item>
+          <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
+          <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
+          <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+        </dxo-toolbar>
+        
+      <dxo-editing 
+        mode="popup"
+        [allowAdding]="true"
+        [allowUpdating]="true"
+        [useIcons]="true">
+        <dxo-popup
+            [title]="'labels.claim' | transloco"
+            [showTitle]="true"
+            [width]="500"
+            [height]="380"
+            [resizeEnabled]="true"
+            [position]="{ my: 'center', at: 'center'}">
+        </dxo-popup>
+        <dxo-form [colCount]="1" labelLocation="top" labelMode="floating">
+          <dxi-item dataField="code" [disabled]="true">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+          </dxi-item>
+
+            <dxi-item dataField="state">
+              <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
+              </dxi-validation-rule>
+            </dxi-item>
+            <dxi-item dataField="description"></dxi-item>
+            <dxi-item dataField="hasTenant"></dxi-item>
+        </dxo-form>
+    </dxo-editing>
+  
+      <dxi-column dataField="code" dataType="string"></dxi-column>
+      <dxi-column dataField="state" dataType="string"></dxi-column>
+      <dxi-column dataField="hasTenant" dataType="boolean"></dxi-column>
+      <dxi-column dataField="description" dataType="string"></dxi-column>
+      
+      <dxo-paging [pageSize]="20"></dxo-paging>
+      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+    </dx-data-grid>
+  </div>

@@ -1,0 +1,100 @@
+<div class="p-6">
+    <dx-data-grid id="gridContainer" 
+    [dataSource]="dataSource"
+    [remoteOperations]="false"
+    [showColumnLines]="false"
+    [showBorders]="true"
+    [showRowLines]="true"
+    [rowAlternationEnabled]="true"
+    [hoverStateEnabled]="true"
+    [allowColumnResizing]="true"
+    [columnHidingEnabled]="true"
+    (onInitNewRow)="onInitNewRow($event)">
+  
+      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+      <dxo-group-panel [visible]="false"></dxo-group-panel>
+  
+      <dxo-toolbar>
+          <dxi-item location="before">
+            <div *dxTemplate>
+              <div class="text-2xl tracking-tight">{{ 'labels.api-resources' | transloco }}</div>
+            </div>
+          </dxi-item>
+          <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
+          <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
+          <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+        </dxo-toolbar>
+        
+      <dxo-editing 
+        mode="popup"
+        [allowUpdating]="false"
+        [allowAdding]="true"
+        [allowDeleting]="true"
+        [useIcons]="true">
+        <dxo-popup
+            [title]="'labels.api-resource' | transloco"
+            [showTitle]="true"
+            [width]="600"
+            [height]="580"
+            [resizeEnabled]="true"
+            [position]="{ my: 'center', at: 'center'}">
+        </dxo-popup>
+        <dxo-form [colCount]="1" labelLocation="top" labelMode="floating">
+          <dxi-item dataField="secret" editorType="dxTextBox" [editorOptions]="{
+            disabled: true
+          }">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            <dxi-validation-rule type="async" [message]="'messages.name-exists' | transloco" [validationCallback]="validationCallback"></dxi-validation-rule>
+          </dxi-item>
+
+          <dxi-item itemType="group">
+            <genesis-alert [type]="'warning'">
+                <span genesisAlertTitle>{{ 'labels.warningrning' | transloco }}</span>
+                {{ 'messages.secret-warning' | transloco }}
+            </genesis-alert>
+          </dxi-item>
+          
+          <dxi-item dataField="name" editorType="dxTextBox" [editorOptions]="{
+            placeholder: 'descriptions.name-placeholder' | transloco
+          }">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            <dxi-validation-rule type="async" [message]="'messages.name-exists' | transloco" [validationCallback]="validationCallback"></dxi-validation-rule>
+          </dxi-item>
+
+            <dxi-item dataField="displayName">
+              <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            </dxi-item>
+
+            <dxi-item dataField="scopes" editorType="dxTagBox" [editorOptions]="{
+                dataSource: scopesDataSource,
+                displayExpr: 'name',
+                valueExpr: 'name',
+                showClearButton: true,
+                placeholder: 'labels.scopes' | transloco,
+                showSelectionControls: true
+              }"></dxi-item>
+
+            <dxi-item dataField="description"></dxi-item>
+            <dxi-item itemType="group" [colCount]="2">
+                <dxi-item dataField="enabled"></dxi-item>
+                <dxi-item dataField="nonEditable"></dxi-item>
+            </dxi-item>
+            
+        </dxo-form>
+    </dxo-editing>
+  
+      <dxi-column dataField="name" dataType="string"></dxi-column>
+      <dxi-column dataField="displayName" dataType="string"></dxi-column>
+      <dxi-column dataField="description" dataType="string"></dxi-column>
+      <dxi-column dataField="secret" dataType="string" [visible]="false" [allowSorting]="false"></dxi-column>
+      <dxi-column dataField="enabled" dataType="boolean"></dxi-column>
+      <dxi-column dataField="nonEditable" dataType="boolean"></dxi-column>
+      <dxi-column dataField="scopes" dataType="array" 
+       [allowSorting]="false"
+      [cellTemplate]="scopeCellTemplate"></dxi-column>
+
+      <dxo-paging [pageSize]="20"></dxo-paging>
+      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+    </dx-data-grid>
+  </div>

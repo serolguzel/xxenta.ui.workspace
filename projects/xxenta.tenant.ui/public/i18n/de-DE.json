@@ -1,0 +1,157 @@
+{
+  "generic": {
+    "message": {
+      "warning": "Warnung"
+    }
+  },
+  "labels": {
+    "is-tenant": "Ist Mandant",
+    "is-deleted": "Ist gelöscht",
+    "cancel": "Abbrechen",
+    "search": "Suche...",
+    "cancel-confirm": "Sind Sie sicher, dass Sie abbrechen möchten?",
+    "cancel-reservation": "Reservierung stornieren",
+    "cancellation-note": "Stornierungsnotiz",
+    "change-flight-times": "Flugzeiten ändern",
+    "change-terminal": "Terminal ändern",
+    "tenants": "Mandanten",
+    "sub-apps": "Unteranwendungen & Dienste",
+    "email": "E-Mail",
+    "user-type": "Benutzertyp",
+    "gender": "Geschlecht",
+    "first-name": "Vorname",
+    "last-name": "Nachname",
+    "active-user": "Aktiver Benutzer",
+    "identity-number": "Identifikationsnummer",
+    "phone-number": "Telefonnummer",
+    "phone-country-code": "Ländervorwahl",
+    "phone-codes": "Ländervorwahlen",
+    "partners": "Partner",
+    "operators": "Betreiber",
+    "hotels": "Hotels",
+    "users": "Benutzer",
+    "customers": "Kunden",
+    "companies": "Unternehmen",
+    "company-name": "Firmenname",
+    "countries": "Länder",
+    "vehicle-types": "Fahrzeugtypen",
+    "transfer-types": "Transfertypen",
+    "airports": "Flughäfen",
+    "flights": "Flüge",
+    "regions": "Regionen",
+    "airlines": "Fluggesellschaften",
+    "transfer-routes": "Transferstrecken",
+    "airports-hotels": "Flughäfen & Hotels",
+    "none": "Keine",
+    "east": "Ost",
+    "west": "West",
+    "north": "Nord",
+    "south": "Süd",
+    "cardinal-direction": "Richtung",
+    "vehicle": "Fahrzeug",
+    "vehicles": "Fahrzeuge",
+    "vehicle-type": "Fahrzeugtyp",
+    "transfer-type": "Transfertyp",
+    "organization": "Organisation",
+    "organizations": "Organisationen",
+    "send-notification": "Benachrichtigung senden",
+    "notification-text": "Benachrichtigungstext",
+    "monthly-pp-cost.title": "Monatliche Kosten pro Person",
+    "api-resources": "API-Ressourcen",
+    "api-resource": "API-Ressource",
+    "scopes": "Bereiche",
+    "api-scopes": "API-Bereiche",
+    "api-scope": "API-Bereich",
+    "claims": "Ansprüche",
+    "claim": "Anspruch",
+    "client-permissions": "Client-Berechtigungen",
+    "client-permission": "Client-Berechtigung",
+    "clients": "Clients",
+    "configurations": "Konfigurationen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "integrations": "Integrationen",
+    "select-role": "Rolle auswählen",
+    "role-permissions": "Rollenberechtigungen",
+    "dashboard": "Dashboard",
+    "client-id": "client_id",
+    "client-secret": "client_secret",
+    "grant-type": "grant_type",
+    "scope": "scope",
+    "back": "Zurück",
+    "username": "Benutzername",
+    "email-confirm": "E-Mail bestätigen",
+    "navigations": "Navigationen",
+    "apps": "Anwendungen",
+    "app": "Anwendung",
+    "column-chooser": "Spaltenauswahl"
+  },
+  "messages": {
+    "required": "Dieses Feld ist erforderlich"
+  },
+  "validation": {
+    "required": "Pflichtfeld!",
+    "name-exists": "Dieser Name existiert bereits!",
+    "code-exists": "Dieser Code existiert bereits!"
+  },
+  "descriptions": {
+    "no-data": "Keine Daten verfügbar",
+    "drop-here": "Ziehen Sie Ihre Datei hierher",
+    "click-to-upload": "…oder klicken Sie, um Dateien auszuwählen."
+  },
+  "navigation": {
+    "homepage": "Startseite",
+    "reservations": "Reservierungen",
+    "airport-planning": "Flughafenplanung",
+    "transfer-tracking": "Transferverfolgung",
+    "transfer-planning": "Transferplanung",
+    "divider-1": "divider_1",
+    "contracts": "Verträge",
+    "contract-extras": "Vertragsextras",
+    "definitions-title": "Definitionen",
+    "definitions": {
+      "drivers": "Fahrer",
+      "vehicles": "Fahrzeuge",
+      "partners": "Partner",
+      "operators": "Betreiber",
+      "vehicle-types": "Fahrzeugtypen",
+      "transfer-types": "Transfertypen",
+      "terminals": "Terminals",
+      "flights": "Flüge",
+      "extras": "Extras",
+      "seasons": "Saisons"
+    },
+    "divider-2": "divider_2",
+    "reports": "Berichte",
+    "data-import-title": "Datenimport",
+    "data-import": {
+      "transfer": "Transferdatenimport",
+      "flight": "Flugdatenimport"
+    },
+    "divider-3": "divider_3",
+    "settings": "Einstellungen",
+    "uetds-city-mapping": "UETDS Stadtzuordnung",
+    "uetds-service-info": "UETDS Serviceinformationen",
+    "uetds-logs": "UETDS Protokolle"
+  },
+  "tenant": {
+    "api-resources": {
+      "name-placeholder": "API-Ressourcenname eingeben",
+      "secret-warning": "Bitte speichern Sie den geheimen Schlüssel. Er wird nicht erneut angezeigt.",
+      "validation": {
+        "name-exists": "Dieser API-Ressourcenname existiert bereits"
+      }
+    },
+    "apps-customer-using": {
+      "application": "Anwendung",
+      "customer": "Kunde",
+      "title": "Von Kunden verwendete Anwendungen"
+    },
+    "navigations": {
+      "popup-title": "Navigationsverwaltung"
+    },
+    "validation": {
+      "code-exists": "Dieser Code existiert bereits"
+    }
+  }
+}

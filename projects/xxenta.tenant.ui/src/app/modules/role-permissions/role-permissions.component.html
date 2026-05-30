@@ -1,0 +1,52 @@
+<div class="w-full flex flex-col">
+    <div
+        class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-4 sm:px-10 border-b bg-card dark:bg-transparent">
+        <!-- Actions -->
+        <div class="flex shrink-0 items-center">
+            <genesis-breadcrumbs [Breadcrumbs]="breadcrumbs" class="flex"></genesis-breadcrumbs>
+        </div>
+    </div>
+
+    <div class="flex-auto p-6 sm:p-10 bg-white">
+        <div class="w-full max-w-3xl">
+            <div class="mb-4">
+                <dx-toolbar>
+                    <dxi-item location="before" widget="dxSelectBox" [options]="{
+                        items: roles,
+                        value: selectedRole,
+                        displayExpr: 'name',
+                        valueExpr: 'id',
+                        placeholder: translocoService.translate('labels.select-role'),
+                        onValueChanged: onRoleValueChanged
+                    }"></dxi-item>
+                    <dxi-item location="after" widget="dxTextBox" [options]="{
+                        value: filterText,
+                        width: 240,
+                        placeholder: translocoService.translate('labels.search'),
+                        onValueChanged: onValueChanged
+                    }"></dxi-item>
+                  </dx-toolbar>
+            </div>
+            <dx-accordion #accordion 
+                [dataSource]="data" 
+                [collapsible]="true" 
+                [multiple]="false"
+                [animationDuration]="300" 
+                [selectedItems]="data[0] ? [data[0]] : []"
+                id="accordion-container">
+                <div *dxTemplate="let item of 'title'">
+                    <div class="header">{{ item.moduleName }}</div>
+                </div>
+                <div *dxTemplate="let item of 'item'">
+                    <div class="dx-field" *ngFor="let row of item.permissions">
+                        <div class="dx-field-label">{{row.claimValue}}</div>
+                        <div class="dx-field-value">
+                            <dx-switch [value]="row.hasRole" (onValueChanged)="onRowValueChanged($event, row)"></dx-switch>
+                        </div>
+                    </div>
+                </div>
+
+            </dx-accordion>
+        </div>
+    </div>
+</div>

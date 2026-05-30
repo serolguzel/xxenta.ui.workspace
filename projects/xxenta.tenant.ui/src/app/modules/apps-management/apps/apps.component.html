@@ -1,0 +1,104 @@
+<div class="p-6">
+    <dx-data-grid id="gridContainer" 
+    [dataSource]="dataSource"
+    [remoteOperations]="false"
+    [showColumnLines]="false"
+    [showBorders]="true"
+    [showRowLines]="true"
+    [rowAlternationEnabled]="true"
+    [hoverStateEnabled]="true"
+    [allowColumnResizing]="true"
+    [columnHidingEnabled]="true"
+    (onEditingStart)="onEditingStart($event)"
+    (onInitNewRow)="onInitNewRow($event)"
+    (onRowUpdating)="onRowUpdating($event)">
+  
+      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+      <dxo-group-panel [visible]="false"></dxo-group-panel>
+      <dxo-column-chooser #columnChooser [enabled]="true" mode="dragAndDrop" [title]="'labels.column-chooser' | transloco">
+        <dxo-position my="right top" at="right bottom" of=".dx-datagrid-column-chooser-button"></dxo-position>
+        <dxo-search [enabled]="true" [editorOptions]="{ placeholder: 'labels.search' | transloco }"></dxo-search>
+        <dxo-selection [allowSelectAll]="true" [selectByClick]="true" [recursive]="true"></dxo-selection>
+      </dxo-column-chooser>
+      <dxo-master-detail [enabled]="true" template="masterDetail"></dxo-master-detail>
+
+      <dxo-toolbar>
+          <dxi-item location="before">
+            <div *dxTemplate>
+              <div class="text-2xl tracking-tight">{{ 'labels.apps' | transloco }}</div>
+            </div>
+          </dxi-item>
+          <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+          <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
+          <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
+          <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+        </dxo-toolbar>
+        
+      <dxo-editing 
+        mode="popup"
+        [allowUpdating]="true"
+        [allowAdding]="true"
+        [allowDeleting]="false"
+        [useIcons]="true">
+        <dxo-popup
+            [title]="'labels.app' | transloco"
+            [showTitle]="true"
+            [width]="600"
+            [height]="500"
+            [resizeEnabled]="true"
+            [position]="{ my: 'center', at: 'center'}">
+        </dxo-popup>
+        <dxo-form [colCount]="1" labelLocation="top" labelMode="floating">
+            <dxi-item itemType="group" [colCount]="2">
+              <dxi-item dataField="code" [editorOptions]="{
+                  disabled: isUpdate
+                }">
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                <dxi-validation-rule type="async" [message]="'messages.code-exists' | transloco"
+                  [validationCallback]="validationCallback"></dxi-validation-rule>
+              </dxi-item>
+            
+              <dxi-item dataField="name">
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+              </dxi-item>
+            </dxi-item>
+            <dxi-item dataField="description"></dxi-item>
+            <dxi-item dataField="link"></dxi-item>
+            <dxi-item dataField="icon"></dxi-item>
+
+            <dxi-item itemType="group" [colCount]="2">
+              <dxi-item dataField="appType"></dxi-item>
+              <dxi-item dataField="presentationType"></dxi-item>
+              <dxi-item dataField="noShow"></dxi-item>
+            </dxi-item>
+        </dxo-form>
+    </dxo-editing>
+  
+      <dxi-column dataField="name" dataType="string" cellTemplate="nameTemp"></dxi-column>
+      <dxi-column dataField="code" dataType="string" cellTemplate="nameTemp"></dxi-column>
+      <dxi-column dataField="icon" dataType="string" [visible]="false"></dxi-column>
+      <dxi-column dataField="link" dataType="string" [visible]="false"></dxi-column>
+      <dxi-column dataField="presentationType" dataType="string">
+        <dxo-lookup [dataSource]="presentationTypes" valueExpr="id" displayExpr="name"></dxo-lookup>
+      </dxi-column>
+      <dxi-column dataField="appType" dataType="string">
+        <dxo-lookup [dataSource]="appTypes"></dxo-lookup>
+      </dxi-column>
+      <dxi-column dataField="noShow" dataType="boolean"></dxi-column>
+      <dxi-column dataField="description" dataType="string" cellTemplate="nameTemp"></dxi-column>
+      <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
+        <a [routerLink]="'detail/'+d.data.id">
+            <span class="flex font-bold">
+                {{d.value}}
+            </span>
+        </a>
+    </div>
+    <div *dxTemplate="let detail of 'masterDetail'">
+      <app-sub-apps-component [appId]="detail.data.id"></app-sub-apps-component>
+    </div>
+
+      <dxo-paging [pageSize]="20"></dxo-paging>
+      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+    </dx-data-grid>
+  </div>

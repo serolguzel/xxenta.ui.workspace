@@ -1,0 +1,23 @@
+<div class="w-full max-w-3xl">
+    <dx-form #hotelForm id="form" [formData]="data" labelLocation="top" labelMode="floating">
+        <dxi-item dataField="officialName" editorType="dxTextBox">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            <dxo-label [text]="'labels.official-name' | transloco"></dxo-label>
+        </dxi-item>
+        <dxi-item dataField="officialAddress">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            <dxo-label [text]="'labels.official-address' | transloco"></dxo-label>
+        </dxi-item>
+        <dxi-item dataField="taxNumber">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            <dxo-label [text]="'labels.tax-number' | transloco"></dxo-label>
+        </dxi-item>
+        <dxi-item dataField="taxOffice">
+            <dxo-label [text]="'labels.tax-office' | transloco"></dxo-label>
+        </dxi-item>
+    </dx-form>
+    <dx-toolbar class="mt-4">
+        <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
+        <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
+    </dx-toolbar>
+</div>

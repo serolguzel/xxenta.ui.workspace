@@ -1,0 +1,56 @@
+<div class="w-full max-w-3xl">
+    <dx-form #customerForm id="form" 
+      [formData]="app" 
+      labelLocation="top"
+      labelMode="floating">
+      <dxi-item dataField="code" editorType="dxTextBox" [editorOptions]="{
+        disabled: false
+      }">
+        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+
+        <dxi-item dataField="name" editorType="dxTextBox" [editorOptions]="{
+            disabled: false
+          }">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item dataField="description" editorType="dxTextBox" [editorOptions]="{
+            disabled: false
+          }">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item dataField="icon" editorType="dxTextBox" [editorOptions]="{
+                    disabled: false
+                  }">
+          <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item dataField="link"></dxi-item>
+        <dxi-item dataField="clientId"></dxi-item>
+        <dxi-item itemType="group" [colCount]="2">
+          <dxi-item dataField="price" editorType="dxNumberBox"
+            [editorOptions]="{ min: 0, showSpinButtons: true, showClearButton: true }">
+          </dxi-item>
+        
+          <dxi-item dataField="currency" editorType="dxSelectBox" [editorOptions]="{
+                                                                      dataSource: currenciesDataSoruce,
+                                                                      showClearButton: true
+                                                                      }">
+          </dxi-item>
+        
+          <dxi-item dataField="noShow" editorType="dxCheckBox"></dxi-item>
+          <dxi-item dataField="presentationType" editorType="dxSelectBox" [editorOptions]="{
+                        dataSource: presentationTypes,
+                        valueExpr: 'id',
+                        displayExpr: 'name'
+                      }"></dxi-item>
+        </dxi-item>
+
+    </dx-form>
+
+    <dx-toolbar class="mt-4">
+        <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
+        <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
+    </dx-toolbar>
+</div>

@@ -4,6 +4,6 @@ import { DashboardComponent } from "./dashboard.component";
 export default [
     {
         path: '',
-        component: DashboardComponent
-    }
+        component: DashboardComponent,
+    },
 ] as Routes;
