@@ -27,25 +27,27 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/xxenta.tenant.ui/public"
+                "input": "public"
               },
               {
                 "glob": "**/*",
-                "input": "projects/xxenta.tenant.ui/public/icons",
+                "input": "public/icons",
                 "output": "assets/icons"
               },
               {
                 "glob": "**/*",
-                "input": "projects/xxenta.tenant.ui/public/images",
+                "input": "public/images",
                 "output": "assets/images"
               },
               {
                 "glob": "**/*",
-                "input": "projects/xxenta.tenant.ui/public/avatars",
+                "input": "public/avatars",
                 "output": "assets/avatars"
               }
             ],
             "styles": [
+              "node_modules/devextreme/dist/css/dx.common.css",
+              "node_modules/devextreme/dist/css/dx.light.css",
               "projects/xxenta.tenant.ui/src/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
