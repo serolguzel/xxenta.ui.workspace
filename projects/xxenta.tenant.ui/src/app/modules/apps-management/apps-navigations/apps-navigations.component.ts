@@ -5,6 +5,7 @@ import CustomStore from 'devextreme/data/custom_store';
 import { DataSourceBuilder, RoleResponse } from 'genesis-components';
 import { CoreService } from 'genesis-coreservice';
 import { TranslocoModule } from '@jsverse/transloco';
+import { TenantService } from '../../services/tenant.service';
 
 @Component({
   selector: 'app-apps-navigations',
@@ -14,6 +15,9 @@ import { TranslocoModule } from '@jsverse/transloco';
     DxDataGridModule,
     DxButtonModule,
     TranslocoModule
+  ],
+  providers: [
+    TenantService
   ]
 })
 export class AppsNavigationsComponent implements OnInit {
@@ -24,12 +28,13 @@ export class AppsNavigationsComponent implements OnInit {
   roles: RoleResponse[] = [];
   constructor(
     private readonly coreService: CoreService,
+    private readonly tenantsService: TenantService,
     private readonly activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit() {
     this.appId = this.activatedRoute.snapshot.params.appId;
-    this.coreService.getCall(`User/GetRoles`)
+    this.tenantsService.GetRoles()
             .then((res: RoleResponse[]) => {
               this.roles = res;
             })

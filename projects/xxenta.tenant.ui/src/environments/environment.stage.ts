@@ -4,12 +4,12 @@ export const environment = {
   production: false,
   hmr: false,
   apiClientConfig: <ApiClientConfig>(<unknown>{
-    apiHost: 'https://localhost:7297/v1',
-    notifyHost: 'https://localhost:7297',
+    apiHost: 'https://xtenant.weorbis.com/v1',
+    notifyHost: 'https://xtenant.weorbis.com',
     notifyHubName: 'PushNotification',
   }),
   authConfig: <IAuthConfig><unknown>{
-    issuer: 'https://localhost:5001/',
+    issuer: 'https://xid.weorbis.com/',
     redirectUri: 'http://localhost:4000/callback',
     postLogoutRedirectUri: 'http://localhost:4000/logout',
     clientId: 'xxenta.tenant.ui',

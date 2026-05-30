@@ -44,7 +44,7 @@ export class TenantService extends CoreService {
   }
 
   public GetRoles(): Promise<RoleResponse[]> {
-    return this.getCall(`User/GetRoles`);
+    return this.getCall(`Role`);
   }
 
   public GetUserRoles(userId: string): Promise<string[]> {
