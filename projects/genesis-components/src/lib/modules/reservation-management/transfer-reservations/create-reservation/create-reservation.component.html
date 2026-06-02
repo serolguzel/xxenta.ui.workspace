@@ -1,0 +1,18 @@
+<div class="w-full max-w-[1200px] p-6">
+  <transfer-reservation-form 
+    [data]="formData"
+    [hasTotalAmountInput]="hasTotalAmountInput"
+    (onSaveClick)="onSaveClick($event)">
+  </transfer-reservation-form>
+</div>
+
+<dx-load-panel
+  #loadPanel
+  shadingColor="rgba(0,0,0,0.4)"
+  [position]="{ of: '#transfer_reservation' }"
+  [(visible)]="loadingVisible"
+  [showIndicator]="true"
+  [showPane]="true"
+  [shading]="true"
+  [hideOnOutsideClick]="false">
+</dx-load-panel>

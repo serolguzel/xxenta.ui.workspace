@@ -1,0 +1,33 @@
+
+@if(routerLink) {
+  <a [href]="routerLink" target="_blank" [ngClass]="[cssClass]" class="flex items-center max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+    @if (icon) {
+      <div class="bg-gray-200 rounded-md p-[5px]">
+        <mat-icon [svgIcon]="icon" [ngClass]="[width, height]"></mat-icon>
+      </div>
+    }
+  
+    <div class="ml-3">
+      <h5 class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
+        {{title}}
+      </h5>
+      <div class="text-xs font-medium truncate">{{summaryLabel}}</div>
+    </div>
+  </a>
+}
+@else {
+  <a [ngClass]="[cssClass]" class="flex items-center max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+    @if (icon) {
+      <div class="bg-gray-200 rounded-md p-[5px]">
+        <mat-icon [svgIcon]="icon" [ngClass]="[width, height]"></mat-icon>
+      </div>
+    }
+  
+    <div class="ml-3">
+      <h5 class="text-base font-bold tracking-tight text-gray-900 dark:text-white">
+        {{title}}
+      </h5>
+      <div class="text-xs font-medium truncate">{{summaryLabel}}</div>
+    </div>
+  </a>
+}

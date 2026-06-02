@@ -1,0 +1,121 @@
+<dx-data-grid id="gridContainer" 
+  [dataSource]="data" 
+  [remoteOperations]="false" 
+  columnResizingMode="nextColumn"
+  [columnAutoWidth]="true" 
+  [rowAlternationEnabled]="true" 
+  [allowColumnReordering]="true" 
+  [showColumnLines]="false"
+  [showBorders]="true" 
+  [showRowLines]="true" 
+  [allowColumnResizing]="true" 
+  [columnHidingEnabled]="false"
+  (onRowUpdating)="onRowUpdating($event)"
+  (onRowUpdated)="onRowUpdated($event)">
+
+
+  <dxo-filter-row [visible]="true"></dxo-filter-row>
+  <dxo-search-panel [visible]="true" placeholder="Search..."></dxo-search-panel>
+
+  <dxo-column-chooser #columnChooser [enabled]="true" mode="dragAndDrop" title="Kolan Seç">
+    <dxo-position my="right top" at="right bottom" of=".dx-datagrid-column-chooser-button"></dxo-position>
+    <dxo-search [enabled]="true" [editorOptions]="{ placeholder: 'labels.column-search' | transloco }"></dxo-search>
+    <dxo-selection [allowSelectAll]="true" [selectByClick]="true" [recursive]="true"></dxo-selection>
+  </dxo-column-chooser>
+
+  <dxo-editing
+  mode="popup"
+  [allowUpdating]="true"
+  [useIcons]="true">
+  <dxo-popup
+      title="Info Cocktail"
+      [showTitle]="true"
+      [maxWidth]="500"
+      height="auto"
+      [resizeEnabled]="true"
+      [position]="{ my: 'center', at: 'center'}">
+  </dxo-popup>
+  <dxo-form [colCount]="1" labelMode="floating">
+    <dxi-item dataField="guideId" editorType="dxLookup" [editorOptions]="guideOptions" [disabled]="!isAdmin">
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
+      </dxi-validation-rule>
+  </dxi-item>
+
+    <dxi-item itemType="group" [colCount]="2">
+      <dxi-item dataField="date" editorType="dxDateBox" [editorOptions]="{
+        displayFormat: 'dd.MM.yyyy',
+        type:'date',
+        useMaskBehavior: true
+    }">
+          <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+      </dxi-item>
+
+        <dxi-item dataField="beginTime" editorType="dxDateBox" [editorOptions]="{
+          displayFormat: 'HH:mm',
+          type:'time',
+          useMaskBehavior: true
+      }">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+      </dxi-item>
+  </dxo-form>
+</dxo-editing>
+
+
+  <dxi-column dataField="oprVoucher" dataType="string" caption="Voucher"></dxi-column>
+  <dxi-column dataField="operator.name" dataType="string" caption="Operator" cellTemplate="operatorTemp"></dxi-column>
+  <dxi-column dataField="guide.displayName" dataType="string" caption="Guide" cellTemplate="userTemp"></dxi-column>
+  <dxi-column dataField="firstName" dataType="string" caption="Guest Name" cellTemplate="nameTemp"></dxi-column>
+  <dxi-column dataField="nationality" dataType="string" caption="Nationality"></dxi-column>
+  <dxi-column dataField="paxCount" dataType="string" caption="Pax"></dxi-column>
+
+  <dxi-column dataField="flight.flightDate" dataType="date" format="dd.MM.yyyy" caption="Flight Date"></dxi-column>
+  <dxi-column dataField="flight.flightTime" dataType="date" format="HH:mm" caption="Flight Time"></dxi-column>
+  <dxi-column dataField="date" dataType="date" format="dd.MM.yyyy" caption="Info Cocktail Date"></dxi-column>
+  <dxi-column dataField="beginTime" dataType="date" format="HH:mm" caption="Info Cocktail Time"></dxi-column>
+
+  <dxi-column dataField="guideId" dataType="string" caption="Guide" [visible]="false"></dxi-column>
+
+  <div class="flex-auto" *dxTemplate="let d of 'operatorTemp'">
+    <span class="flex font-bold">{{ d.value }}</span>
+    <span class="flex text-sm">{{ d.data.operator?.code }}</span>
+  </div>
+  
+  <div *dxTemplate="let masterDetailItem of 'masterDetail'">
+    <guest-items [data]="masterDetailItem.data.guests"></guest-items>
+  </div>
+  <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
+    <span class="flex font-bold">
+      {{d.data.title}}. {{d.value}} {{d.data.lastName}}
+    </span>
+  </div>
+
+  <div class="flex-auto" *dxTemplate="let d of 'userTemp'">
+    <span class="flex font-sm" *ngIf="!d.value">
+      --Rehber Atanmamış--
+    </span>
+  
+    <div class="flex items-center" *ngIf="d.value">
+      <div class="flex items-center">
+        <ng-container *ngIf="d.data.guide?.picture">
+          <img class="h-10 w-10 rounded-full" [src]="d.data.guide?.picture" alt="">
+        </ng-container>
+        <ng-container *ngIf="!d.data.guide?.picture">
+          <img class="h-10 w-10 rounded-full" src="assets/avatars/profile.jpg" alt="">
+        </ng-container>
+  
+        <div class="ml-3">
+          <h3 class="text-base font-semibold tracking-tight text-gray-900">
+            {{ d.value }}
+          </h3>
+          <p class="text-sm font-semibold text-indigo-600">
+            {{ d.data.guide?.email }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <dxo-paging [pageSize]="20"></dxo-paging>
+  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+</dx-data-grid>

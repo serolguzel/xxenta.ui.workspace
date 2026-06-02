@@ -1,0 +1,76 @@
+<dx-form #hotelForm id="form" [formData]="model" labelLocation="top" labelMode="floating">
+
+  <dxi-item itemType="group" [colCount]="2">
+    <dxi-item dataField="userName" editorType="dxTextBox" [editorOptions]="{
+                disabled: model.id != undefined
+                }">
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+      <dxo-label [text]="'labels.username' | transloco"></dxo-label>
+    </dxi-item>
+
+    <dxi-item itemType="group" [colCount]="visibleUserType ? 2 : 1">
+      <dxi-item dataField="userType" editorType="dxSelectBox" [visible]="visibleUserType" [editorOptions]="{
+                    dataSource: userTypes,
+                    displayExpr: 'name',
+                    valueExpr: 'code',
+                  }">
+        <dxo-label [text]="'labels.user-type' | transloco"></dxo-label>
+      </dxi-item>
+
+      <dxi-item dataField="gender" editorType="dxSelectBox" [editorOptions]="{
+              dataSource: genders,
+              valueExpr: 'code',
+              displayExpr: 'name'
+            }">
+        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        <dxo-label [text]="'labels.gender' | transloco"></dxo-label>
+      </dxi-item>
+    </dxi-item>
+
+    <dxi-item dataField="firstName">
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+      <dxo-label [text]="'labels.first-name' | transloco"></dxo-label>
+    </dxi-item>
+
+    <dxi-item dataField="lastName">
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+      <dxo-label [text]="'labels.last-name' | transloco"></dxo-label>
+    </dxi-item>
+
+    <dxi-item dataField="email" editorType="dxTextBox">
+      <dxi-validation-rule type="email" [message]="'messages.invalid-emails' | transloco"></dxi-validation-rule>
+      <dxo-label [text]="'labels.email' | transloco"></dxo-label>
+    </dxi-item>
+
+    <dxi-item dataField="identityNumber">
+      <dxo-label [text]="'labels.identity-number' | transloco"></dxo-label>
+    </dxi-item>
+
+    <dxi-item dataField="phoneAreaCode" editorType="dxLookup"
+      [editorOptions]="lookupService.countryPhoneCodesLookUpOptions">
+      <dxo-label [text]="'labels.phone-country-code' | transloco"></dxo-label>
+    </dxi-item>
+
+    <dxi-item dataField="phoneNumber" editorType="dxTextBox" [editorOptions]="txtPhoneOptions">
+      <dxo-label [text]="'labels.phone-number' | transloco"></dxo-label>
+    </dxi-item>
+
+    <dxi-item dataField="ownerId" editorType="dxLookup" [editorOptions]="customerLookUpOptions"
+      [visible]="visibleCustomerLookup">
+      <dxo-label text="Customer"> </dxo-label>
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+    <dxi-item itemType="group" [colCount]="2">
+      <dxi-item dataField="isActive" editorType="dxCheckBox">
+        <dxo-label [text]="'labels.active-user' | transloco"></dxo-label>
+      </dxi-item>
+      <dxi-item dataField="emailConfirmed" editorType="dxCheckBox" [visible]="visibleCustomerLookup">
+        <dxo-label [text]="'labels.email-confirm' | transloco"></dxo-label>
+      </dxi-item>
+    </dxi-item>
+  </dxi-item>
+</dx-form>
+<dx-toolbar class="mt-4">
+  <dxi-item location="after" widget="dxButton" [disabled]="disableSaveButton" [options]="btnSave"></dxi-item>
+  <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
+</dx-toolbar>

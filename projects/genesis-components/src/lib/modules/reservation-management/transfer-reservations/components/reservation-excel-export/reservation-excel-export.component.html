@@ -1,0 +1,27 @@
+<dx-popup
+    [visible]="visible"
+    [showTitle]="true"
+    [dragEnabled]="true"
+    [resizeEnabled]="true"
+    [title]="'labels.excel-export' | transloco"
+    [width]="460"
+    [height]="320"
+    (onHidden)="onHidden()"
+    [position]="{my: 'center', at: 'center', of: 'window'}">
+    <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="after" [options]="btnSave"></dxi-toolbar-item>
+    <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="before" [options]="btnCancel"></dxi-toolbar-item>
+    <dx-form labelMode="floating" [formData]="model">
+      <dxi-item dataField="transferDate" editorType="dxDateBox" [editorOptions]="{ 
+        displayFormat: 'dd.MM.yyyy',
+        type:'date',
+        showClearButton: true}">
+       <dxi-validation-rule type="required" message="{{ 'generic.message.required' | transloco }}"></dxi-validation-rule>  
+      </dxi-item>
+      <dxi-item dataField="operatorId" editorType="dxLookup" [editorOptions]="companyOptions">
+        <dxo-label text="{{ 'labels.operator' | transloco }}"></dxo-label>
+      </dxi-item>
+       <dxi-item dataField="routeType" editorType="dxSelectBox" [editorOptions]="transferRouteTypeOptions">
+        <dxo-label text="{{ 'labels.route-type' | transloco }}"></dxo-label>
+      </dxi-item>
+    </dx-form>
+</dx-popup>

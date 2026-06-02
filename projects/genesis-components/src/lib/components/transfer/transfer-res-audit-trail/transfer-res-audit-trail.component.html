@@ -1,0 +1,107 @@
+<div class="pb-4" *ngIf="data.oprVoucher">
+    <label for="operator-voucher" class="my-2 block text-base font-medium leading-6 text-gray-900">
+        {{ 'labels.voucher' | transloco }}:
+    </label>
+    <div id="operator-voucher" class="flex text-2xl items-center">
+        {{ data.oprVoucher }}
+    </div>
+</div>
+
+<div class="pb-4">
+    <label for="system-voucher" class="my-2 block text-base font-medium leading-6 text-gray-900">
+        {{ 'labels.system-voucher' | transloco }}:
+    </label>
+    <div id="system-voucher" class="flex text-medium items-center">
+        {{ data.sysVoucher }}
+    </div>
+</div>
+
+<div class="pb-4" *ngIf="data.isLock">
+    <label for="reservation-lock" class="my-2 block text-base font-sm leading-6 text-gray-900">
+        {{ 'labels.reservation-lock' | transloco }}:
+    </label>
+    <div class="flex items-center">
+        <badge-taskstatus
+            id="reservation-lock"
+            text="{{ 'labels.reservation-locked' | transloco }}"
+            textSizeClass="text-sm text-red-700 bg-red-50 ring-red-700/10">
+        </badge-taskstatus>
+    </div>
+</div>
+
+<div class="pb-4" *ngIf="data.cancel">
+    <label for="cancel-status" class="my-2 block text-base font-sm leading-6 text-gray-900">
+        {{ 'labels.reservation-status' | transloco }}:
+    </label>
+    <div id="cancel-status" class="flex justify-start">
+        <badge-taskstatus
+        text="{{ 'labels.reservation-cancelled' | transloco }}"
+            textSizeClass="text-sm text-red-700 bg-red-50 ring-red-700/10">
+        </badge-taskstatus>
+        <badge-taskstatus
+            [text]="data.cancelDate | date: 'dd.MM.yyyy HH:mm'"
+            textSizeClass="ml-2 text-sm text-orange-700 bg-orange-50 ring-orange-700/10">
+        </badge-taskstatus>
+    </div>
+</div>
+
+<div class="p-4 bg-amber-100 hover:bg-amber-600" *ngIf="data.return">
+    <a [routerLink]="link">
+        <div class="flex justify-start">
+            <badge-taskstatus
+                [text]="data.return?.transferRouteType == 'Arrival' ? ('labels.arrival' | transloco) : ('labels.departure' | transloco)"
+                textSizeClass="text-sm text-emerald-700 bg-emerald-50 ring-emerald-700/10">
+            </badge-taskstatus>
+            <badge-taskstatus
+                [text]="data.return?.transferDate | date: 'dd.MM.yyyy'"
+                textSizeClass="ml-2 text-sm text-orange-700 bg-orange-50 ring-orange-700/10">
+            </badge-taskstatus>
+            <badge-taskstatus
+                *ngIf="data.transferRouteType == 'Arrival'"
+                [text]="data.return?.flight?.arrivalTime"
+                textSizeClass="ml-2 text-sm text-blue-700 bg-blue-50 ring-blue-700/10">
+            </badge-taskstatus>
+            <badge-taskstatus
+                *ngIf="data.transferRouteType == 'Departure'"
+                [text]="data.return?.flight?.departureTime"
+                textSizeClass="ml-2 text-sm text-blue-700 bg-blue-50 ring-blue-700/10">
+            </badge-taskstatus>
+            <badge-taskstatus
+                [text]="data.return?.flight?.code"
+                textSizeClass="ml-2 text-sm text-blue-700 bg-blue-50 ring-blue-700/10">
+            </badge-taskstatus>
+        </div>
+    </a>
+</div>
+
+<div class="pb-4 mt-4" *ngIf="createdUser">
+    <label for="created-by" class="mb-2 block text-base font-medium leading-6 text-gray-900">
+        {{'labels.created-by' | transloco }}:
+    </label>
+    <div id="created-by" class="flex items-center">
+        <div class="flex items-center">
+            <img class="h-10 w-10 rounded-full" [src]="createdUser?.picture" alt="User"/>
+            <div class="ml-3">
+                <h3 class="text-base font-semibold tracking-tight text-gray-900">
+                    {{ createdUser?.displayName }}
+                </h3>
+                <p class="text-sm font-semibold text-indigo-600">
+                    {{ createdUser?.email }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pb-4">
+    <label for="created-date" class="my-2 block text-base font-sm leading-6 text-gray-900">
+        {{ 'labels.created-date' | transloco }}:
+    </label>
+    <div id="created-date" class="flex items-center">
+        {{ data.createDate | date: "dd.MM.yyyy HH:mm" }}
+    </div>
+</div>
+
+<div class="w-full" *ngIf="auditTrails.length > 0">
+    <activity-timeline [data]="auditTrails" />
+</div>

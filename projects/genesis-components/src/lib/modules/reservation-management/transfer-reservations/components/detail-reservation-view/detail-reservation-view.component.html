@@ -1,0 +1,159 @@
+<dx-tab-panel>
+    <dxi-item [title]="'labels.departure' | transloco" template="returnTransfer" *ngIf="!referenceData.hasError"></dxi-item>
+    <dxi-item [title]="'labels.arrival' | transloco" template="guests"></dxi-item>
+
+    <div *dxTemplate="let item of 'returnTransfer'">
+        <dx-data-grid id="transferGrid" 
+            [dataSource]="transfers" 
+            keyExpr="id" 
+            [remoteOperations]="false"
+            [columnAutoWidth]="true"
+            [rowAlternationEnabled]="true"
+            [allowColumnReordering]="true"
+            [showColumnLines]="false"
+            [showBorders]="true"
+            [showRowLines]="true"
+            [allowColumnResizing]="true"
+            [columnHidingEnabled]="false">
+
+            <dxo-toolbar>
+                <dxi-item location="before">
+                    <div *dxTemplate>
+                        <div class="ml-4 text-2xl tracking-tight">
+                            {{'labels.passengers' | transloco}}
+                        </div>
+                    </div>
+                </dxi-item>
+            </dxo-toolbar>
+
+            <dxi-column dataField="voucher" dataType="string" [caption]="'labels.voucher' | transloco"
+                cellTemplate="linkTemplate"></dxi-column>
+
+            <dxi-column dataField="oprVoucher" dataType="string" 
+                [caption]="'labels.opr-voucher' | transloco"
+                cellTemplate="linkTemplate" 
+                [visible]="false"></dxi-column>
+
+            <dxi-column dataField="flight.code" dataType="string" [caption]="'labels.flight-code' | transloco" 
+                cellTemplate="codeTemplate"
+                [allowFiltering]="false" 
+                [allowSearch]="false" 
+                [allowSorting]="false"></dxi-column>
+
+            <dxi-column dataField="arrivalTime" dataType="date" format="HH:mm" [caption]="'labels.flight-time' | transloco"
+                cellTemplate="flightTimeTemplate"></dxi-column>
+                
+            <dxi-column dataField="transferDate" dataType="date" format="dd.MM.yyyy"
+                [caption]="'labels.transfer-date' | transloco"></dxi-column>
+            <dxi-column dataField="saleDate" dataType="date"
+                format="dd.MM.yyyy"
+                [caption]="'labels.sale-date' | transloco"
+                [visible]="false"></dxi-column>
+
+            <dxi-column dataField="transferRouteType" dataType="date" [caption]="'labels.direction' | transloco"
+                [allowFiltering]="false"
+                [allowSearch]="false"
+                [allowSorting]="false">
+                <dxo-lookup [dataSource]="transferRouteTypes" displayExpr="name" valueExpr="code"></dxo-lookup>
+              </dxi-column>
+
+              <dxi-column dataField="fromLocation.id" dataType="string" [caption]="'labels.from' | transloco" cellTemplate="fromTemp"></dxi-column>
+              <dxi-column dataField="toLocation.id" dataType="string" [caption]="'labels.to' | transloco"cellTemplate="toTemp"></dxi-column>
+
+            <dxi-column dataField="adult" dataType="number" [caption]="'labels.adult' | transloco"></dxi-column>
+            <dxi-column dataField="child" dataType="number" [caption]="'labels.child' | transloco"></dxi-column>
+            <dxi-column dataField="infant" dataType="number" [caption]="'labels.infant' | transloco"></dxi-column>
+
+            <dxi-column dataField="vehicleTypeId" 
+                dataType="string" 
+                [visible]="false" 
+                caption="Araç Türü"
+                [allowFiltering]="false" 
+                [allowSearch]="false" 
+                [allowSorting]="false">
+                <dxo-lookup [dataSource]="vehicleTypesDataSource" displayExpr="name" valueExpr="code"></dxo-lookup>
+            </dxi-column>
+
+            <dxi-column dataField="transferTypeId" 
+                dataType="string" 
+                [caption]="'labels.transfer-type' | transloco" 
+                [allowFiltering]="false"
+                [allowSearch]="false" 
+                [allowSorting]="false" 
+                cellTemplate="transferTypeTemplate">
+            </dxi-column>
+
+            <dxi-column dataField="operator.name"
+                dataType="string" 
+                [caption]="'labels.operator' | transloco"
+                [allowFiltering]="false"
+                [allowSearch]="false"
+                [allowSorting]="false">
+            </dxi-column>
+
+            <dxi-column dataField="terminal.code" dataType="string" 
+                [caption]="'labels.terminal' | transloco"
+                [allowFiltering]="false"
+                [allowSearch]="false" 
+                [allowSorting]="false">
+            </dxi-column>
+
+            <dxi-column dataField="createDate" dataType="date" format="dd.MM.yyyy" [caption]="'labels.create-date' | transloco"
+                [visible]="false"></dxi-column>
+
+            <div class="flex-auto" *dxTemplate="let d of 'linkTemplate'">
+                <a [routerLink]="'detail/'+d.data.id">
+                    <span class="flex font-bold">
+                        {{d.value}}
+                    </span>
+                </a>
+            </div>
+
+            <div class="flex-auto" *dxTemplate="let d of 'codeTemplate'">
+                <a [routerLink]="'detail/'+d.data.id">
+                    <span class="flex font-bold">
+                        {{d.value}}
+                    </span>
+                </a>
+            </div>
+
+            <div class="flex-auto" *dxTemplate="let d of 'transferTypeTemplate'">
+                <span class="flex font-bold">
+                    {{d.data.transferType?.name}}
+                </span>
+                <span class="flex text-sm">
+                    {{d.value}}
+                </span>
+            </div>
+            
+            <div class="flex-auto" *dxTemplate="let d of 'flightTimeTemplate'">
+                <span class="flex font-bold">
+                  {{d.data.flight?.departureTime}}
+                </span>
+              </div>
+            
+            <div class="flex-auto" *dxTemplate="let d of 'fromTemp'">
+                <div class="flex font-bold">
+                  {{d.data.fromLocation?.name}}
+                </div>
+              </div>
+            
+              <div class="flex-auto" *dxTemplate="let d of 'toTemp'">
+                <div class="flex font-bold">
+                    <mat-icon svgIcon="heroicons_solid:check" class="text-emerald-600" *ngIf="d.data.isMappedHotel"></mat-icon>
+                    {{ d.data.toLocation?.name }}
+                </div>
+            </div>
+
+            <dxo-paging [pageSize]="5"></dxo-paging>
+            <dxo-pager 
+                [showPageSizeSelector]="true" 
+                [showInfo]="true"
+                [allowedPageSizes]="[5, 10, 15]"></dxo-pager>
+        </dx-data-grid>
+    </div>
+
+    <div *dxTemplate="let item of 'guests'">
+        <flight-guest-list-view [guests]="guests"></flight-guest-list-view>
+    </div>
+</dx-tab-panel>

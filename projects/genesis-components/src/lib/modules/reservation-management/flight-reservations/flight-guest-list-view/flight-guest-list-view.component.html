@@ -1,0 +1,30 @@
+
+    <dx-data-grid id="guestGrid" 
+        [dataSource]="guests" 
+        keyExpr="id" 
+        [remoteOperations]="false"
+        [showColumnLines]="false" 
+        [showBorders]="true">
+
+        <dxo-toolbar>
+            <dxi-item location="before">
+                <div *dxTemplate>
+                    <div class="ml-4 text-2xl tracking-tight">
+                        {{'labels.passengers' | transloco}}
+                    </div>
+                </div>
+            </dxi-item>
+            <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+        </dxo-toolbar>
+        <dxi-column dataField="title" dataType="string" [caption]="'labels.title' | transloco"></dxi-column>
+        <dxi-column dataField="firstName" dataType="string" [caption]="'labels.first-name' | transloco"></dxi-column>
+        <dxi-column dataField="lastName" dataType="string" [caption]="'labels.last-name' | transloco"></dxi-column>
+        <dxi-column dataField="age" dataType="number" [caption]="'labels.age' | transloco"></dxi-column>
+        <dxi-column dataField="guestType" dataType="string" [caption]="'labels.guest-type' | transloco"></dxi-column>
+        <dxi-column dataField="noShow" dataType="boolean" [caption]="'labels.no-show' | transloco"></dxi-column>
+        <dxi-column dataField="selfTransfer" dataType="boolean" [caption]="'labels.self-transfer' | transloco"></dxi-column>
+
+
+        <dxo-paging [pageSize]="10"></dxo-paging>
+        <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[5, 10, 15]"></dxo-pager>
+    </dx-data-grid>

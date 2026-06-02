@@ -1,0 +1,13 @@
+<div class="w-full max-w-[1200px]">
+    <!-- TRANSFER -->
+    <div class="flex p-6 mb-6">
+        <flight-reservation-form
+            [data]="data"
+            [hasTotalAmountInput]="hasTotalAmountInput"
+            [canAddDepartureFlight]="true"
+            [loadingVisible]="loadingVisible"
+            (onDepartureDateValueChanged)="onDepartureDateValueChanged($event)"
+            (onSaveClick)="onSaveClick($event)">
+        </flight-reservation-form>
+    </div>
+</div>

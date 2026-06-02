@@ -1,0 +1,39 @@
+<div class="p-6 grow">
+  <dx-data-grid id="gridContainer" 
+    #logsGrid 
+    [dataSource]="dataSource"
+    [columnResizingMode]="'nextColumn'"
+    [columnAutoWidth]="true" 
+    [rowAlternationEnabled]="true" 
+    [allowColumnReordering]="true"
+    [showColumnLines]="false"
+    [showBorders]="true" 
+    [showRowLines]="true" 
+    [remoteOperations]="true" >
+
+    <dxo-toolbar>
+      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="codeTextBoxOptions"></dxi-item>
+      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="filterTextBoxOptions"></dxi-item>
+      <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+      <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+      <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
+    </dxo-toolbar>
+
+    <dxi-column dataField="code" dataType="string" cellTemplate="linkTemp" caption="{{ 'labels.code' | transloco }}"></dxi-column>
+    <dxi-column dataField="description" dataType="string" cellTemplate="linkTemp" caption="{{ 'labels.description' | transloco }}"></dxi-column>
+    <dxi-column dataField="transferDate" dataType="date" format="dd.MM.yyyy" caption="{{ 'labels.transfer-date' | transloco }}"></dxi-column>
+    <dxi-column dataField="isSuccess" dataType="boolean" caption="{{ 'labels.status' | transloco }}"></dxi-column>
+    <dxi-column dataField="createDate" dataType="date" format="dd.MM.yyyy HH:mm" caption="{{ 'labels.create-date' | transloco }}"></dxi-column>
+    <div class="flex-auto" *dxTemplate="let d of 'linkTemp'">
+      <a [routerLink]="d.data.id">
+        <span class="flex font-bold">
+          {{ d.value }}
+        </span>
+      </a>
+    </div>
+
+    <dxo-paging [pageSize]="20"></dxo-paging>
+    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+    <dxo-export [enabled]="true" [allowExportSelectedData]="true"></dxo-export>
+  </dx-data-grid>
+</div>

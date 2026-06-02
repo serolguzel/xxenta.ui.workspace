@@ -1,0 +1,102 @@
+<dx-form #hotelForm id="form" [formData]="data" labelLocation="top" labelMode="floating">
+
+  <dxi-item itemType="group" [colCount]="2">
+    <dxi-item dataField="clientId" editorType="dxTextBox">
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+
+    <dxi-item dataField="clientName" editorType="dxTextBox">
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+
+    <dxi-item dataField="operatorCode" editorType="dxTextBox" *ngIf="options.showOperatorCode"></dxi-item>
+
+    <dxi-item dataField="allowedGrantTypes" editorType="dxTagBox" *ngIf="options.showAllowedGrantType" [editorOptions]="{
+      dataSource: allowedGrantTypes,
+      displayExpr: 'name',
+      valueExpr: 'code',
+      showClearButton: true,
+      placeholder: 'Grant Types',
+      showSelectionControls: true,
+      onValueChanged: allowedGrantTypeValueChanged
+    }"></dxi-item>
+
+    <dxi-item dataField="ownerId" editorType="dxLookup" [editorOptions]="tenantsLookUpOptions" *ngIf="options.showOwnerLookup">
+      <dxo-label text="Owner"> </dxo-label>
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+
+    <dxi-item dataField="allowOfflineAccess" editorType="dxCheckBox" *ngIf="options.accessTokenLifetime"></dxi-item>
+    <dxi-item dataField="accessTokenLifetime" editorType="dxNumberBox" *ngIf="options.accessTokenLifetime" [editorOptions]="{ min: 1, showSpinButtons: true, showClearButton: true }">
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+  </dxi-item>
+
+  <dxi-item dataField="allowedScopes" editorType="dxTagBox" [visible]="options.showAllowedScope" [editorOptions]="{
+    dataSource: scopes,
+    displayExpr: 'name',
+    valueExpr: 'code',
+    showClearButton: true,
+    itemTemplate: codeNameTemplate,
+    placeholder: 'Scopes...',
+    showSelectionControls: true
+  }"></dxi-item>
+
+<dxi-item itemType="group" caption="Redirect Uris" name="redirectUris-container" *ngIf="isCode">
+  <dxi-item itemType="group" name="redirectUris" *ngFor="let rUris of redirectUrisOptions; let i = index">
+    <dxi-item [dataField]="'redirectUris[' + i + ']'" [editorOptions]="redirectUrisOptions[i]">
+      <dxo-label [text]="'Redirect Uris ' + (i + 1)"> </dxo-label>
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+  </dxi-item>
+  <dxi-item
+    itemType="button"
+    horizontalAlignment="left"
+    [buttonOptions]="addRedirectUrisButtonOptions">
+  </dxi-item>
+</dxi-item>
+
+<dxi-item itemType="group" caption="Logout Uris" name="postLogoutRedirectUris-container" *ngIf="isCode">
+  <dxi-item
+    itemType="group"
+    name="postLogoutRedirectUris"
+    *ngFor="let prUris of postLogoutRedirectUrisOptions; let i = index">
+    <dxi-item
+      [dataField]="'postLogoutRedirectUris[' + i + ']'"
+      [editorOptions]="postLogoutRedirectUrisOptions[i]">
+      <dxo-label [text]="'Logout Redirect Uris ' + (i + 1)"> </dxo-label>
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+  </dxi-item>
+  <dxi-item
+    itemType="button"
+    horizontalAlignment="left"
+    [buttonOptions]="addPostLogoutRedirectUrisButtonOptions">
+  </dxi-item>
+</dxi-item>
+
+
+<dxi-item itemType="group" caption="Allowed Cors Origins" name="allowedCorsOrigins-container" *ngIf="isCode">
+  <dxi-item
+    itemType="group"
+    name="allowedCorsOrigins"
+    *ngFor="let prUris of allowedCorsOriginsOptions; let i = index">
+    <dxi-item
+      [dataField]="'allowedCorsOrigins[' + i + ']'"
+      [editorOptions]="allowedCorsOriginsOptions[i]">
+      <dxo-label [text]="'Allowed Cors Origins ' + (i + 1)"> </dxo-label>
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+  </dxi-item>
+  <dxi-item itemType="button" horizontalAlignment="left" [buttonOptions]="addAllowedCorsOriginsButtonOptions">
+  </dxi-item>
+</dxi-item>
+</dx-form>
+<ng-content class="flex-auto w-full">
+    
+</ng-content>
+<dx-toolbar class="mt-2">
+  <dxi-item location="after" widget="dxButton" [disabled]="!hasSaveButton" [options]="btnSave"></dxi-item>
+  <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
+  <dxi-item location="before" widget="dxButton" [disabled]="!hasDeleteButton" [visible]="deleteButtonVisible" [options]="btnDelete"></dxi-item>
+</dx-toolbar>

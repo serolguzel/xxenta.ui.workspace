@@ -1,0 +1,60 @@
+<div class="chatbox w-full flex flex-col p-4">
+    <div class="messages flex-1 overflow-y-auto flex flex-col gap-4">
+        <div *ngFor="let note of notes">
+            <div
+                class="message theirs flex items-start gap-2"
+                *ngIf="note.createUser?.id !== userId">
+                <div
+                    class="rounded-full w-10 h-10 bg-gray-200 flex items-center justify-center overflow-hidden">
+                    <img *ngIf="note.createUser?.picture" [src]="note.createUser?.picture" class="w-full h-full"/>
+                    <mat-icon *ngIf="!note.createUser?.picture" svgIcon="heroicons_solid:user"
+                    ></mat-icon>
+                </div>
+                <div class="flex flex-col items-start grow">
+                    <div class="bg-blue-100 text-gray-800 p-3 rounded rounded-bl-none max-w-[70%]">
+                        {{ note.note }}
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        {{ note.createUser?.department?.name || "" }} •
+                        {{ note.createDate | date: "HH:mm dd.MM.yyyy" }}
+                    </div>
+                </div>
+            </div>
+            <div
+                class="message theirs flex flex-row-reverse items-start gap-2" *ngIf="note.createUser?.id === userId">
+                <div class="rounded-full w-10 h-10 bg-gray-200 flex items-center justify-center overflow-hidden">
+                    <img *ngIf="note.createUser?.picture" [src]="note.createUser?.picture" class="w-full h-full" />
+                    <mat-icon *ngIf="!note.createUser?.picture" svgIcon="heroicons_solid:user"></mat-icon>
+                </div>
+                <div class="flex flex-col items-end grow">
+                    <div class="bg-green-100 text-gray-800 p-3 rounded rounded-br-none max-w-[70%]">
+                        {{ note.note }}
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        {{ note.createUser?.department?.name || "" }} •
+                        {{ note.createDate | date: "HH:mm dd.MM.yyyy" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="input-box flex gap-2 mt-6">
+        <input
+            #messageInput
+            type="text"
+            placeholder="Type your message..."
+            class="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <button
+            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 flex items-center gap-2"
+            (click)="sendNote(messageInput)"
+            [disabled]="isSending"
+        >
+            <span *ngIf="!isSending">Kaydet</span>
+            <div
+                *ngIf="isSending"
+                class="loader border-t-transparent border-white w-4 h-4 rounded-full animate-spin"
+            ></div>
+        </button>
+    </div>
+</div>

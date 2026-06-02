@@ -1,0 +1,152 @@
+<dx-data-grid id="gridContainer" 
+  [dataSource]="dataSource" 
+  [filterValue]="FilterValue"
+  [remoteOperations]="true" 
+  [showBorders]="true"
+  [showRowLines]="true" 
+  [rowAlternationEnabled]="true"
+  [hoverStateEnabled]="true"
+  [columnAutoWidth]="true"
+  [allowColumnResizing]="true"
+  [columnHidingEnabled]="columnHidingEnabled">
+
+  <dxo-scrolling [useNative]="true"></dxo-scrolling>
+  <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
+  <dxo-filter-row [visible]="true"></dxo-filter-row>
+  <dxo-group-panel [visible]="false"></dxo-group-panel>
+
+  <dxo-column-chooser #columnChooser [enabled]="true" mode="dragAndDrop" title="Kolan Seç">
+    <dxo-position my="right top" at="right bottom" of=".dx-datagrid-column-chooser-button"></dxo-position>
+    <dxo-search [enabled]="true" [editorOptions]="{ placeholder: 'labels.column-search' | transloco }"></dxo-search>
+    <dxo-selection [allowSelectAll]="true" [selectByClick]="true" [recursive]="true"></dxo-selection>
+  </dxo-column-chooser>
+
+
+  <dxo-toolbar>
+    <dxi-item location="before">
+      <div *dxTemplate>
+        <div class="text-2xl tracking-tight">
+          {{pageTitle}}
+        </div>
+      </div>
+    </dxi-item>
+    <dxi-item locateInMenu="auto" location="after">
+      <div *dxTemplate>
+        <dx-check-box [value]="columnHidingEnabled" (onValueChanged)="onValueChanged($event)" text="Column Hiding Enabled"></dx-check-box>
+      </div>
+  </dxi-item>
+    <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+    <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+  </dxo-toolbar>
+
+  <dxo-editing mode="popup" 
+    [allowUpdating]="true"
+    [allowDeleting]="true"
+    [useIcons]="true">
+    <dxo-popup title="Tur" 
+      [showTitle]="true" 
+      [width]="600" 
+      [height]="200" 
+      [resizeEnabled]="true"
+      [position]="{ my: 'center', at: 'center'}">
+    </dxo-popup>
+    <dxo-form [colCount]="1" labelMode="floating">
+  
+      <dxi-item dataField="isLock"></dxi-item>
+  
+    </dxo-form>
+  </dxo-editing>
+
+  <dxi-column dataField="tourCode" dataType="string" caption="Tur" cellTemplate="nameTemp"></dxi-column>
+  <dxi-column dataField="tourContract.regionIds" dataType="string" caption="Sat. Bolge" 
+    [allowEditing]="false"
+    [allowFiltering]="false" 
+    [allowGrouping]="false" 
+    [allowSearch]="false" 
+    [allowSorting]="false"
+    cellTemplate="regionsTemp"></dxi-column>
+
+  <dxi-column dataField="tourDate" dataType="date" format="dd.MM.yyyy" caption="Tur Tarihi"></dxi-column>
+
+  <dxi-column caption="Alış">
+    <dxi-column dataField="tourContract.reference.adultPrice" dataType="number" caption="Yetişkin"
+      cellTemplate="pricePurchaseTemp"></dxi-column>
+    <dxi-column dataField="tourContract.reference.childPrice" dataType="number" caption="Çocuk"
+      cellTemplate="pricePurchaseTemp"></dxi-column>
+    <dxi-column dataField="tourContract.reference.infantPrice" dataType="number" caption="Bebek"
+      cellTemplate="pricePurchaseTemp"></dxi-column>
+
+    <dxi-column caption="Çocuk Yaşı">
+      <dxi-column dataField="tourContract.reference.minChildAge" dataType="number" caption="Min"></dxi-column>
+      <dxi-column dataField="tourContract.reference.maxChildAge" dataType="number" caption="Max"></dxi-column>
+    </dxi-column>
+    <dxi-column caption="Bebek Yaşı">
+      <dxi-column dataField="tourContract.reference.minInfantAge" dataType="number" caption="Min"></dxi-column>
+      <dxi-column dataField="tourContract.reference.maxInfantAge" dataType="number" caption="Max"></dxi-column>
+    </dxi-column>
+  </dxi-column>
+
+  <dxi-column caption="Satış">
+    <dxi-column dataField="tourContract.adultPrice" dataType="number" caption="Yetişkin"
+      cellTemplate="priceSaleTemp"></dxi-column>
+    <dxi-column dataField="tourContract.childPrice" dataType="number" caption="Çocuk"
+      cellTemplate="priceSaleTemp"></dxi-column>
+    <dxi-column dataField="tourContract.infantPrice" dataType="number" caption="Bebek"
+      cellTemplate="priceSaleTemp"></dxi-column>
+    <dxi-column caption="Çocuk Yaşı">
+      <dxi-column dataField="tourContract.minChildAge" dataType="number" caption="Min"></dxi-column>
+      <dxi-column dataField="tourContract.maxChildAge" dataType="number" caption="Max"></dxi-column>
+    </dxi-column>
+    <dxi-column caption="Bebek Yaşı">
+      <dxi-column dataField="tourContract.minInfantAge" dataType="number" caption="Min"></dxi-column>
+      <dxi-column dataField="tourContract.maxInfantAge" dataType="number" caption="Max"></dxi-column>
+    </dxi-column>
+  </dxi-column>
+
+  <dxi-column dataField="isLock" dataType="boolean" caption="Kilit"></dxi-column>
+  <dxi-column dataField="tourContractId" dataType="string" [visible]="false"></dxi-column>
+
+
+  <div class="flex-auto" *dxTemplate="let d of 'regionsTemp'">
+    <span *ngFor="let item of d.value">
+      {{item.name}} ({{item.code}})
+    </span>
+  </div>
+
+  <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
+    <a [routerLink]="'detail/'+d.data.id">
+      <span class="flex font-bold">
+        {{d.data.tour.name}}
+      </span>
+      <span class="flex text-sm">
+        {{d.value}}
+      </span>
+    </a>
+  </div>
+
+  <div class="flex-auto" *dxTemplate="let d of 'companyTemp'">
+    <a [routerLink]="'detail/'+d.data.id">
+      <span class="flex font-bold">
+        {{d.data.partner.name}}
+      </span>
+      <span class="flex text-sm">
+        {{d.data.partner.code}}
+      </span>
+    </a>
+  </div>
+
+  <div class="flex-auto" *dxTemplate="let d of 'pricePurchaseTemp'">
+    <span *ngIf="d.value">
+      {{d.value}} {{d.data.tourContract.reference.currency}}
+    </span>
+  </div>
+
+  <div class="flex-auto" *dxTemplate="let d of 'priceSaleTemp'">
+    <span *ngIf="d.value">
+      {{d.value}} {{d.data.tourContract.currency}}
+    </span>
+  </div>
+
+  <dxo-paging [pageSize]="20"></dxo-paging>
+  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+</dx-data-grid>

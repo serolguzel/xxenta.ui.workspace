@@ -1,0 +1,85 @@
+<dx-toolbar class="mt-4" [visible]="options.hideOptions">
+  <dxi-item location="after" widget="dxDropDownButton" [disabled]="!hasSaveButton" [options]="drpDownMenuOptions"></dxi-item>
+</dx-toolbar>
+<dx-form 
+  #companyForm id="form" 
+  [formData]="data" 
+  labelLocation="top" 
+  labelMode="floating"
+  [disabled]="data.lock">
+  <dxi-item itemType="group" [colCount]="4">
+    <dxi-item itemType="group" [colSpan]="1">
+      <dxi-item dataField="code">
+        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+      </dxi-item>
+    </dxi-item>
+
+    <dxi-item itemType="group" [colSpan]="3">
+      <dxi-item dataField="name">
+        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+      </dxi-item>
+    </dxi-item>
+
+  </dxi-item>
+
+  <dxi-item dataField="officialName">
+    <dxo-label text="Official Name"></dxo-label>
+  </dxi-item>
+
+  <dxi-item dataField="organizationTypes" editorType="dxTagBox" [editorOptions]="{
+            items: organizationTypes,
+            displayExpr: 'name',
+            valueExpr: 'code',
+            placeholder: 'Organization Types',
+            acceptCustomValue: true,
+            showClearButton: true
+          }">
+    <dxo-label text="Organization Types"> </dxo-label>
+    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+  </dxi-item>
+
+  <dxi-item itemType="group" [colCount]="options.hideIsTenant == true ? 2 : 3">
+    <dxi-item dataField="countryId" editorType="dxLookup" [editorOptions]="{
+            dataSource: countryDataSource,
+            displayExpr: 'name',
+            valueExpr: 'id',
+            searchExpr: ['name', 'id'],
+            onSelectionChanged: onCountrySelectionChanged,
+            dropDownOptions: {
+              hideOnOutsideClick: true,
+              title: 'Countries'
+            },
+          }">
+      <dxo-label text="Country"> </dxo-label>
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+
+    <dxi-item dataField="cityId" editorType="dxLookup" [editorOptions]="{
+            dataSource: cityDataSource,
+            displayExpr: 'name',
+            valueExpr: 'id',
+            searchExpr: ['name', 'id'],
+            dropDownOptions: {
+              hideOnOutsideClick: true,
+              title: 'Cities'
+            }
+          }">
+      <dxo-label text="City"> </dxo-label>
+      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+    </dxi-item>
+    <dxi-item dataField="isTenant" temType="boolean" editorType="dxCheckBox"
+      [visible]="!options.hideIsTenant"></dxi-item>
+  </dxi-item>
+
+  <dxi-item dataField="address"></dxi-item>
+
+  <dxi-item dataField="webSite">
+    <dxi-validation-rule type="pattern"
+      pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+      [message]="'validation.invalidUrl' | transloco"></dxi-validation-rule>
+  </dxi-item>
+</dx-form>
+<dx-toolbar class="mt-4">
+  <dxi-item location="after" widget="dxButton" [disabled]="!hasSaveButton || data.lock" [options]="btnSave"></dxi-item>
+  <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
+</dx-toolbar>

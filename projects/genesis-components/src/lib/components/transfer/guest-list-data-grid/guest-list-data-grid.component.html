@@ -1,0 +1,140 @@
+<dx-data-grid
+  id="guestGrid"
+  [dataSource]="guests"
+  keyExpr="id"
+  [remoteOperations]="false"
+  [showColumnLines]="false"
+  [showBorders]="true"
+  [allowColumnResizing]="false"
+  [columnHidingEnabled]="true"
+  [class]="{ 'redOutline': hasError }"
+  (onRowInserted)="rowInserted($event)"
+  (onRowInserting)="rowInserting($event)"
+  (onRowRemoved)="rowRemoved($event)"
+  (onRowRemoving)="rowRemoving($event)"
+  (onRowUpdating)="rowUpdating($event)"
+  (onRowUpdated)="rowUpdated($event)">
+  <dxo-editing mode="popup" 
+    [allowUpdating]="true" 
+    [allowAdding]="true" 
+    [allowDeleting]="true" 
+    [useIcons]="true">
+    <dxo-popup
+      title="{{ 'labels.guests' | transloco }}"
+      [showTitle]="true"
+      [width]="700"
+      [height]="500"
+      [resizeEnabled]="true"
+      [position]="{ my: 'center', at: 'center'}">
+    </dxo-popup>
+    <dxo-form [colCount]="1" labelMode="floating">
+      <dxi-item itemType="group" [colCount]="3">
+        <dxi-item itemType="group" [colCount]="1">
+          <dxi-item
+             dataField="title"
+             editorType="dxSelectBox"
+             [editorOptions]="{ 
+              dataSource: guestTitles,
+              displayExpr: getDisplayExprCode,
+              valueExpr: 'code'}">
+            <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
+            <dxo-label [text]="'labels.guest-title' | transloco"></dxo-label>
+          </dxi-item>
+          <dxi-item
+            dataField="guestType"
+            editorType="dxSelectBox"
+            [editorOptions]="{ 
+              dataSource: guestTypes,
+              displayExpr: getDisplayExprCode,
+              valueExpr: 'code'
+              }">
+          </dxi-item>
+        </dxi-item>
+
+        <dxi-item itemType="group" [colCount]="1" [colSpan]="2">
+
+          <dxi-item dataField="firstName">
+            <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
+            <dxo-label text="{{ 'labels.first-name' | transloco }}"></dxo-label>
+          </dxi-item>
+
+          <dxi-item dataField="lastName">
+            <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
+            <dxo-label text="{{ 'labels.last-name' | transloco }}"></dxo-label>
+          </dxi-item>
+        </dxi-item>
+      </dxi-item>
+
+      <dxi-item itemType="group" [colCount]="3">
+        <dxi-item itemType="group" [colCount]="1">
+          <dxi-item dataField="nationality" editorType="dxLookup" [editorOptions]="lookupService.countryLookUpOptions">
+            <dxo-label text="{{ 'labels.nationality' | transloco }}"></dxo-label>
+          </dxi-item>
+
+          <dxi-item dataField="birthDate" editorType="dxDateBox" [editorOptions]="{ 
+             displayFormat: 'dd.MM.yyyy',
+            format: 'yyyy-MM-dd',
+            type:'date',
+            useMaskBehavior: true,
+            showSpinButtons: true,
+            pickerType: 'rollers' }">
+            <dxo-label text="{{ 'labels.birth-date' | transloco }}"></dxo-label>
+          </dxi-item>
+          <dxi-item dataField="phoneAreaCode" editorType="dxLookup" [editorOptions]="lookupService.countryPhoneCodesLookUpOptions">
+            <dxo-label text="{{ 'labels.country-code' | transloco }}"></dxo-label>
+          </dxi-item>
+        </dxi-item>
+
+        <dxi-item itemType="group" [colCount]="1" [colSpan]="2">
+          <dxi-item dataField="idOrPassportNo">
+            <dxo-label text="{{ 'labels.id-passport-no' | transloco }}"></dxo-label>
+          </dxi-item>
+
+          <dxi-item dataField="email">
+            <dxo-label text="{{ 'labels.email' | transloco }}"></dxo-label>
+          </dxi-item>
+          <dxi-item dataField="phoneNumber" editorType="dxNumberBox">
+            <dxo-label text="{{ 'labels.phone-number' | transloco }}"></dxo-label>
+          </dxi-item>
+          <dxi-item dataField="isLead" editorType="dxCheckBox">
+            <dxo-label [text]="'labels.is-lead' | transloco"></dxo-label>
+          </dxi-item>
+        </dxi-item>
+      </dxi-item>
+    </dxo-form>
+  </dxo-editing>
+  <dxo-toolbar>
+    <dxi-item location="before">
+      <div *dxTemplate>
+        <div class="text-2xl tracking-tight">{{ 'labels.guests' | transloco }}</div>
+      </div>
+    </dxi-item>
+    <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
+    <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+    <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+  </dxo-toolbar>
+  <dxi-column dataField="guestType" dataType="string" [width]="80" [caption]="'labels.guest-type' | transloco"></dxi-column>
+  <dxi-column dataField="title" dataType="string" [caption]="'labels.title' | transloco" [visible]="false"></dxi-column>
+  <dxi-column dataField="firstName" dataType="string" [caption]="'labels.full-name' | transloco" cellTemplate="guestName"></dxi-column>
+  <dxi-column dataField="lastName" dataType="string" [caption]="'labels.last-name' | transloco" [visible]="false"></dxi-column>
+  <dxi-column dataField="birthDate" dataType="date" format="dd.MM.yyyy" [caption]="'labels.age' | transloco"></dxi-column>
+  <dxi-column dataField="nationality" dataType="string" [width]="80" [caption]="'labels.nationality' | transloco"></dxi-column>
+  <dxi-column dataField="idOrPassportNo" dataType="string" [caption]="'labels.id-passport-no' | transloco"></dxi-column>
+  <dxi-column dataField="phoneAreaCode" dataType="string" [caption]="'labels.country-code' | transloco" [visible]="false"></dxi-column>
+  <dxi-column dataField="phoneNumber" dataType="string" caption="{{ 'labels.phone-number' | transloco }}" cellTemplate="phoneTemp"></dxi-column>
+  <dxi-column dataField="email" dataType="string" caption="{{ 'labels.email' | transloco }}"></dxi-column>
+  
+  
+  <dxi-column dataField="isLead" dataType="boolean" [width]="80" [visible]="false"></dxi-column>
+  <div class="flex-auto" *dxTemplate="let d of 'guestName'">
+    <span class="flex font-bold">{{d.data.title}}. {{d.value}} {{d.data.lastName}}</span>
+  </div>
+
+  <div class="flex-auto" *dxTemplate="let d of 'phoneTemp'">
+    @if(d.data.phoneAreaCode && d.value){
+      +{{d.data.phoneAreaCode}}{{d.value}}
+    }
+  </div>
+  <dxo-paging [pageSize]="10"></dxo-paging>
+  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[5, 10, 15]"></dxo-pager>
+</dx-data-grid>

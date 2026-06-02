@@ -43,15 +43,22 @@
                 "glob": "**/*",
                 "input": "public/avatars",
                 "output": "assets/avatars"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/devextreme/dist/css/",
+                "output": "assets"
               }
             ],
             "styles": [
               "node_modules/devextreme/dist/css/dx.common.css",
-              "node_modules/devextreme/dist/css/dx.light.css",
               "projects/xxenta.tenant.ui/src/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": [".", "dist/genesis-shell/src/styles"]
+              "includePaths": [
+                ".",
+                "node_modules/genesis-shell/src/styles"
+              ]
             },
             "security": {
               "allowedHosts": []
@@ -104,20 +111,20 @@
         }
       }
     },
-    "genesis-shell": {
+    "genesis-components": {
       "projectType": "library",
-      "root": "projects/genesis-shell",
-      "sourceRoot": "projects/genesis-shell/src",
+      "root": "projects/genesis-components",
+      "sourceRoot": "projects/genesis-components/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "configurations": {
             "production": {
-              "tsConfig": "projects/genesis-shell/tsconfig.lib.prod.json"
+              "tsConfig": "projects/genesis-components/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/genesis-shell/tsconfig.lib.json"
+              "tsConfig": "projects/genesis-components/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -125,7 +132,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/genesis-shell/tsconfig.spec.json"
+            "tsConfig": "projects/genesis-components/tsconfig.spec.json"
           }
         }
       }

@@ -1,0 +1,84 @@
+<div [ngClass]="options.paddingCss">
+    <dx-data-grid id="gridContainer" 
+        [dataSource]="dataSource" 
+        [remoteOperations]="true" 
+        [showColumnLines]="false"
+        [showBorders]="true" 
+        [showRowLines]="true" 
+        [rowAlternationEnabled]="true" 
+        [hoverStateEnabled]="true"
+        [allowColumnResizing]="true" 
+        [columnHidingEnabled]="true" 
+        (onRowUpdating)="onRowUpdating($event)">
+
+        <dxo-search-panel [visible]="true"></dxo-search-panel>
+        <dxo-filter-row [visible]="true"></dxo-filter-row>
+        <dxo-group-panel [visible]="false"></dxo-group-panel>
+
+        <dxo-toolbar>
+            <dxi-item location="before">
+                <div *dxTemplate>
+                    <div class="text-2xl tracking-tight">
+                        {{options.pageTitle | transloco}}
+                    </div>
+                </div>
+            </dxi-item>
+            <dxi-item locateInMenu="auto" location="after" [visible]="options.createRoute">
+                <div *dxTemplate>
+                    <dx-button icon="add" (onClick)="createUser($event)"></dx-button>
+                </div>
+            </dxi-item>
+            <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+            <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+        </dxo-toolbar>
+
+        <dxi-column dataField="id" dataType="string" cellTemplate="userTemp"
+            [allowFiltering]="false" 
+            [allowSearch]="false" 
+            [allowGrouping]="false" caption="" width="60"></dxi-column>
+
+        <dxi-column dataField="firstName" dataType="string" cellTemplate="nameTemp" caption="{{'labels.first-name' | transloco}}"></dxi-column>
+        <dxi-column dataField="lastName" dataType="string" cellTemplate="nameTemp" caption="{{'labels.last-name' | transloco}}"></dxi-column>
+        <dxi-column dataField="userName" dataType="string" cellTemplate="nameTemp" caption="{{'labels.username' | transloco}}"></dxi-column>
+        <dxi-column dataField="email" dataType="string" cellTemplate="nameTemp" caption="{{'labels.email' | transloco}}"></dxi-column>
+        <dxi-column dataField="gender" dataType="string" cellTemplate="nameTemp" caption="{{'labels.gender' | transloco}}"></dxi-column>
+        <dxi-column dataField="company.name" dataType="string" [allowFiltering]="false" [allowSearch]="false"
+            [allowGrouping]="false" caption="{{'labels.company-name' | transloco}}"></dxi-column>
+
+        <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
+            <a
+                [routerLink]="options.detailBaseRoute ? options.detailBaseRoute+'/detail/'+d.data.id : 'detail/'+d.data.id">
+                <span class="flex font-bold">
+                    {{d.value}}
+                </span>
+            </a>
+        </div>
+
+
+        <div class="flex-auto" *dxTemplate="let d of 'userTemp'">
+            <a
+                [routerLink]="options.detailBaseRoute ? options.detailBaseRoute+'/detail/'+d.data.id : 'detail/'+d.data.id">
+                <div class="flex flex-0 items-center justify-center w-8 h-8 rounded-full overflow-hidden">
+                    <ng-container *ngIf="d.data.picture">
+                        <img class="object-cover w-full h-full" [src]="d.data?.picture" alt="">
+                    </ng-container>
+                    <ng-container *ngIf="!d.data.picture">
+                        <div
+                            class="flex items-center justify-center w-full h-full rounded-full text-sm uppercase bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-200">
+                            @if(d.data.firstName || d.data.lastName){
+                                {{d.data.firstName?.charAt(0)}}{{d.data.lastName?.charAt(0)}}
+                            }
+                            @else{
+                                {{'N'.charAt(0)}}/{{'A'.charAt(0)}}
+                            }
+                            
+                        </div>
+                    </ng-container>
+                </div>
+            </a>
+        </div>
+
+        <dxo-paging [pageSize]="10"></dxo-paging>
+        <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+    </dx-data-grid>
+</div>

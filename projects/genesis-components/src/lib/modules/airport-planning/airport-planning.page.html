@@ -1,0 +1,248 @@
+<div class="flex flex-col flex-auto min-w-0">
+  <div class="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 p-6">
+    <summary-mini 
+      [data]="{ count: data.paxCount, completed: 0 }"
+      width="w-[30px]"
+      height="h-[30px]"
+      cssClass="p-4"
+      [icon]="'assets/icons/group_64.png'"
+      [title]="'labels.guests' | transloco"
+      [summaryLabel]="'labels.total-pax' | transloco">
+    </summary-mini>
+
+    <summary-mini 
+      [data]="{ count: data.completedGetOnCount, completed: 0 }"
+      width="w-[30px]"
+      height="h-[30px]"
+      cssClass="p-4"
+      [icon]="'assets/icons/check-mark_64.png'"
+      [title]="'labels.completed' | transloco"
+      [summaryLabel]="'labels.boarded' | transloco">
+    </summary-mini>
+
+    <summary-mini 
+      [data]="{ count: data.selfTransferCount, completed: 0 }"
+      width="w-[30px]"
+      height="h-[30px]"
+      cssClass="p-4"
+      [icon]="'assets/icons/self-service_64.png'"
+      [title]="'labels.self-transfer' | transloco"
+      [summaryLabel]="'labels.self-transfer' | transloco">
+    </summary-mini>
+    
+    <summary-mini 
+      [data]="{ count: data.noShowCount, completed: 0 }"
+      width="w-[30px]"
+      height="h-[30px]"
+      cssClass="p-4"
+      [icon]="'assets/icons/hide_64.png'"
+      [title]="'labels.no-show' | transloco"
+      [summaryLabel]="'labels.no-show' | transloco">
+    </summary-mini>
+  </div>
+
+  <div class="px-6 pb-6 grow">
+    <dx-data-grid id="gridContainer" 
+      #reservationGrid [dataSource]="dataSource"
+      [columnResizingMode]="'nextColumn'"
+      [columnAutoWidth]="true" 
+      [rowAlternationEnabled]="true" 
+      [allowColumnReordering]="true"
+      [showColumnLines]="false"
+      [showBorders]="true" 
+      [showRowLines]="true" 
+      [remoteOperations]="true" 
+      [scrolling]="{ mode: 'virtual' }" 
+      [height]="'calc(100vh - 180px - 3rem)'"
+      (onContentReady)="onContentReady($event)"
+      (onInitialized)="onGridInitialized($event)" 
+      (onOptionChanged)="onGridOptionChanged($event)">
+
+      <dxo-toolbar>
+        <dxi-item locateInMenu="auto" location="before" widget="dxButton" width="auto">
+          <dx-date-box stylingMode="outlined" [width]="280" [(value)]="selectedTransferDate" displayFormat="dd.MM.yyyy"
+            (onValueChanged)="onTourDateValueChanged($event)">
+            <dxi-button name="today" location="before" [options]="todayButtonOptions"> </dxi-button>
+            <dxi-button name="prevDate" location="before" [options]="prevDayButtonOptions"> </dxi-button>
+            <dxi-button name="nextDate" location="after" [options]="nextDayButtonOptions"> </dxi-button>
+            <dxi-button name="dropDown"></dxi-button>
+          </dx-date-box>
+        </dxi-item>
+        <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [options]="companyOptions"></dxi-item>
+        <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [options]="hotelOptions"></dxi-item>
+        <dxi-item location="before" locateInMenu="auto" widget="dxTagBox" [options]="tagBoxFligthOptions"></dxi-item>
+        <dxi-item location="before" locateInMenu="auto" widget="dxSelectBox" [options]="routeTypeOptions"></dxi-item>
+        <dxi-item location="after" locateInMenu="never" widget="dxButton" [options]="refreshButtonOptions"> </dxi-item>
+        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+      </dxo-toolbar>
+
+      <dxo-filter-row [visible]="true"></dxo-filter-row>
+      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
+      <dxo-master-detail [enabled]="true" template="masterDetail"></dxo-master-detail>
+      <dxo-group-panel [visible]="true"></dxo-group-panel>
+      <dxo-column-chooser #columnChooser [enabled]="true" mode="dragAndDrop"
+        [title]="'labels.column-chooser' | transloco">
+        <dxo-position my="right top" at="right bottom" of=".dx-datagrid-column-chooser-button"></dxo-position>
+        <dxo-search [enabled]="true"
+          [editorOptions]="{ placeholder: 'labels.column-search' | transloco }"></dxo-search>
+        <dxo-selection [allowSelectAll]="true" [selectByClick]="true" [recursive]="true"></dxo-selection>
+      </dxo-column-chooser>
+      <dxo-grouping [contextMenuEnabled]="true" expandMode="rowClick"  [autoExpandAll]="true"></dxo-grouping>
+      <dxi-column type="buttons" cellTemplate="customButtons"></dxi-column>
+      
+      <dxi-column dataField="firstName" dataType="string" width="auto" [caption]="'labels.name' | transloco"
+        cellTemplate="nameTemplate"></dxi-column>
+      
+        <dxi-column dataField="lastName" dataType="string" width="auto" [caption]="'labels.surname' | transloco"
+        cellTemplate="nameTemplate"></dxi-column>
+
+      <dxi-column dataField="reservation.adult" dataType="number" [caption]="'labels.adult' | transloco"></dxi-column>
+      <dxi-column dataField="reservation.child" dataType="number" [caption]="'labels.child' | transloco"></dxi-column>
+      <dxi-column dataField="reservation.oprVoucher" dataType="string" [caption]="'labels.voucher' | transloco" [allowFiltering]="true"
+        cellTemplate="voucherTemplate">
+      </dxi-column>
+      <dxi-column dataField="reservation.flight.flightCode" dataType="string" [caption]="'labels.flight-code' | transloco"
+        cellTemplate="codeTemplate" [allowFiltering]="false" [allowSearch]="false" [allowSorting]="false">
+      </dxi-column>
+      <dxi-column dataField="reservation.flight.arrivalTime" dataType="object" [caption]="'labels.flight-time' | transloco">
+      </dxi-column>
+      <dxi-column dataField="reservation.transferDate" dataType="date" format="dd.MM.yyyy" [caption]="'labels.transfer-date' | transloco">
+      </dxi-column>
+      <dxi-column dataField="reservation.pickupTime" [caption]="'labels.pickup-time' | transloco"></dxi-column>
+      
+      <dxi-column dataField="reservation.transferRouteType" dataType="date" [caption]="'labels.direction' | transloco"
+        [allowFiltering]="false" [allowSearch]="false" [allowSorting]="false">
+        <dxo-lookup [dataSource]="transferRouteTypes" displayExpr="name" valueExpr="code">
+        </dxo-lookup>
+      </dxi-column>
+      
+      <dxi-column dataField="reservation.fromLocation.regionCode" dataType="string" [caption]="'labels.from-region' | transloco"
+        [allowFiltering]="false" [allowSearch]="false" [allowSorting]="false">
+      </dxi-column>
+      
+      <dxi-column dataField="reservation.fromLocation.id" dataType="string" [caption]="'labels.from' | transloco" [width]="180"
+        [allowFiltering]="false" [allowSearch]="false" [allowSorting]="false" cellTemplate="fromTemp"></dxi-column>
+      
+      <dxi-column dataField="reservation.toLocation.regionCode" dataType="string" [caption]="'labels.to-region' | transloco"
+        [allowFiltering]="false" [allowSearch]="false" [allowSorting]="false">
+      </dxi-column>
+      
+      <dxi-column dataField="reservation.toLocation.id" dataType="string" [caption]="'labels.to' | transloco" [allowFiltering]="false"
+        [allowSearch]="false" [allowSorting]="false" cellTemplate="toTemp">
+      </dxi-column>
+      
+      <dxi-column dataField="reservation.transferType.name" dataType="string" [caption]="'labels.transfer-type' | transloco">
+      </dxi-column>
+      
+      <dxi-column dataField="operator.name" dataType="string" [caption]="'labels.operator' | transloco"
+        [allowFiltering]="false" [allowSearch]="false" [allowSorting]="false" cellTemplate="operatorTemplate">
+      </dxi-column>
+      
+      <dxi-column dataField="deskOnDate" dataType="date" [caption]="'labels.at-desk' | transloco" format="dd.MM.yyyy HH:mm"
+        [allowFiltering]="false" [allowSearch]="false" [allowSorting]="false">
+      </dxi-column>
+      
+      <dxi-column dataField="transferPlan.taskCode" dataType="string" [caption]="'labels.trf-order' | transloco"
+        cellTemplate="taskNumberTemp"></dxi-column>
+
+      <dxi-column dataField="transferPlan.tag" dataType="string" [caption]="'labels.sejour-job-no' | transloco"
+        cellTemplate="taskNumberTemp"></dxi-column>
+      
+      <dxi-column dataField="voucher" dataType="string" [caption]="'labels.system-voucher' | transloco"
+        cellTemplate="voucherTemplate" [visible]="false" [allowFiltering]="true">
+      </dxi-column>
+
+      <div *dxTemplate="let menu of 'customButtons'">
+        <dx-drop-down-button stylingMode="text" 
+          [dropDownOptions]="{ width: 180 }" icon="assets/icons/booking_64.png" [items]="menus"
+            displayExpr="name" keyExpr="id" (onItemClick)="onItemClick($event, menu)">
+        </dx-drop-down-button>
+    </div>
+
+      <div class="flex-auto" *dxTemplate="let d of 'codeTemplate'">
+        <span class="flex font-bold"> {{ d.value }} </span>
+      </div>
+
+      <div class="flex-auto" *dxTemplate="let d of 'nameTemplate'">
+        <a [routerLink]="options.reservationDetail(d.data.reservation.sysVoucher)" [queryParamsHandling]="'preserve'">
+          <span class="flex font-bold"> {{ d.value }} </span>
+
+          <!-- <span class="flex items-center">
+            <img *ngIf="getStatusIcon(d.data)" 
+                 [src]="getStatusIcon(d.data)" 
+                 alt="Passenger Status" 
+                 class="w-4 h-4 mr-2" />
+            <span class="font-bold">
+              {{ d.data.title }}. {{ d.value }} {{ d.data.lastName }}
+            </span>
+          </span> -->
+        </a>
+      </div>
+
+      <div class="flex-auto" *dxTemplate="let d of 'voucherTemplate'">
+        <a [routerLink]="options.reservationDetail(d.data.reservation.sysVoucher)" [queryParamsHandling]="'preserve'">
+          <span class="flex font-bold">
+            {{ d.value }}
+          </span>
+        </a>
+      </div>
+      <div class="flex-auto" *dxTemplate="let d of 'taskNumberTemp'">
+        <span class="flex font-bold">
+          {{ d.value }}
+        </span>
+      </div>
+
+      <div class="flex-auto" *dxTemplate="let d of 'operatorTemplate'">
+        <span class="flex font-bold"> {{ d.value }} </span>
+        <span class="flex text-xs"> {{ d.data.operator?.code }} </span>
+      </div>
+      <div class="flex-auto" *dxTemplate="let d of 'flightTimeTemplate'">
+        <span class="flex font-bold" *ngIf="d.data.fromLocation?.source == 'Airport'">
+          {{ d.value | date: "HH:mm" }}
+        </span>
+        <span class="flex font-bold" *ngIf="d.data.toLocation?.source == 'Airport'">
+          {{ d.data.flight?.departureTime }}
+        </span>
+      </div>
+      <div class="flex-auto" *dxTemplate="let d of 'fromTemp'">
+        <div class="flex items-center">
+          <img src="assets/icons/landing-flight_32.png" alt="" class="h-8 w-8 rounded-full border p-[4px]"
+            *ngIf="d.data.reservation.fromLocation?.placeType == 'Airport'" />
+          <img src="assets/icons/hotel_32.png" alt="" class="h-8 w-8 rounded-full border p-[4px]"
+            *ngIf="d.data.reservation.fromLocation?.placeType == 'Hotel'" />
+          <div class="ml-3 flex flex-col">
+            <span class="font-medium leading-none">
+              {{ d.data.reservation.fromLocation?.name }}
+            </span>
+            <span class="text-secondary mt-1 text-xs leading-none">
+              {{ d.data.reservation.fromLocation?.code }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="flex-auto" *dxTemplate="let d of 'toTemp'">
+        <div class="flex items-center">
+          <img src="assets/icons/flight-take-off_32.png" alt="" class="h-8 w-8 rounded-full border p-[4px]"
+            *ngIf="d.data.reservation.toLocation?.placeType == 'Airport'" />
+          <img src="assets/icons/hotel_32.png" alt="" class="h-8 w-8 rounded-full border p-[4px]"
+            *ngIf="d.data.reservation.toLocation?.placeType == 'Hotel'" />
+          <div class="ml-3 flex flex-col">
+            <span class="font-medium leading-none">
+              {{ d.data.reservation.toLocation?.name }}
+            </span>
+            <span class="text-secondary mt-1 text-xs leading-none">
+              {{ d.data.reservation.toLocation?.code }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div *dxTemplate="let detail of 'masterDetail'">
+        <passenger-more-detail [data]="detail.data"></passenger-more-detail>
+      </div>
+      <dxo-paging [pageSize]="20"></dxo-paging>
+      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+      <dxo-export [enabled]="true" [allowExportSelectedData]="true"></dxo-export>
+    </dx-data-grid>
+  </div>
+</div>

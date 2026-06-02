@@ -1,0 +1,189 @@
+<div class="overflow-hidden p-6 grow">
+  <dx-data-grid
+        id="gridContainer"
+        #reservationGrid
+        [dataSource]="dataSource"
+        [remoteOperations]="true"
+        [columnAutoWidth]="true"
+        [rowAlternationEnabled]="true"
+        [allowColumnReordering]="true"
+        [showColumnLines]="false"
+        [showBorders]="true"
+        [showRowLines]="true"
+        [allowColumnResizing]="true"
+        [columnHidingEnabled]="false"
+        (onOptionChanged)="onOptionChanged($event)">
+        <dxo-toolbar>
+            <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [visible]="hasOwner" [options]="ownerOptions"></dxi-item>
+            <dxi-item locateInMenu="auto" location="before" widget="dxDateBox" [options]="beginDateOptions"> </dxi-item>
+            <dxi-item locateInMenu="auto" location="before" widget="dxDateBox" [options]="endDateOptions"> </dxi-item>
+            <dxi-item location="before" locateInMenu="auto" widget="dxSelectBox" [options]="transferRouteTypeOptions"></dxi-item>
+            <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [options]="companyOptions"></dxi-item>
+            <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [options]="tansferOptions"></dxi-item>
+           
+            <dxi-item location="after" locateInMenu="auto" widget="dxButton" [options]="changeMultipleTerminalOptions"></dxi-item>
+            <dxi-item location="after" locateInMenu="auto" widget="dxButton" [options]="changeFlightTimeOptions"></dxi-item>
+            <dxi-item location="after" locateInMenu="auto" widget="dxButton" [options]="excelExportOptions"></dxi-item>
+            <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+            <dxi-item name="searchPanel" locateInMenu="never"></dxi-item>
+            <dxi-item location="after" locateInMenu="never" widget="dxButton" [options]="refreshButtonOptions"> </dxi-item>
+            <dxi-item location="after" locateInMenu="never" widget="dxButton" [options]="createItemOptions"></dxi-item>
+        </dxo-toolbar>
+
+        <dxo-filter-row [visible]="true"></dxo-filter-row>
+        <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
+        <dxo-group-panel [visible]="false"></dxo-group-panel>
+        <dxo-master-detail [enabled]="true" template="masterDetail"></dxo-master-detail>
+        <dxo-column-chooser #columnChooser [enabled]="true" mode="dragAndDrop" [title]="'labels.column-chooser' | transloco">
+            <dxo-position my="right top" at="right bottom" of=".dx-datagrid-column-chooser-button"></dxo-position>
+            <dxo-search [enabled]="true" [editorOptions]="{ placeholder: 'labels.column-search' | transloco }"></dxo-search>
+            <dxo-selection [allowSelectAll]="true" [selectByClick]="true" [recursive]="true"></dxo-selection>
+        </dxo-column-chooser>
+
+        <!-- <dxi-column type="buttons" cellTemplate="customButtons"></dxi-column> -->
+        <dxi-column dataField="sysVoucher" dataType="string" [caption]="'labels.sys-voucher' | transloco" cellTemplate="linkTemplate"></dxi-column>
+        <dxi-column dataField="oprVoucher" dataType="string" [caption]="'labels.opr-voucher' | transloco" cellTemplate="linkTemplate"></dxi-column>
+        <dxi-column dataField="subVoucher" dataType="string" [caption]="'labels.sub-voucher' | transloco" cellTemplate="linkTemplate"></dxi-column>
+        <dxi-column dataField="pickupTime" dataType="string" [caption]="'labels.pickup-time' | transloco" cellTemplate="codeTemplate"></dxi-column>
+        <dxi-column dataField="flight.code" dataType="string" [caption]="'labels.flight-code' | transloco"
+            cellTemplate="codeTemplate" 
+            [allowSorting]="false"
+            [allowFiltering]="false"
+            [allowSearch]="false"
+            [allowGrouping]="false">
+        </dxi-column>
+        <dxi-column dataField="flight.arrivalTime" dataType="time" [caption]="'labels.flight-time' | transloco" cellTemplate="flightTimeTemplate"></dxi-column>
+        
+        <dxi-column dataField="transferDate" dataType="date" 
+            format="dd.MM.yyyy" 
+            [allowFiltering]="false" 
+            [allowSearch]="false"
+            [allowSorting]="false" 
+            [allowGrouping]="false"
+            [caption]="'labels.transfer-date' | transloco">
+        </dxi-column>
+
+        <dxi-column dataField="saleDate" dataType="date" format="dd.MM.yyyy" [caption]="'labels.sale-date' | transloco" [visible]="false"></dxi-column>
+        <dxi-column dataField="transferRouteType" dataType="string" [caption]="'labels.direction' | transloco" [allowFiltering]="false" [allowSearch]="false" [allowSorting]="false">
+            <dxo-lookup [dataSource]="transferRouteTypes" displayExpr="name" valueExpr="code"></dxo-lookup>
+        </dxi-column>
+        <dxi-column dataField="fromLocation.name" dataType="string" [caption]="'labels.from' | transloco" cellTemplate="fromTemp"></dxi-column>
+        <dxi-column dataField="toLocation.name" dataType="string" [caption]="'labels.to' | transloco" cellTemplate="toTemp"></dxi-column>
+        <dxi-column dataField="adult" dataType="number" [caption]="'labels.adult' | transloco"></dxi-column>
+        <dxi-column dataField="child" dataType="number" [caption]="'labels.child' | transloco"></dxi-column>
+        <dxi-column dataField="infant" dataType="number" [caption]="'labels.infant' | transloco"></dxi-column>
+        <dxi-column dataField="transferType.code" dataType="string" [caption]="'labels.transfer-type' | transloco" cellTemplate="transferTypeTemplate"></dxi-column>
+
+        <dxi-column dataField="operator.name" 
+            dataType="string" 
+            [caption]="'labels.operator' | transloco"
+            [allowFiltering]="false" 
+            [allowSearch]="false"
+            [allowSorting]="false">
+        </dxi-column>
+
+        <dxi-column 
+            dataField="flight.terminal.id" 
+            dataType="string" 
+            [caption]="'labels.terminal' | transloco" 
+            [allowFiltering]="false"
+            [allowSearch]="false"
+            [allowSorting]="false">
+        </dxi-column>
+            
+        <dxi-column dataField="createDate" dataType="date" format="dd.MM.yyyy" [caption]="'labels.create-date' | transloco" [visible]="false"></dxi-column>
+
+        <div class="flex-auto" *dxTemplate="let d of 'linkTemplate'">
+            <div class="flex justify-start items-center">
+                <a [routerLink]="options.editTransferReservation(d.data.id)" [queryParams]="filter">
+                    <span class="flex font-bold">{{ d.value }}</span>
+                </a>
+                <button [cdkCopyToClipboard]="d.value" class="flex ml-2 hover:bg-blue-50 p-[3px] rounded-full"
+                    (click)="onCopy(d.value)" #tooltip="matTooltip" [matTooltip]="'labels.copy' | transloco"
+                    matTooltipPosition="above">
+                    <mat-icon svgIcon="heroicons_outline:clipboard" *ngIf="compyValue !== d.value"
+                        class="icon-size-5"></mat-icon>
+                    <mat-icon svgIcon="heroicons_outline:clipboard-document-check" *ngIf="compyValue === d.value"
+                        class="icon-size-5 text-green-700"></mat-icon>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-auto" *dxTemplate="let d of 'codeTemplate'">
+            <a [routerLink]="options.editTransferReservation(d.data.id)">
+                <span class="flex font-bold">{{ d.value }}</span>
+            </a>
+        </div>
+        <div class="flex-auto" *dxTemplate="let d of 'transferTypeTemplate'">
+            <span class="font-bold" id="ttype_{{d.data.id}}">{{ d.value }}</span>
+            <dx-tooltip target="#ttype_{{d.data.id}}" showEvent="mouseenter" hideEvent="mouseleave"
+                position="left" [hideOnOutsideClick]="false">
+                <div *dxTemplate="let data = data; of: 'content'">
+                    <div class="flex flex-col">
+                        {{d.data.transferType?.name}}
+                    </div>
+                </div>
+            </dx-tooltip>
+        </div>
+        <div class="flex-auto" *dxTemplate="let d of 'flightTimeTemplate'">
+            <span class="flex font-bold" *ngIf="d.data.transferRouteType == 'Arrival'">{{ d.data.flight?.arrivalTime }}</span>
+            <span class="flex font-bold" *ngIf="d.data.transferRouteType == 'Departure'">{{ d.data.flight?.departureTime }}</span>
+        </div>
+
+         <div class="flex-auto" *dxTemplate="let d of 'fromTemp'">
+             <span class="flex font-bold">
+                    {{ d.value }}
+                </span>
+                <span class="flex text-sm">
+                    @if(d.data.fromLocation?.district && d.data.fromLocation?.town){
+                        {{ d.data.fromLocation?.district }}/{{d.data.fromLocation?.town}}
+                    }
+                </span>
+        </div>
+        <div class="flex-auto" *dxTemplate="let d of 'toTemp'">
+             <span class="flex font-bold">
+                    {{ d.value }}
+                </span>
+                <span class="flex text-sm">
+                    @if(d.data.toLocation?.district && d.data.toLocation?.town){
+                        {{ d.data.toLocation?.district }}/{{d.data.toLocation?.town}}
+                    }
+                </span>
+        </div>
+        <div *dxTemplate="let menu of 'customButtons'">
+            <dx-drop-down-button stylingMode="text" [dropDownOptions]="{ width: 180 }" icon="assets/icons/booking_64.png" [items]="menus"
+                displayExpr="name" keyExpr="id" (onItemClick)="onItemClick($event, menu)">
+            </dx-drop-down-button>
+        </div>
+        <div *dxTemplate="let masterDetailItem of 'masterDetail'">
+            <detail-reservation-view [key]="masterDetailItem.key" [rowData]="masterDetailItem.data"></detail-reservation-view>
+        </div>
+
+        <dxo-summary>
+            <dxi-total-item name="oprVoucher" summaryType="count" column="oprVoucher"></dxi-total-item>
+            <dxi-total-item name="adult" summaryType="sum" column="adult"></dxi-total-item>
+            <dxi-total-item name="child" summaryType="sum" column="child"></dxi-total-item>
+            <dxi-total-item name="infant" summaryType="sum" column="infant"></dxi-total-item>
+        </dxo-summary>
+
+        <dxo-paging [pageSize]="20"></dxo-paging>
+        <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 50, 100]"></dxo-pager>
+    </dx-data-grid>
+</div>
+
+<change-multiple-terminal
+[visible]="changeMultipleTerminalVisible"
+[transferRouteType]="filter.transferRouteType"
+(onCancelClick)="onChangeMultipleTerminalCancel($event)">
+</change-multiple-terminal>
+
+<reservation-excel-export
+    [visible]="excelExportVisible"
+    [transferDate]="filter.transferDate"
+    (onCancelClick)="onExcelExportCancel($event)">
+</reservation-excel-export>
+
+<change-flight-times
+  [visible]="changeFlightTimeVisible"
+  (onCancelClick)="onChangeFlightTimeCancel($event)"
+></change-flight-times>

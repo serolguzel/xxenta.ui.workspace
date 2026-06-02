@@ -1,0 +1,69 @@
+<dx-data-grid id="gridContainer" 
+  [dataSource]="dataSource" 
+  [remoteOperations]="false" 
+  [showColumnLines]="false"
+  [showBorders]="true" 
+  [showRowLines]="true"
+  [rowAlternationEnabled]="true"
+  [hoverStateEnabled]="true"
+  [allowColumnResizing]="true"
+  [columnHidingEnabled]="true"
+  (onRowUpdating)="onRowUpdating($event)"
+  (onRowInserting)="onRowInserting($event)"
+  (onInitNewRow)="onInitNewRow($event)">
+  <dxo-search-panel [visible]="true"></dxo-search-panel>
+  <dxo-filter-row [visible]="true"></dxo-filter-row>
+  <dxo-group-panel [visible]="false"></dxo-group-panel>
+
+  <dxo-toolbar>
+    <dxi-item location="before">
+      <div *dxTemplate>
+        <div class="text-2xl tracking-tight">
+          Customer Aplications
+        </div>
+      </div>
+    </dxi-item>
+    <dxi-item locateInMenu="auto" location="after">
+      <div *dxTemplate>
+        <dx-button icon="add" (onClick)="saveApp($event)"></dx-button>
+      </div>
+    </dxi-item>
+    <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+    <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+  </dxo-toolbar>
+
+<dxo-editing mode="popup" 
+    [allowUpdating]="false" 
+    [allowAdding]="false" 
+    [allowDeleting]="true" 
+    [useIcons]="true">
+  </dxo-editing>
+
+  <dxi-column dataField="app.name" dataType="string" caption="App" cellTemplate="linkTemp"></dxi-column>
+  <dxi-column dataField="organization.name" dataType="string" caption="Customer"></dxi-column>
+  <dxi-column dataField="registerDate" dataType="date" format="dd.MM.yyyy"></dxi-column>
+  <dxi-column dataField="price" dataType="number" cellTemplate="priceTemp"></dxi-column>
+  <dxi-column dataField="priceCalculatorType" dataType="string"></dxi-column>
+  <dxi-column dataField="paymentType" dataType="string"></dxi-column>
+  <dxi-column dataField="currency" dataType="number" [visible]="false"></dxi-column>
+  <dxi-column dataField="organizationId" dataType="string" caption="Customer" [visible]="false"></dxi-column>
+  <dxi-column dataField="appId" dataType="string" caption="App" [visible]="false"></dxi-column>
+  <dxi-column dataField="url" dataType="string" caption="Url" [visible]="false"></dxi-column>
+
+  <div class="flex-auto" *dxTemplate="let d of 'priceTemp'">
+    <span class="flex font-bold">
+      {{d.value}} {{d.data.currency}}
+    </span>
+  </div>
+
+  <div class="flex-auto" *dxTemplate="let d of 'linkTemp'">
+    <a [routerLink]="'add-app/' + d.data.appId">
+      <span class="flex font-bold">
+        {{ d.value }}
+      </span>
+    </a>
+  </div>
+
+  <dxo-paging [pageSize]="20"></dxo-paging>
+  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+</dx-data-grid>

@@ -1,0 +1,50 @@
+<dx-popup
+    [visible]="visible"
+    [showTitle]="true"
+    [dragEnabled]="true"
+    [resizeEnabled]="true"
+    [title]="'labels.change-flight-times' | transloco"
+    [width]="600"
+    [height]="380"
+    (onHidden)="onHidden()"
+    [position]="{my: 'center', at: 'center', of: 'window'}">
+    <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="after" [options]="btnSave"></dxi-toolbar-item>
+    <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="before" [options]="btnCancel"></dxi-toolbar-item>
+    <dx-form labelMode="floating" [formData]="model">
+      <dxi-item itemType="group" [colCount]="2">
+        <dxi-item [colSpan]="1" dataField="flightCode" editorType="dxLookup" [editorOptions]="flightLookUpOptions">
+          <dxo-label text="{{ 'labels.flight' | transloco }}"></dxo-label>
+          <dxi-validation-rule type="required" message="{{ 'generic.message.required' | transloco }}"></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item dataField="flightDate" editorType="dxDateBox" [editorOptions]="{ 
+                    displayFormat: 'dd.MM.yyyy',
+                    type:'date',
+                    showClearButton: true}">
+          <dxi-validation-rule type="required" message="{{ 'generic.message.required' | transloco }}"></dxi-validation-rule>
+        </dxi-item>
+    
+        <dxi-item dataField="departureTime" editorType="dxDateBox" [editorOptions]="{
+                                              displayFormat: 'HH:mm',
+                                              type:'time',
+                                              format: 'HH:mm',
+                                              useMaskBehavior: true
+                                          }">
+          <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item dataField="arrivalTime" editorType="dxDateBox" [editorOptions]="{
+                                              displayFormat: 'HH:mm',
+                                              format: 'HH:mm',
+                                              type:'time',
+                                              useMaskBehavior: true
+                                          }">
+          <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+      </dxi-item>
+      <dxi-item>
+        <genesis-alert [type]="'warning'">
+          <span genesisAlertTitle class="text-lg">{{ 'labels.warning' | transloco }}</span>
+          <span genesisAlertMessage class="text-sm">{{'messages.change-flight-times' | transloco }}</span>
+        </genesis-alert>
+      </dxi-item>
+    </dx-form>
+</dx-popup>

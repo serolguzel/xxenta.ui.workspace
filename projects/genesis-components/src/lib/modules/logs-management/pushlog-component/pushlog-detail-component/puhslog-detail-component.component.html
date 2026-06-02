@@ -1,0 +1,54 @@
+<div class="flex flex-auto p-6 sm:p-10">
+  <div class="mx-auto flex w-full max-w-xs flex-auto flex-col sm:max-w-5xl">
+    <div class="mt-6 border-t border-gray-100">
+      <dl class="divide-y divide-gray-100">
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-base font-medium text-gray-900">{{ 'labels.code' | transloco }}</dt>
+          <dd class="mt-1 text-base text-gray-700 sm:col-span-2 sm:mt-0">{{data.code}}</dd>
+        </div>
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-base font-medium text-gray-900">{{ 'labels.message' | transloco }}</dt>
+          <dd class="mt-1 text-base text-gray-700 sm:col-span-2 sm:mt-0">
+            @if (data.messages?.length) {
+              <ul>
+                <li class="text-red-700" *ngFor="let item of data.messages">
+                  {{item}}
+                </li>
+              </ul>
+            }
+            @else {
+              ---
+            }
+            
+          </dd>
+        </div>
+
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-base font-medium text-gray-900">{{ 'labels.status' | transloco }}</dt>
+          <dd class="mt-1 text-base text-gray-700 sm:col-span-2 sm:mt-0">
+            @if(data.isSuccess){
+              <mat-icon class="text-green-600 icon-size-6" [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+            }
+            @else {
+              <mat-icon class="icon-size-6" [svgIcon]="'heroicons_solid:stop'"></mat-icon>
+            }
+          </dd>
+        </div>
+
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-base font-medium text-gray-900">{{ 'labels.create-date' | transloco }}</dt>
+          <dd class="mt-1 text-base text-gray-700 sm:col-span-2 sm:mt-0">
+            {{data.createDate | date: 'dd.MM.yyyy HH:mm'}}
+          </dd>
+        </div>
+
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-base font-medium text-gray-900">{{ 'labels.data' | transloco }}</dt>
+          <dd class="mt-1 text-base text-gray-700 sm:col-span-2 sm:mt-0">
+            <pre class="json-container" [innerHTML]="prettyPrintJson.toHtml(data.data)"></pre>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>

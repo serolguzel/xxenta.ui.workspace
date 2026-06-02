@@ -1,0 +1,81 @@
+<dx-form #flightForm id="form" [formData]="data" labelMode="floating">
+    <dxi-item itemType="group" [colCount]="2">
+        <dxi-item dataField="airlineCode" editorType="dxLookup" [editorOptions]="{
+                                        dataSource: airlineDataSource,
+                                        displayExpr: getDisplayExprCode,
+                                        valueExpr: 'code',
+                                        searchExpr: ['name', 'code'],
+                                        itemTemplate: codeNameTemplate,
+                                        onValueChanged: airlineOnValueChanged,
+                                        dropDownOptions: {
+                                            hideOnOutsideClick: true,
+                                            title: 'Havayolları'
+                                        }
+                                    }">
+            <dxo-label [text]="'labels.airline' | transloco"></dxo-label>
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item dataField="flightNumber" itemType="number" editorType="dxNumberBox" [editorOptions]="{
+                        min: 1,
+                        onValueChanged: flightCodeOnValueChanged,
+                        showClearButton: true
+                    }">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            <dxo-label [text]="'labels.flight-code' | transloco"></dxo-label>
+        </dxi-item>
+    </dxi-item>
+
+    <dxi-item [visible]="isSelected">
+        <genesis-alert [type]="'warning'">
+            <span genesisAlertTitle class="text-lg">{{data.airlineCode}} {{data.flightNumber}}</span>
+            Uçuş kodu.
+        </genesis-alert>
+    </dxi-item>
+
+    <dxi-item itemType="group" [colCount]="3">
+        <dxi-item dataField="fromAirport" editorType="dxLookup" [editorOptions]="{
+                        dataSource: airportDataSource,
+                        displayExpr: getDisplayExprId,
+                        valueExpr: 'id',
+                        searchExpr: ['name', 'id'],
+                        itemTemplate: idNameTemplate,
+                        dropDownOptions: {
+                            hideOnOutsideClick: true,
+                            title: 'Havaalanları'
+                        }
+                    }">
+            <dxo-label text="Nereden?"></dxo-label>
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item dataField="toAirport" editorType="dxLookup" [editorOptions]="{
+                        dataSource: airportDataSource,
+                        displayExpr: getDisplayExprId,
+                        valueExpr: 'id',
+                        searchExpr: ['name', 'id'],
+                        itemTemplate: idNameTemplate,
+                        dropDownOptions: {
+                            hideOnOutsideClick: true,
+                            title: 'Havaalanları'
+                        }
+                    }">
+            <dxo-label text="Nereye?"></dxo-label>
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item dataField="terminalCode" editorType="dxSelectBox" [editorOptions]="{
+                        dataSource: terminalDataSource,
+                        displayExpr: getDisplayExprCode,
+                        valueExpr: 'code',
+                        itemTemplate: codeNameTemplate
+                    }">
+            <dxo-label text="Terminal"></dxo-label>
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+    </dxi-item>
+</dx-form>
+<dx-toolbar class="mt-4">
+    <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
+    <dxi-item location="before" widget="dxButton" [options]="btnCancel" [visible]="data.id != null"></dxi-item>
+</dx-toolbar>

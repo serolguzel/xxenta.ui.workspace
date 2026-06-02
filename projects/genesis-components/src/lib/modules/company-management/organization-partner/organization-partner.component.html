@@ -1,0 +1,68 @@
+<dx-data-grid id="gridContainer" 
+    [dataSource]="dataSource" 
+    [remoteOperations]="false" 
+    [showColumnLines]="false"
+    [showBorders]="true" 
+    [showRowLines]="true"
+    [rowAlternationEnabled]="true" 
+    [hoverStateEnabled]="true"
+    [allowColumnResizing]="true" 
+    [columnHidingEnabled]="true"
+    (onInitNewRow)="onInitNewRow($event)"
+    (onRowUpdating)="onRowUpdating($event)">
+
+    <dxo-search-panel [visible]="true"></dxo-search-panel>
+    <dxo-filter-row [visible]="true"></dxo-filter-row>
+    <dxo-group-panel [visible]="false"></dxo-group-panel>
+
+    <dxo-editing mode="popup" 
+        [allowUpdating]="false" 
+        [allowAdding]="true" 
+        [allowDeleting]="true" 
+        [useIcons]="true">
+            <dxo-popup title="Partner" 
+                [showTitle]="true" 
+                [width]="500" 
+                [height]="300" 
+                [resizeEnabled]="true"
+                [position]="{ my: 'center', at: 'center'}">
+            </dxo-popup>
+            
+            <dxo-form [colCount]="1" labelMode="floating">
+                <dxi-item dataField="toOrganizationId" editorType="dxLookup" [editorOptions]="customerLookUpOptions">
+                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                    <dxo-label text="Partner"></dxo-label>
+                  </dxi-item>
+
+                <dxi-item dataField="fromConfirm">
+                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                </dxi-item>
+                <dxi-item dataField="toConfirm">
+                  <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+              </dxi-item>
+            </dxo-form>
+    
+    </dxo-editing>
+
+    <dxi-column dataField="fromOrganization.name" dataType="string" caption="From" cellTemplate="nameTemp"></dxi-column>
+    <dxi-column dataField="toOrganization.name" dataType="string" caption="To"></dxi-column>
+    <dxi-column dataField="fromConfirm" dataType="boolean"></dxi-column>
+    <dxi-column dataField="toConfirm" dataType="boolean"></dxi-column>
+
+    <dxi-column dataField="fromOrganizationId" dataType="string" [visible]="false"></dxi-column>
+    <dxi-column dataField="toOrganizationId" dataType="string" [visible]="false"></dxi-column>
+
+    <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
+            <a [routerLink]="[d.data.toOrganizationId]">
+                <span class="flex font-bold">
+                    {{ d.value }}
+                </span>
+                <span class="flex text-sm">
+                    {{ d.data.fromOrganization.code }}
+                </span>
+            </a>
+        </div>
+
+    <dxo-paging [pageSize]="20"></dxo-paging>
+    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+</dx-data-grid>

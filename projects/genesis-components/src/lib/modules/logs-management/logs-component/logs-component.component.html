@@ -1,0 +1,91 @@
+<div class="p-6 grow">
+  <dx-data-grid id="gridContainer" 
+    #logsGrid 
+    [dataSource]="dataSource"
+    [columnResizingMode]="'nextColumn'"
+    [remoteOperations]="true"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    [allowColumnReordering]="true"
+    [showColumnLines]="false"
+    [showBorders]="true"
+    [showRowLines]="true"
+    [allowColumnResizing]="true"
+    [columnHidingEnabled]="false">
+
+    <dxo-filter-row [visible]="false"></dxo-filter-row>
+    <dxo-search-panel [visible]="false" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
+    <dxo-column-chooser #columnChooser [enabled]="true" mode="dragAndDrop" [title]="'labels.column-chooser' | transloco">
+      <dxo-position my="right top" at="right bottom" of=".dx-datagrid-column-chooser-button"></dxo-position>
+      <dxo-search [enabled]="true" [editorOptions]="{ placeholder: 'labels.column-search' | transloco }"></dxo-search>
+      <dxo-selection [allowSelectAll]="true" [selectByClick]="true" [recursive]="true"></dxo-selection>
+    </dxo-column-chooser>
+    
+    <dxo-toolbar>
+      <dxi-item locateInMenu="auto" location="before" widget="dxDateBox" [options]="createDateOptions"> </dxi-item>
+      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtMessageOptions"></dxi-item>
+      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtSourceOptions"></dxi-item>
+      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtVoucherOptions"></dxi-item>
+      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtHostOptions"></dxi-item>
+      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtCorrelationIdOptions"></dxi-item>
+      <dxi-item location="before" locateInMenu="auto" widget="dxSelectBox" [options]="lookupLoggingTypeOptions"></dxi-item>
+
+      <dxi-item location="after" locateInMenu="never" widget="dxButton" [options]="refreshButtonOptions"> </dxi-item>
+      <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+      <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+      <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
+    </dxo-toolbar>
+
+    <dxi-column dataField="message" dataType="string" cellTemplate="linkTemp" [caption]="'labels.message' | transloco"></dxi-column>
+    <dxi-column dataField="voucher" dataType="string" cellTemplate="linkTemplate" [caption]="'labels.voucher' | transloco"></dxi-column>
+    <dxi-column dataField="source" dataType="string" cellTemplate="linkTemp" [caption]="'labels.source' | transloco"></dxi-column>
+    <dxi-column dataField="loggingType" dataType="string" [caption]="'labels.logging-type' | transloco"></dxi-column>
+    <dxi-column dataField="level" dataType="string" [caption]="'labels.level' | transloco"></dxi-column>
+    <dxi-column dataField="host" dataType="string" [caption]="'labels.host' | transloco"></dxi-column>
+    <dxi-column dataField="path" dataType="string" [caption]="'labels.path' | transloco" [visible]="false"></dxi-column>
+    <dxi-column dataField="method" dataType="string" [caption]="'labels.method' | transloco"></dxi-column>
+    <dxi-column dataField="correlationId" dataType="string" [caption]="'labels.correlation-id' | transloco" cellTemplate="corrIdTemplate"></dxi-column>
+
+    <dxi-column dataField="timestamp" dataType="date" format="dd.MM.yyyy HH:mm" [caption]="'labels.create-date' | transloco"></dxi-column>
+
+    <div class="flex-auto" *dxTemplate="let d of 'linkTemplate'">
+      <div class="flex justify-start items-center">
+        <a [routerLink]="d.data.id" [queryParams]="filter">
+          <span class="flex font-bold">{{ d.value }}</span>
+        </a>
+        @if (d.value) {
+        <button [cdkCopyToClipboard]="d.value" class="ml-2 hover:bg-blue-50 p-[3px] rounded-full" (click)="onCopy(d.value)"
+          #tooltip="matTooltip" [matTooltip]="'labels.copy' | transloco" matTooltipPosition="above">
+          <mat-icon svgIcon="heroicons_outline:clipboard" *ngIf="compyValue !== d.value" class="icon-size-5"></mat-icon>
+          <mat-icon svgIcon="heroicons_outline:clipboard-document-check" *ngIf="compyValue === d.value"
+            class="icon-size-5 text-green-700"></mat-icon>
+        </button>
+        }
+      </div>
+    </div>
+    
+    <div class="flex-auto" *dxTemplate="let d of 'corrIdTemplate'">
+      <div class="flex justify-start items-center">
+        <span class="flex font-bold">{{ d.value }}</span>
+        <button [cdkCopyToClipboard]="d.value" class="ml-2 hover:bg-blue-50 p-[3px] rounded-full" (click)="onCopy(d.value)"
+          #tooltip="matTooltip" [matTooltip]="'labels.copy' | transloco" matTooltipPosition="above">
+          <mat-icon svgIcon="heroicons_outline:clipboard" *ngIf="compyValue !== d.value" class="icon-size-5"></mat-icon>
+          <mat-icon svgIcon="heroicons_outline:clipboard-document-check" *ngIf="compyValue === d.value"
+            class="icon-size-5 text-green-700"></mat-icon>
+        </button>
+      </div>
+    </div>
+    
+    <div class="flex-auto" *dxTemplate="let d of 'linkTemp'">
+      <a [routerLink]="d.data.id">
+        <span class="flex font-bold">
+          {{ d.value }}
+        </span>
+      </a>
+    </div>
+
+    <dxo-paging [pageSize]="20"></dxo-paging>
+    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+    <dxo-export [enabled]="true" [allowExportSelectedData]="true"></dxo-export>
+  </dx-data-grid>
+</div>

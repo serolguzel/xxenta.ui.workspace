@@ -1,0 +1,55 @@
+<dx-data-grid id="gridContainer" 
+    [dataSource]="dataSource" 
+    [remoteOperations]="false" 
+    [showColumnLines]="false"
+    [showBorders]="true" 
+    [showRowLines]="true"
+    [rowAlternationEnabled]="true" 
+    [hoverStateEnabled]="true"
+    [allowColumnResizing]="true" 
+    [columnHidingEnabled]="true" 
+    (onRowUpdated)="onRowUpdated($event)">
+
+    <dxo-search-panel [visible]="true"></dxo-search-panel>
+    <dxo-filter-row [visible]="true"></dxo-filter-row>
+    <dxo-group-panel [visible]="false"></dxo-group-panel>
+
+    <dxo-toolbar>
+        <dxi-item location="before">
+            <div *dxTemplate>
+                <div class="text-2xl tracking-tight">
+                    Customers
+                </div>
+            </div>
+        </dxi-item>
+        <dxi-item locateInMenu="auto" location="after">
+            <div *dxTemplate>
+                <dx-button icon="add" (onClick)="createOrganization($event)"></dx-button>
+            </div>
+        </dxi-item>
+        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+    </dxo-toolbar>
+
+    <dxi-column dataField="name" dataType="string" cellTemplate="nameTemp"></dxi-column>
+    <dxi-column dataField="officialName" dataType="string" cellTemplate="nameTemp"></dxi-column>
+    <dxi-column dataField="code" dataType="string"></dxi-column>
+    <dxi-column dataField="countryId" dataType="string" caption="Country"></dxi-column>
+    <dxi-column dataField="organizationTypes" dataType="array"></dxi-column>
+    <dxi-column dataField="isDeleted" dataType="boolean"></dxi-column>
+    
+    
+    <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
+        <a [routerLink]="options.detailRoute+'/'+ d.data.id">
+            <span class="flex font-bold">
+                {{d.value}}
+            </span>
+            <span class="flex text-sm">
+                {{d.data.oprVoucher}}
+            </span>
+        </a>
+    </div>
+
+    <dxo-paging [pageSize]="20"></dxo-paging>
+    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+</dx-data-grid>

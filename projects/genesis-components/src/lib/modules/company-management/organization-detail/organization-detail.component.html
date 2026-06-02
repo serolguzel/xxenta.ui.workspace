@@ -1,0 +1,15 @@
+<div class="w-full max-w-3xl">
+  <organization-form 
+  [data]="data" 
+  [options]="{
+          hideIsTenant: options.hideIsTenant,
+          hideOptions: options.hideOptions
+        }"
+  [hasSaveButton]="hasUpdate"
+  (onSaveClick)="save($event)"
+  (onCancelClick)="cancel($event)"
+  (onDeleteClick)="onDeleteClick($event)"
+  (onPassiveClick)="onPassiveClick($event)"
+  (onReActiveClick)="onReActiveClick($event)">
+</organization-form>
+</div>

@@ -1,0 +1,26 @@
+<div class="w-full flex flex-col">
+  @if (!options.hideCreadCrumb) {
+  <div
+    class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-4 sm:px-10 border-b bg-card dark:bg-transparent">
+    <!-- Actions -->
+    <div class="flex shrink-0 items-center">
+      <genesis-breadcrumbs [Breadcrumbs]="breadcrumbs" class="flex"></genesis-breadcrumbs>
+    </div>
+  </div>
+  }
+
+  <div [ngClass]="{'p-6 sm:p-10': !options.hideCreadCrumb}" class="flex-auto bg-white">
+    <div class="w-full max-w-3xl">
+      <organization-form 
+        [data]="data" 
+        [options]="{
+          hideIsTenant: options.hideIsTenant,
+          hideOptions: false
+        }"
+        [disabledoprVoucher]="false"
+        [hasSaveButton]="hasCreate"
+        (onSaveClick)="save($event)">
+      </organization-form>
+    </div>
+  </div>
+</div>

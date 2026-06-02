@@ -1,0 +1,190 @@
+<dx-data-grid id="gridContainer" 
+  [dataSource]="dataSource" 
+  [remoteOperations]="false"
+  columnResizingMode="nextColumn"
+  [columnAutoWidth]="true"
+  [rowAlternationEnabled]="true"
+  [allowColumnReordering]="true"
+  [showColumnLines]="false"
+  [showBorders]="true"
+  [showRowLines]="true"
+  [allowColumnResizing]="true"
+  [columnHidingEnabled]="false"
+  (onEditingStart)="onEditingStart($event)"
+  (onRowUpdating)="onRowUpdating($event)">
+
+  <dxo-toolbar>
+    <dxi-item location="before" locateInMenu="auto" widget="dxDateBox" [options]="{
+                    width: 180,
+                    value: filter.transferDate,
+                    format: 'yyyy-MM-dd',
+                    displayFormat: 'dd.MM.yyyy',
+                    placeholder: 'Tarnsfer Tarihi:',
+                    onValueChanged: onDateValueChanged
+                  }"></dxi-item>
+    <!-- <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [options]="companyOptions"></dxi-item> -->
+    <dxi-item locateInMenu="auto" location="before" widget="dxButton" [options]="{
+                icon: 'search',
+                text: 'Ara',
+                type: 'default',
+                onClick: search
+              }">
+    </dxi-item>
+    <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+    <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+  </dxo-toolbar>
+
+  <dxo-filter-row [visible]="true"></dxo-filter-row>
+  <dxo-search-panel [visible]="true" placeholder="Search..."></dxo-search-panel>
+
+  <dxo-column-chooser #columnChooser [enabled]="true" mode="dragAndDrop" title="Kolan Seç">
+    <dxo-position my="right top" at="right bottom" of=".dx-datagrid-column-chooser-button"></dxo-position>
+    <dxo-search [enabled]="true" [editorOptions]="{ placeholder: 'labels.column-search' | transloco }"></dxo-search>
+    <dxo-selection [allowSelectAll]="true" [selectByClick]="true" [recursive]="true"></dxo-selection>
+  </dxo-column-chooser>
+  <dxo-master-detail [enabled]="true" template="masterDetail"></dxo-master-detail>
+
+  <dxo-editing
+            mode="popup"
+            [allowUpdating]="true"
+            [useIcons]="true">
+            <dxo-popup
+                title="Info Cocktail"
+                [showTitle]="true"
+                [maxWidth]="500"
+                height="auto"
+                [resizeEnabled]="true"
+                [position]="{ my: 'center', at: 'center'}">
+            </dxo-popup>
+            <dxo-form [colCount]="1" labelMode="floating">
+              <dxi-item dataField="guideId" editorType="dxLookup" [editorOptions]="guideOptions" [disabled]="!isAdmin">
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
+                </dxi-validation-rule>
+            </dxi-item>
+
+              <dxi-item itemType="group" [colCount]="2">
+                <dxi-item dataField="date" editorType="dxDateBox" [editorOptions]="{
+                  displayFormat: 'dd.MM.yyyy',
+                  type:'date',
+                  useMaskBehavior: true
+              }">
+                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                </dxi-item>
+
+                  <dxi-item dataField="beginTime" editorType="dxDateBox" [editorOptions]="{
+                    displayFormat: 'HH:mm',
+                    type:'time',
+                    useMaskBehavior: true
+                }">
+                      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                  </dxi-item>
+                </dxi-item>
+            </dxo-form>
+  </dxo-editing>
+
+  <dxi-column dataField="hotel.name" dataType="string" caption="Hotel" cellTemplate="hotelTemp"></dxi-column>
+
+  <dxi-column dataField="guide.displayName" dataType="string" caption="Guide" cellTemplate="userTemp"></dxi-column>
+  <dxi-column dataField="transferDate" dataType="date" format="dd.MM.yyyy" caption="Transfer Date"></dxi-column>
+
+  <dxi-column dataField="flightDate" dataType="date" format="dd.MM.yyyy" caption="Flight Date"></dxi-column>
+  <dxi-column dataField="flightTime" dataType="date" format="HH:mm" caption="Flight Time"></dxi-column>
+  <dxi-column dataField="paxCount" dataType="string" caption="Pax"></dxi-column>
+
+  <dxi-column dataField="date" dataType="date" format="dd.MM.yyyy" caption="Info Cocktail Date" cellTemplate="dateTemp"></dxi-column>
+  <dxi-column dataField="beginTime" dataType="date" format="HH:mm" caption="Info Cocktail Time" cellTemplate="timeTemp"></dxi-column>
+  <dxi-column dataField="guideId" dataType="string" caption="Guide" [visible]="false"></dxi-column>
+
+  <div class="flex-auto" *dxTemplate="let d of 'hotelTemp'">
+    <span class="flex font-bold">{{ d.value }}</span>
+    <span class="flex text-sm">{{ d.data.hotel?.code }}</span>
+</div>
+
+<div class="flex-auto" *dxTemplate="let d of 'dateTemp'">
+  <span class="flex font-bold" *ngIf="d.data.dates.length == 1">
+    <badge-taskstatus textSizeClass="text-orange-700 bg-orange-50 ring-orange-700/10"
+      [text]="d.value?.toString() | date: 'dd.MM.yyyy'"></badge-taskstatus>
+  </span>
+  <span class="flex gap-2" *ngIf="d.data.dates.length > 1">
+    <badge-taskstatus *ngFor="let dt of d.data.dates"
+      textSizeClass="text-xs text-orange-700 bg-orange-50 ring-orange-700/10" [text]="dt"></badge-taskstatus>
+  </span>
+  <span class="flex text-sm" *ngIf="d.data.dates.length == 0">-Tarih atanmamış-</span>
+</div>
+
+<div class="flex-auto" *dxTemplate="let d of 'timeTemp'">
+  <span class="flex font-bold" *ngIf="d.data.beginTimes.length == 1">
+    <badge-taskstatus textSizeClass="text-red-700 bg-red-50 ring-red-700/10" [text]="d.value | date: 'HH:mm'"></badge-taskstatus>
+  </span>
+  <span class="flex gap-2" *ngIf="d.data.beginTimes.length > 1">
+    <badge-taskstatus *ngFor="let time of d.data.beginTimes"
+      textSizeClass="text-xs text-red-700 bg-red-50 ring-red-700/10" [text]="time"></badge-taskstatus>
+  </span>
+  <span class="flex text-sm" *ngIf="d.data.beginTimes.length == 0">-Saat atanmamış-</span>
+</div>
+
+<div class="flex-auto" *dxTemplate="let d of 'userTemp'">
+  <span class="flex font-sm" *ngIf="!d.data.guidId && d.data.guides.length <= 0">
+    --Rehber Atanmamış--
+  </span>
+  <!-- ADMIN DEGILSE -->
+  <div class="flex items-center" *ngIf="d.data.guides.length > 0 && !isAdmin">
+    <div class="flex items-center">
+      <ng-container *ngIf="d.data.guide?.picture">
+        <img class="h-8 w-8 rounded-full" [src]="d.data.guide?.picture" alt="">
+      </ng-container>
+      <ng-container *ngIf="!d.data.guide?.picture">
+        <img class="h-8 w-8 rounded-full" src="assets/avatars/profile.jpg" alt="">
+      </ng-container>
+
+      <div class="ml-3">
+        <h3 class="text-base font-semibold tracking-tight text-gray-900">
+          {{ d.data.guide?.displayName }}
+        </h3>
+        <p class="text-sm font-semibold text-indigo-600">
+          {{ d.data.guide?.email }}
+        </p>
+      </div>
+    </div>
+  </div>
+<!-- ADMIN DEGILSE -->
+
+  <div class="flex items-center" *ngIf="d.data.guides.length == 1 && isAdmin">
+    <div class="flex items-center">
+      <ng-container *ngIf="d.data.guides[0]?.picture">
+        <img class="h-8 w-8 rounded-full" [src]="d.data.guides[0]?.picture" alt="">
+      </ng-container>
+      <ng-container *ngIf="!d.data.guides[0]?.picture">
+        <img class="h-8 w-8 rounded-full" src="assets/avatars/profile.jpg" alt="">
+      </ng-container>
+
+      <div class="ml-3">
+        <h3 class="text-base font-semibold tracking-tight text-gray-900">
+          {{ d.data.guides[0]?.displayName }}
+        </h3>
+        <p class="text-sm font-semibold text-indigo-600">
+          {{ d.data.guides[0]?.email }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center" *ngIf="d.data.guides.length > 1 && isAdmin">
+    <ng-container *ngFor="let item of d.data.guides; let i = index;">
+      <img class="w-6 h-6 m-0.5 rounded-full text-card ring-2 ring-white" *ngIf="i == 0"
+        [src]="item.picture ? item.picture : 'assets/avatars/profile.jpg'">
+      <img class="w-6 h-6 m-0.5 rounded-full -ml-3 text-card ring-2 ring-white" *ngIf="i > 0"
+        [src]="item.picture ? item.picture : 'assets/avatars/profile.jpg'">
+    </ng-container>
+    <div class="text-md tracking-tight ml-3">
+      {{d.data.guides.length}} rehber atanmış.
+    </div>
+  </div>
+</div>
+
+<div *dxTemplate="let masterDetailItem of 'masterDetail'">
+  <guest-items [data]="masterDetailItem.data.items"></guest-items>
+</div>
+  <dxo-paging [pageSize]="20"></dxo-paging>
+  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+</dx-data-grid>

@@ -1,0 +1,116 @@
+<div class="md:flex w-full p-6">
+    <div class="md:w-2/3 sm:w-full">
+        <transfer-reservation-form
+            [data]="formData" 
+            [formDisabled]="formDisabled"
+            [hasTotalAmountInput]="hasTotalAmountInput" 
+            [hasCancelButton]="hasCancelButton"
+            [hasDeleteButton]="hasDeleteButton" 
+            [disabledNote]="true" 
+            [extrasDataSource]="extrasDataSource"
+            (onSaveClick)="onSaveClick($event)"
+            (onDeleteClick)="onDeleteClick($event)" 
+            (onCancelClick)="onCancelClick()">
+        </transfer-reservation-form>
+        <mat-tab-group class="mt-6" mat-stretch-tabs="false" mat-align-tabs="start">
+            <mat-tab label="{{ 'labels.notes' | transloco }}">
+                <app-reservation-notes [bookingId]="item.id" [userId]="user.userId" *ngIf="item.id" />
+            </mat-tab>
+            <mat-tab label="{{ 'labels.activity-log' | transloco }}">
+                <activity-timeline [data]="auditTrails" [showTitle]="false" />
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+    <div class="md:w-1/3 md:pl-8">
+        <transfer-res-audit-trail [link]="reservationDetailLink"
+            [data]="item" 
+            [createdUser]="createdUser"></transfer-res-audit-trail>
+            <mat-divider></mat-divider>
+            <div class="p-2 bg-gray-100">{{'labels.transfer-info' | transloco }}</div>
+            <div *ngIf="transferPlan.id">
+                <!-- Transfer Order -->
+                <div class="pb-4">
+                    <label for="transfer-order" class="block text-base leading-6 text-gray-900">
+                    {{ 'labels.internal-job-no' | transloco }}:
+                    </label>
+                    <div id="transfer-order" class="flex items-center font-bold">
+                        <a [routerLink]="'/transfer-tracking/detail/'+transferPlan.id">{{ transferPlan.taskCode }}</a>
+                    </div>
+                </div>
+                <!-- External Job No -->
+                <div class="pb-4" *ngIf="transferPlan.tag">
+                    <label for="transfer-order" class="block text-base leading-6 text-gray-900">
+                    {{ 'labels.sejour-job-no' | transloco }}:
+                    </label>
+                    <div id="transfer-order" class="flex items-center font-bold">
+                    {{ transferPlan.tag }}
+                    </div>
+                </div>
+                <!-- BeginTime -->
+                <div class="pb-4" *ngIf="transferPlan.beginTime">
+                    <label for="transfer-order" class="block text-base leading-6 text-gray-900">
+                    {{ 'labels.begin-time' | transloco }}:
+                    </label>
+                    <div id="transfer-order" class="flex items-center font-bold">
+                    {{ transferPlan.beginTime }}
+                    </div>
+                </div>
+
+                <!-- BeginTime -->
+                <div class="pb-4" *ngIf="transferPlan.vehicle">
+                    <label for="transfer-order" class="block text-base leading-6 text-gray-900">
+                    {{ 'labels.begin-time' | transloco }}:
+                    </label>
+                    <div id="transfer-order" class="flex items-center font-bold">
+                    {{ transferPlan.vehicle?.plateCode }} - {{transferPlan.vehicle?.windowNumber}}
+                    </div>
+                </div>
+
+                <div class="pb-4 mt-4" *ngIf="transferPlan.driver">
+                    <label for="driver" class="mb-2 block text-base font-medium leading-6 text-gray-900">
+                        {{'labels.driver' | transloco }}:
+                    </label>
+                    <div id="driver" class="flex items-center">
+                        <div class="flex items-center">
+                            <img class="h-10 w-10 rounded-full" [src]="transferPlan.driver?.picture" alt="User"/>
+                            <div class="ml-3">
+                                <h3 class="text-base font-semibold tracking-tight text-gray-900">
+                                    {{ transferPlan.driver?.displayName }}
+                                </h3>
+                                <p class="text-sm font-semibold text-indigo-600">
+                                    {{ transferPlan.driver?.email }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+<dx-load-panel #loadPanel 
+    shadingColor="rgba(0,0,0,0.4)" 
+    [position]="{ of: '#transfer_reservation' }"
+    [(visible)]="loadingVisible" 
+    [showIndicator]="true" 
+    [showPane]="true" 
+    [shading]="true" 
+    [hideOnOutsideClick]="false">
+</dx-load-panel>
+<dx-popup 
+    [width]="600" 
+    [height]="240" 
+    [(visible)]="isPopupVisible" 
+    [position]="{ my: 'center', at: 'center' }"
+    [showCloseButton]="true" 
+    [resizeEnabled]="true" 
+    (onHidden)="onHidden($event)">
+    <dxi-toolbar-item text="{{ 'labels.cancel-reservation' | transloco }}" location="before"></dxi-toolbar-item>
+    <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="after" [options]="btnTransferCancelOption"></dxi-toolbar-item>
+
+    <dx-form #cancelReservationForm labelMode="floating" [colCount]="1" [formData]="transferCancelModel">
+        <dxi-item dataField="cancelNote" editorType="dxTextArea" [editorOptions]="{ height: 60 }">
+            <dxo-label text="{{ 'labels.cancellation-note' | transloco }}"></dxo-label>
+            <dxi-validation-rule type="required" message="{{ 'generic.message.required' | transloco }}"></dxi-validation-rule>
+        </dxi-item>
+    </dx-form>
+</dx-popup>

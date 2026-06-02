@@ -1,0 +1,120 @@
+<dx-data-grid id="guestGrid"
+              [dataSource]="guests"
+              keyExpr="id"
+              [remoteOperations]="false"
+              [showColumnLines]="false"
+              [showBorders]="true"
+              [allowColumnResizing]="true"
+              [columnHidingEnabled]="true"
+              [class]="{
+                'redOutline': hasError
+              }">
+    <dxo-editing mode="popup"
+                 [allowUpdating]="true"
+                 [allowAdding]="true"
+                 [allowDeleting]="true"
+                 [useIcons]="true">
+        <dxo-popup title="Yolcu Ekle"
+                   [showTitle]="true"
+                   [width]="600"
+                   [height]="440"
+                   [resizeEnabled]="true"
+                   [position]="{ my: 'center', at: 'center'}">
+        </dxo-popup>
+
+        <dxo-form [colCount]="1" labelMode="floating" >
+            <dxi-item itemType="group" [colCount]="3">
+                <dxi-item itemType="group" [colCount]="1">
+                    <dxi-item dataField="title" editorType="dxSelectBox" [editorOptions]="{
+                                                    dataSource: guestTitles,
+                                                    displayExpr: getDisplayExprCode,
+                                                    valueExpr: 'code'
+                                                    }">
+                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                        <dxo-label [text]="'labels.title' | transloco"></dxo-label>
+                    </dxi-item>
+                    <dxi-item dataField="guestType" editorType="dxSelectBox" [editorOptions]="{
+                                                dataSource: guestTypes,
+                                                displayExpr: getDisplayExprCode,
+                                                valueExpr: 'code'
+                                            }">
+                    </dxi-item>
+                </dxi-item>
+
+                <dxi-item itemType="group" [colCount]="1" [colSpan]="2">
+
+                    <dxi-item dataField="firstName">
+                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                        <dxo-label text="Adı"></dxo-label>
+                    </dxi-item>
+
+                    <dxi-item dataField="lastName">
+                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                        <dxo-label [text]="'labels.last-name' | transloco"></dxo-label>
+                    </dxi-item>
+                </dxi-item>
+            </dxi-item>
+
+            <dxi-item itemType="group" [colCount]="3">
+                <dxi-item itemType="group" [colCount]="1">
+                    <dxi-item dataField="nationality" editorType="dxLookup" [editorOptions]="lookupService.countryLookUpOptions">
+                        <dxo-label [text]="'labels.nationality' | transloco"></dxo-label>
+                    </dxi-item>
+
+                    <dxi-item dataField="age" editorType="dxNumberBox" [editorOptions]="{ showSpinButtons: true}">
+                    </dxi-item>
+                    <dxi-item dataField="phoneAreaCode" editorType="dxLookup" [editorOptions]="lookupService.countryPhoneCodesLookUpOptions">
+                        <dxo-label [text]="'labels.phone-country-code' | transloco"></dxo-label>
+                    </dxi-item>
+                </dxi-item>
+
+                <dxi-item itemType="group" [colCount]="1" [colSpan]="2">
+                    <dxi-item dataField="idOrPassportNo">
+                        <dxo-label [text]="'labels.id-passport-no' | transloco"></dxo-label>
+                    </dxi-item>
+
+                    <dxi-item dataField="email">
+                        <dxo-label text="Eposta"></dxo-label>
+                    </dxi-item>
+                    <dxi-item dataField="phoneNumber" editorType="dxNumberBox">
+                        <dxo-label text="Tel No"></dxo-label>
+                    </dxi-item>
+                </dxi-item>
+            </dxi-item>
+        </dxo-form>
+    </dxo-editing>
+    <dxo-toolbar>
+        <dxi-item location="before">
+            <div *dxTemplate>
+                <div class="text-2xl tracking-tight">
+                    Yolcu Bilgileri
+                </div>
+            </div>
+        </dxi-item>
+        <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
+        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+    </dxo-toolbar>
+    <dxi-column dataField="title" dataType="string" caption="Ünvan" [visible]="false"></dxi-column>
+    <dxi-column dataField="firstName" dataType="string" caption="Adı Soyadı" cellTemplate="guestName"></dxi-column>
+    <dxi-column dataField="lastName" dataType="string" caption="Soyadı" [visible]="false"></dxi-column>
+    <dxi-column dataField="age" dataType="number" [width]="80" caption="Yaşı"></dxi-column>
+    <dxi-column dataField="idOrPassportNo" dataType="string" caption="ID/Passport No"></dxi-column>
+    <dxi-column dataField="phoneAreaCode" dataType="string" caption="Ülke Kodu" [visible]="false"></dxi-column>
+    <dxi-column dataField="phoneNumber" dataType="string" caption="Tel No" cellTemplate="phoneTemp"></dxi-column>
+    <dxi-column dataField="email" dataType="string" caption="Eposta"></dxi-column>
+    <dxi-column dataField="nationality" dataType="string" [width]="80" caption="Milliyet"></dxi-column>
+    <dxi-column dataField="guestType" dataType="string" [width]="80" caption="Tipi"></dxi-column>
+    <div class="flex-auto" *dxTemplate="let d of 'guestName'">
+        <span class="flex font-bold">
+            {{d.data.title}}. {{d.value}} {{d.data.lastName}}
+        </span>
+    </div>
+
+    <div class="flex-auto" *dxTemplate="let d of 'phoneTemp'">
+        {{d.data.phoneAreaCode}}{{d.value}}
+    </div>
+
+    <dxo-paging [pageSize]="5"></dxo-paging>
+    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[5, 10, 15]"></dxo-pager>
+</dx-data-grid>

@@ -1,0 +1,33 @@
+<div class="guest-count">
+    {{ 'labels.number-of-guests' | transloco }}: {{ data?.length ?? 0 }}
+  </div>
+<dx-data-grid id="guestGrid" 
+    [dataSource]="data" 
+    keyExpr="id" 
+    [remoteOperations]="false" 
+    [showColumnLines]="false"
+    [showBorders]="true">
+    
+    <dxi-column dataField="firstName" dataType="string" caption="{{ 'labels.first-name' | transloco }}" cellTemplate="nameTemplate"></dxi-column>
+    <dxi-column dataField="age" dataType="number" caption="{{ 'labels.age' | transloco }}"></dxi-column>
+    <dxi-column dataField="guestType" dataType="string" caption="{{ 'labels.type' | transloco }}"></dxi-column>
+    <dxi-column dataField="isGetOn" dataType="boolean" caption="{{ 'labels.boarded' | transloco }}"></dxi-column>
+    <dxi-column dataField="getOnTime" dataType="date" caption="{{ 'labels.boarding-time' | transloco }}" cellTemplate="getOnTimeTemplate"></dxi-column>
+    <dxi-column dataField="noShow" dataType="boolean" caption="{{ 'labels.no-show' | transloco }}"></dxi-column>
+    <dxi-column dataField="selfTransfer" dataType="boolean" caption="{{ 'labels.self-transfer' | transloco }}"></dxi-column>
+    
+    <div class="flex-auto" *dxTemplate="let d of 'nameTemplate'">
+        <span class="flex font-bold">
+            {{ d.data.title }}. {{ d.value }} {{ d.data.lastName }}
+        </span>
+    </div>
+    
+    <div class="flex-auto" *dxTemplate="let d of 'getOnTimeTemplate'">
+        <span class="flex font-bold">
+            {{ d.value | date: 'HH:mm' }}
+        </span>
+    </div>
+    
+    <dxo-paging [pageSize]="5"></dxo-paging>
+    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[5, 10, 15]"></dxo-pager>
+</dx-data-grid>

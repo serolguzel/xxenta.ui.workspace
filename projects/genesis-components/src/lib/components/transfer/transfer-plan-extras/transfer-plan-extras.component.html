@@ -1,0 +1,59 @@
+<dx-data-grid
+    id="extrasGrid"
+    [dataSource]="extras"
+    keyExpr="extraId"
+    [remoteOperations]="false"
+    [showColumnLines]="false"
+    [showBorders]="true"
+    [showRowLines]="true"
+    [rowAlternationEnabled]="true"
+    [columnAutoWidth]="true"
+    [hoverStateEnabled]="true"
+    [allowColumnResizing]="true"
+    [allowColumnReordering]="true"
+    [columnHidingEnabled]="false"
+    [noDataText]="'labels.no-extras' | transloco"
+>
+    <dxo-scrolling mode="virtual"></dxo-scrolling>
+    <dxo-group-panel [visible]="true"></dxo-group-panel>
+    <dxo-grouping [autoExpandAll]="true"></dxo-grouping>
+
+    <dxi-column
+        dataField="voucher"
+        dataType="string"
+        [caption]="'labels.voucher' | transloco"
+        [groupIndex]="0"
+    ></dxi-column>
+    <dxi-column
+        dataField="operatorVoucher"
+        dataType="string"
+        [caption]="'labels.operator-voucher' | transloco"
+    ></dxi-column>
+    <dxi-column
+        dataField="name"
+        dataType="string"
+        [caption]="'labels.name' | transloco"
+    ></dxi-column>
+    <dxi-column
+        dataField="description"
+        dataType="string"
+        [caption]="'labels.description' | transloco"
+    ></dxi-column>
+    <dxi-column
+        dataField="saleAmount"
+        dataType="number"
+        [caption]="'labels.sale' | transloco"
+    ></dxi-column>
+    <dxi-column
+        dataField="currency"
+        dataType="string"
+        [caption]="'labels.currency' | transloco"
+    ></dxi-column>
+
+    <dxo-paging [pageSize]="20"></dxo-paging>
+    <dxo-pager
+        [showPageSizeSelector]="true"
+        [showInfo]="true"
+        [allowedPageSizes]="[10, 20, 30]"
+    ></dxo-pager>
+</dx-data-grid>

@@ -1,0 +1,66 @@
+<div class="relative flex flex-col flex-auto items-center px-6 sm:px-12">
+    <div class="w-full max-w-3xl">
+      <div id="dropzone-external" class="mt-3 mb-3 dropzone-external" [ngClass]="isUploaded ? 'uploaded-file' : ''">
+        <div id="dropzone-text" class="flex-box" *ngIf="textVisible">
+          <span>{{ 'descriptions.drop-here' | transloco }}</span>
+          <span>{{ 'descriptions.click-to-upload' | transloco }}</span>
+        </div>
+        <dx-progress-bar #uploadProgress [min]="0" [max]="100" [showStatus]="false" [visible]="progressVisible"
+          [value]="progressValue"></dx-progress-bar>
+      </div>
+      <div class="full mb-3">
+        <dx-file-uploader #fileUploader 
+          dialogTrigger="#dropzone-external" 
+          dropZone="#dropzone-external"
+          [multiple]="false" 
+          [allowedFileExtensions]="['.jpg', '.jpeg', '.png', '.svg']" 
+          uploadMode="instantly" 
+          [visible]="false"
+          [uploadUrl]="uploadUrl"
+          [uploadHeaders]="uploadHeaders" 
+          (onUploaded)="onUploaded($event)"
+          (onProgress)="onProgress($event)" 
+          (onUploadStarted)="onUploadStarted($event)">
+        </dx-file-uploader>
+      </div>
+      <div class="full">
+<dx-data-grid id="gridContainer" 
+      [dataSource]="dataSource"
+      [remoteOperations]="false"
+      [showColumnLines]="false"
+      [showBorders]="true"
+      [showRowLines]="true"
+      [rowAlternationEnabled]="true"
+      [hoverStateEnabled]="true"
+      [allowColumnResizing]="true"
+      [columnHidingEnabled]="true">
+  
+      <dxo-toolbar>
+        <dxi-item location="before">
+          <div *dxTemplate>
+            <div class="text-2xl tracking-tight">
+              Logos
+            </div>
+          </div>
+        </dxi-item>
+        <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
+        <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
+        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+      </dxo-toolbar>
+  
+  
+      <dxi-column dataField="path" dataType="string" cellTemplate="pathTemp"></dxi-column>
+      <dxi-column dataField="name" dataType="string"></dxi-column>
+      <dxi-column dataField="logo" dataType="string"></dxi-column>
+
+      <div class="flex-auto" *dxTemplate="let d of 'pathTemp'">
+            <img [src]="d.data.path" class="border" height="50" />
+        </div>
+
+      <dxo-paging [pageSize]="20"></dxo-paging>
+      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+    </dx-data-grid>
+      </div>
+    </div>
+  </div>

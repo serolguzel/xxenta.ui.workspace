@@ -1,0 +1,91 @@
+<div class="text-2xl tracking-tight mt-4 mb-2">
+  {{ 'labels.transfer-info' | transloco }} -
+  {{ data.transferRouteType == TransferRouteType.Arrival
+  ? ('labels.arrival' | transloco)
+  : data.transferRouteType == TransferRouteType.Departure
+  ? ('labels.departure' | transloco)
+  : ('labels.intermediate' | transloco) }}
+</div>
+
+<dx-form [formData]="data" labelMode="static">
+  <dxi-item itemType="group" [colSpan]="3">
+    <dxi-item itemType="group" [colCount]="6">
+      <dxi-item [colSpan]="2" dataField="fromLocation" editorType="dxLookup"
+        [editorOptions]="fromLocationLookupOptions">
+        <dxo-label text="{{ 'labels.from' | transloco }}"></dxo-label>
+        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
+      </dxi-item>
+      <dxi-item [colSpan]="2" dataField="toLocation" editorType="dxLookup" [editorOptions]="toLocationLookupOptions">
+        <dxo-label text="{{ 'labels.to' | transloco }}"></dxo-label>
+        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
+      </dxi-item>
+      <dxi-item [colSpan]="2" dataField="transferTypeId" editorType="dxLookup"
+        [editorOptions]="lookupService.transferTypesLookUpOptions">
+        <dxo-label text="{{ 'labels.transfer-type' | transloco }}"></dxo-label>
+        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
+      </dxi-item>
+      <dxi-item dataField="transferDate" editorType="dxDateBox"
+        [editorOptions]="{ 
+          displayFormat: 'dd.MM.yyyy', 
+          type: 'date',
+          useMaskBehavior: true,
+          onValueChanged: onTransferDateValueChanged
+          }">
+        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
+        <dxo-label text="{{ 'labels.transfer-date' | transloco }}"></dxo-label>
+      </dxi-item>
+      <dxi-item dataField="pickupTime" editorType="dxDateBox"
+        [editorOptions]="{ showClearButton: false, type: 'time', displayFormat: 'HH:mm', useMaskBehavior: true }">
+        <dxo-label text="{{ 'labels.pickup-time' | transloco }}"></dxo-label>
+      </dxi-item>
+      <dxi-item [colSpan]="2" dataField="operatorId" editorType="dxLookup" [editorOptions]="organizationLookUpOptions">
+        <dxo-label [text]="'labels.operator' | transloco"></dxo-label>
+        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
+      </dxi-item>
+      <dxi-item [colSpan]="2" dataField="oprVoucher" editorType="dxTextBox"
+        [editorOptions]="oprVoucherLookUpOptions">
+        <dxo-label text="{{ 'labels.operator-voucher' | transloco }}"></dxo-label>
+        <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
+      </dxi-item>
+      <dxi-item [colSpan]="2" dataField="subVoucher">
+        <dxo-label text="{{ 'labels.sub-voucher' | transloco }}"></dxo-label>
+      </dxi-item>
+    </dxi-item>
+    <dxi-item dataField="reservationExtras" editorType="dxTagBox"
+      [editorOptions]="{ dataSource: extrasDataSource, displayExpr: 'name', valueExpr: 'extraId', itemTemplate: extraTemplate }">
+      <dxo-label text="{{ 'labels.extras' | transloco }}"></dxo-label>
+    </dxi-item>
+    <dxi-item dataField="note" editorType="dxTextBox" *ngIf="!disabledNote">
+      <dxo-label text="{{ 'labels.note' | transloco }}"></dxo-label>
+    </dxi-item>
+  </dxi-item>
+  <dxi-item itemType="group" 
+    [colCount]="3" 
+    caption="{{ 'labels.flight-info' | transloco }}"
+    [visible]="data.transferRouteType !== TransferRouteType.Intermediate">
+    <dxi-item [colSpan]="1" dataField="flightCode" editorType="dxLookup" [editorOptions]="flightLookUpOptions">
+      <dxo-label text="{{ 'labels.flight' | transloco }}"></dxo-label>
+      <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
+    </dxi-item>
+
+    <dxi-item dataField="terminalCode" editorType="dxSelectBox"
+      [editorOptions]="{ dataSource: terminalDataSource, displayExpr: 'name', valueExpr: 'code', itemTemplate: codeNameTemplate }">
+      <dxo-label text="{{ 'labels.terminal' | transloco }}"></dxo-label>
+    </dxi-item>
+    <dxi-item dataField="flightDate" editorType="dxDateBox"
+      [editorOptions]="{ displayFormat: 'dd.MM.yyyy', type: 'date', useMaskBehavior: true, onValueChanged: onDepartureDateValueChanged}">
+      <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
+      <dxo-label text="{{ 'labels.flight-date' | transloco }}"></dxo-label>
+    </dxi-item>
+    <dxi-item dataField="departureTime" editorType="dxDateBox"
+      [editorOptions]="{ type: 'time', displayFormat: 'HH:mm', useMaskBehavior: true }">
+      <dxo-label text="{{ 'labels.departure-time' | transloco }}"></dxo-label>
+      <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
+    </dxi-item>
+    <dxi-item dataField="arrivalTime" editorType="dxDateBox"
+      [editorOptions]="{ type: 'time', displayFormat: 'HH:mm', useMaskBehavior: true }">
+      <dxo-label text="{{ 'labels.arrival-time' | transloco }}"></dxo-label>
+      <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
+    </dxi-item>
+  </dxi-item>
+</dx-form>

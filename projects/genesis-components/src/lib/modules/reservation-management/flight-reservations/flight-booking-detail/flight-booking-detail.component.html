@@ -1,0 +1,18 @@
+<div class="md:flex w-full">
+    <!-- TRANSFER -->
+    <div class="md:w-2/3 sm:w-full">
+        <flight-reservation-form
+            [data]="data"
+            [hasTotalAmountInput]="hasTotalAmountInput"
+            [loadingVisible]="loadingVisible"
+            (onDepartureDateValueChanged)="onDepartureDateValueChanged($event)"
+            (onSaveClick)="onSaveClick($event)"
+        />
+    </div>
+    <div class="md:w-1/3 md:pl-8">
+        <div class="w-full">
+            <activity-timeline [data]="auditTrails"/>
+        </div>
+
+    </div>
+</div>

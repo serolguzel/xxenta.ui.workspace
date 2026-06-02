@@ -1,0 +1,93 @@
+<dx-form #flightForm [formData]="flight" labelMode="floating" class="mb-6">
+    <dxi-item>
+        <div class="flex justify-between items-end">
+            <div class="text-2xl tracking-tight">
+                {{title}}
+            </div>
+            <button mat-icon-button *ngIf="!!onClickRemoveButton" (click)="onClickRemoveButton()">
+                <mat-icon [svgIcon]="'heroicons_solid:x-mark'" color="warn"></mat-icon>
+            </button>
+        </div>
+        <mat-divider class="mt-2 mb-4"></mat-divider>
+    </dxi-item>
+    <dxi-item itemType="group" [colCount]="3">
+
+        <dxi-item itemType="group" [colCount]="2">
+            <dxi-item [dataField]="'pnrNumber'"  editorType="dxTextBox">
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                <dxo-label text="PNR No"></dxo-label>
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            </dxi-item>
+            <dxi-item [dataField]="'flightCode'"  editorType="dxLookup" [editorOptions]="flightLookUpOptions">
+                <dxo-label text="Uçak"></dxo-label>
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            </dxi-item>
+        </dxi-item>
+
+        <dxi-item itemType="group" [colCount]="2">
+            <dxi-item [dataField]="'departureDate'" editorType="dxDateBox" [editorOptions]="{
+                                displayFormat: 'dd.MM.yyyy',
+                                type:'date',
+                                useMaskBehavior: true,
+                                onValueChanged: departureDateValueChanged
+                            }">
+                <dxo-label [text]="'labels.flight-date' | transloco"></dxo-label>
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            </dxi-item>
+            <dxi-item [dataField]="'departureTime'" editorType="dxDateBox" [editorOptions]="{
+                    displayFormat: 'HH:mm',
+                    type:'time',
+                    useMaskBehavior: true,
+                }">
+                <dxo-label [text]="'labels.departure-time' | transloco"></dxo-label>
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            </dxi-item>
+        </dxi-item>
+
+        <dxi-item itemType="group" [colCount]="2">
+            <dxi-item [dataField]="'arrivalTime'" editorType="dxDateBox" [editorOptions]="{
+                        displayFormat: 'HH:mm',
+                        type:'time',
+                        useMaskBehavior: true,
+                    }">
+                <dxo-label [text]="'labels.arrival-time' | transloco"></dxo-label>
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            </dxi-item>
+            <dxi-item [dataField]="'oprVoucher'" editorType="dxTextBox">
+                <dxo-label [text]="'labels.operator-voucher' | transloco"></dxo-label>
+            </dxi-item>
+        </dxi-item>
+        <dxi-item [dataField]="'fromAirport'"  editorType="dxLookup" [editorOptions]="lookupService.airportLookUpOptions">
+            <dxo-label text="Nereden"></dxo-label>
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+
+        <dxi-item [dataField]="'toAirport'"  editorType="dxLookup" [editorOptions]="lookupService.airportLookUpOptions">
+            <dxo-label text="Nereye"></dxo-label>
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+
+
+
+
+        <dxi-item [dataField]="'operatorId'" editorType="dxLookup" [editorOptions]="lookupService.organizationLookUpOptions">
+              <dxo-label [text]="'labels.operator' | transloco"></dxo-label>
+        </dxi-item>
+
+
+    </dxi-item>
+
+    <dxi-item itemType="group" [colCount]="6" [visible]="hasTotalAmountInput">
+        <dxi-item dataField="currency" editorType="dxSelectBox" [editorOptions]="currenciesLookUpOptions">
+            <dxo-label text="Kur"></dxo-label>
+        </dxi-item>
+        <dxi-item dataField="purchaseAmount" editorType="dxNumberBox"
+                  [editorOptions]="{ showSpinButtons: true, showClearButton: true }">
+            <dxo-label text="Alış"></dxo-label>
+        </dxi-item>
+        <dxi-item dataField="saleAmount" editorType="dxNumberBox"
+                  [editorOptions]="{ showSpinButtons: true, showClearButton: true }">
+              <dxo-label [text]="'labels.seller' | transloco"></dxo-label>
+        </dxi-item>
+    </dxi-item>
+</dx-form>

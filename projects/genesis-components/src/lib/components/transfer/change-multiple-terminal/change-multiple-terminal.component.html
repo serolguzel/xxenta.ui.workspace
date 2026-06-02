@@ -1,0 +1,38 @@
+<dx-popup
+    [visible]="visible"
+    [showTitle]="true"
+    [dragEnabled]="true"
+    [resizeEnabled]="true"
+    [title]="'labels.change-terminal' | transloco"
+    [width]="460"
+    [height]="282"
+    (onHidden)="onHidden()"
+    [position]="{my: 'center', at: 'center', of: 'window'}">
+    <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="after" [options]="btnSave"></dxi-toolbar-item>
+    <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="before" [options]="btnCancel"></dxi-toolbar-item>
+    <dx-form labelMode="floating" [formData]="model">
+      <dxi-item [colSpan]="1" dataField="flightCode" editorType="dxLookup" [editorOptions]="flightLookUpOptions">
+        <dxo-label text="{{ 'labels.flight' | transloco }}"></dxo-label>
+        <dxi-validation-rule type="required" message="{{ 'generic.message.required' | transloco }}"></dxi-validation-rule>
+      </dxi-item>
+    
+      <dxi-item itemType="group" [colCount]="2">
+        <dxi-item dataField="transferDate" editorType="dxDateBox" [editorOptions]="{ 
+                displayFormat: 'dd.MM.yyyy',
+                type:'date',
+                showClearButton: true}">
+          <dxi-validation-rule type="required" message="{{ 'generic.message.required' | transloco }}"></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item dataField="terminalCode" editorType="dxSelectBox" [editorOptions]="{ 
+                dataSource: terminalDataSource, 
+                displayExpr: 'name', 
+                valueExpr: 'code', 
+                itemTemplate: codeNameTemplate }">
+          <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+         <dxi-item dataField="routeType" editorType="dxSelectBox" [editorOptions]="transferRouteTypeOptions" [visible]="false">
+          <dxo-label text="{{ 'labels.route-type' | transloco }}"></dxo-label>
+        </dxi-item>
+      </dxi-item>
+    </dx-form>
+</dx-popup>

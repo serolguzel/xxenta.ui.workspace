@@ -1,0 +1,38 @@
+<div class="w-full max-w-3xl">
+  <div class="w-full flex p-5 justify-between">
+    <button mat-flat-button [color]="'primary'" (click)="uploader.click()">
+      Bilgisayarından Resim Seç
+    </button>
+
+      <button mat-flat-button [color]="'primary'" (click)="save()" *ngIf="croppedImage">
+        Yükle
+      </button>
+  </div>
+
+  <form class="flex flex-col flex-auto p-6">
+    <input #uploader type="file" (change)="fileChangeEvent($event)" class="hidden" />
+    <div class="flex flex-col flex-auto">
+        <image-cropper
+            [imageChangedEvent]="imageChangedEvent" 
+            [maintainAspectRatio]="true"
+            [aspectRatio]="4 / 4"
+            [resizeToWidth]="defaultSize" 
+            [format]="format" 
+            (imageCropped)="imageCropped($event)"
+            (imageLoaded)="imageLoaded()"
+            [style.display]="cropperReady ? null : 'none'">
+          </image-cropper>
+          <span class="p-2 text-xs border-border-b border-gray-200" *ngIf="croppedImage">Original Size: {{originalSize.width}}x{{originalSize.height}}</span>
+    </div>
+     
+    <div class="flex flex-auto items-end mt-4 gap-2" *ngIf="croppedImage">
+      @for (item of images; track $index) {
+      <div class="flex flex-col w-[{{item.size}}px] h-[{{item.size}}px overflow-hidden ring-4 ring-bg-card">
+        <img class="object-cover w-full h-full" [src]="item.image">
+        <span class="p-2 text-xs border-border-b border-gray-200">Size: {{item.size}}x{{item.size}}</span>
+      </div>
+      }
+    </div>
+  </form>
+
+</div>

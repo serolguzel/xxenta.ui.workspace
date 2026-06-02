@@ -1,0 +1,16 @@
+<div class="w-full max-w-3xl">
+    <dx-form [(formData)]="model" labelMode="floating">
+        <dxi-item dataField="roleIds" editorType="dxTagBox" [editorOptions]="{
+        dataSource: roles,
+        valueExpr: 'id',
+        displayExpr: 'name',
+        showClearButton: true,
+        showSelectionControls: true,
+        applyValueMode: 'useButtons'
+      }">
+            <dxo-label text="Role"></dxo-label>
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+    </dx-form>
+    <dx-toolbar class="mt-4" [items]="userToolbars"></dx-toolbar>
+</div>

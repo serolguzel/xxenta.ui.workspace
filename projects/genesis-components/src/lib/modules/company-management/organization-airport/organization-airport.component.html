@@ -1,0 +1,69 @@
+<div class="w-full max-w-3xl">
+    <dx-data-grid id="gridContainer" 
+      [dataSource]="dataSource"
+      [remoteOperations]="false"
+      [showColumnLines]="false"
+      [showBorders]="true"
+      [showRowLines]="true"
+      [rowAlternationEnabled]="true"
+      [hoverStateEnabled]="true"
+      [allowColumnResizing]="true"
+      [columnHidingEnabled]="true"
+      (onRowInserted)="onRowInserted($event)">
+  
+      <dxo-toolbar>
+        <dxi-item location="before">
+          <div *dxTemplate>
+            <div class="text-2xl tracking-tight">
+              Airports
+            </div>
+          </div>
+        </dxi-item>
+        <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
+        <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
+        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+      </dxo-toolbar>
+  
+      <dxo-editing mode="popup" 
+        [allowUpdating]="false" 
+        [allowAdding]="true" 
+        [allowDeleting]="true"
+        [useIcons]="true">
+          <dxo-popup title="Airport" 
+            [showTitle]="true"
+            [width]="500" 
+            [height]="240" 
+            [resizeEnabled]="true"
+            [position]="{ my: 'center', at: 'center'}">
+          </dxo-popup>
+        <dxo-form [colCount]="1">
+          <dxi-item dataField="airportCode" editorType="dxLookup" [editorOptions]="{
+                              dataSource: currenciesDataSource,
+                              displayExpr: 'name',
+                              valueExpr: 'id',
+                              searchExpr: ['name', 'id'],
+                              itemTemplate: idNameTemplate,
+                              dropDownOptions: {
+                                hideOnOutsideClick: true,
+                                title: 'Airports'
+                              },
+                            }">
+                <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
+                </dxi-validation-rule>
+          </dxi-item>
+        </dxo-form>
+      </dxo-editing>
+  
+      <dxi-column dataField="organizationId" dataType="string" [visible]="false"></dxi-column>
+      <dxi-column dataField="airportCode" dataType="string" caption="Airport"></dxi-column>
+  
+      <dxi-column type="buttons" [width]="100">
+        <dxi-button icon="trash" [onClick]="deleteItem"></dxi-button>
+      </dxi-column>
+  
+      <dxo-paging [pageSize]="20"></dxo-paging>
+      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+    </dx-data-grid>
+  
+  </div>

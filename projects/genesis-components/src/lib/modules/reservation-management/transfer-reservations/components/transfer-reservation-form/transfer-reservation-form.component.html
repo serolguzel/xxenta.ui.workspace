@@ -1,0 +1,67 @@
+<!-- Guest Section -->
+  <dx-form #transferRezervationForm id="form" [formData]="data" labelMode="static" [disabled]="formDisabled"
+    [alignItemLabels]="true">
+    <dxi-item>
+      <div *dxTemplate>
+        <guest-list-data-grid 
+          [guests]="data.guests" 
+          [hasError]="ifGuestsFormHasError"
+          (onRowInserted)="onRowInserted($event)" 
+          (onRowInserting)="onRowInserting($event)"
+          (onRowRemoved)="onRowRemoved($event)" 
+          (onRowRemoving)="onRowRemoving($event)"
+          (onRowUpdated)="onRowUpdated($event)" 
+          (onRowUpdating)="onRowUpdating($event)" />
+      </div>
+    </dxi-item>
+    <dxi-item itemType="group" [colSpan]="4">
+      <dxi-item itemType="group" [colCount]="3" [colSpan]="4">
+        <dxi-item dataField="adult" editorType="dxNumberBox" [label]="{ text: 'labels.adult' | transloco }"
+          [editorOptions]="{ 
+            min: 1, 
+            showSpinButtons: true,
+            onValueChanged: onAdultValueChanged }">
+          <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item dataField="child" editorType="dxNumberBox" [label]="{ text: 'labels.child' | transloco }"
+          [editorOptions]="{ 
+            min:0,
+            showSpinButtons: true,
+            onValueChanged: onChildValueChanged  
+          }" />
+        <dxi-item dataField="infant" editorType="dxNumberBox" [label]="{ text: 'labels.infant' | transloco }"
+          [editorOptions]="{ 
+            min: 0,
+            showSpinButtons: true,
+            onValueChanged: onInfantValueChanged
+             }" />
+      </dxi-item>
+    </dxi-item>
+  </dx-form>
+
+  <!-- Transfer Section -->
+  <div class="text-2xl tracking-tight mt-4 mb-2">
+    {{ "labels.transfer-direction" | transloco }}
+  </div>
+  <dx-radio-group class="mb-4" [dataSource]="transferRouteTypeOptions.dataSource" valueExpr="code"
+    [value]="transferRouteType" (onValueChanged)="onRouteTypeChanged($event)" layout="horizontal">
+    <div *dxTemplate="let item of 'item'">
+      {{ getTransferRouteTypeLabel(item.code) }}
+    </div>
+  </dx-radio-group>
+  <ng-container *ngFor="let booking of data.bookings; let i = index">
+    <transfer-form [data]="booking" [extrasDataSource]="extrasDataSource" [disabledNote]="disabledNote"
+      (fromLocationChanged)="onLocationChanged($event, 'from', i)"
+      (toLocationChanged)="onLocationChanged($event, 'to', i)" (operatorChanged)="onOperatorChanged($event, i)"
+      (oprVoucherChanged)="onoprVoucherChanged($event, i)">
+    </transfer-form>
+  </ng-container>
+
+  <mat-divider class="my-4"></mat-divider>
+  <dx-toolbar>
+    <dxi-item location="after" widget="dxButton" [options]="btnSave" [disabled]="hasSaveButton"></dxi-item>
+    <dxi-item location="before" locateInMenu="auto" widget="dxButton" [options]="btnTransferCancel"
+      [visible]="hasCancelButton"></dxi-item>
+    <dxi-item location="before" locateInMenu="auto" widget="dxButton" [options]="btnDelete"
+      [visible]="hasDeleteButton"></dxi-item>
+  </dx-toolbar>

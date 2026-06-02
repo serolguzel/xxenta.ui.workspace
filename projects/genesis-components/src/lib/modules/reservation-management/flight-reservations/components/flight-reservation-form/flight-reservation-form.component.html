@@ -1,0 +1,50 @@
+<div class="text-right mb-4" *ngIf="data.flights.length">
+    <h1 class="font-bold text-xl text-right">{{ data.flights[0].voucher }}</h1>
+    <span>{{ 'labels.voucher' | transloco }}</span>
+</div>
+<ng-container *ngFor="let flight of data.flights; let i = index">
+    <app-flight-form
+        [flight]="flight"
+        [title]="flight.routeType === RouteType.Arrival ? 'labels.arrival' : 'labels.departure' | transloco"
+        [currenciesLookUpOptions]="currenciesLookUpOptions"
+        [onClickRemoveButton]="i == 1 ? deleteFlight.bind(this) : undefined"
+        (onDepartureDateValueChanged)="departureValueChanged($event)"
+    />
+</ng-container>
+
+<app-flight-guests [guests]="data.guests" [hasError]="ifGuestsFormHasError" />
+
+<dx-toolbar class="mt-4">
+    <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="addArrivalFlightButton"
+        [disabled]="data.flights.length == 2"
+        *ngIf="canAddDepartureFlight"
+    ></dxi-item>
+    <dxi-item
+        location="after"
+        widget="dxButton"
+        [options]="btnSave"
+        [disabled]="hasSaveButton"
+    ></dxi-item>
+    <dxi-item
+        location="before"
+        locateInMenu="auto"
+        widget="dxButton"
+        [options]="btnDelete"
+        [visible]="hasDeleteButton"
+    ></dxi-item>
+</dx-toolbar>
+
+<dx-load-panel
+    #loadPanel
+    shadingColor="rgba(0,0,0,0.4)"
+    [position]="{ of: '#transfer_reservation' }"
+    [(visible)]="loadingVisible"
+    [showIndicator]="true"
+    [showPane]="true"
+    [shading]="true"
+    [hideOnOutsideClick]="false"
+>
+</dx-load-panel>

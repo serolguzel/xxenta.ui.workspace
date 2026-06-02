@@ -1,0 +1,71 @@
+    <dx-data-grid id="gridContainer" 
+            [dataSource]="dataSource"
+            [remoteOperations]="false"
+            [showColumnLines]="false"
+            [showBorders]="true"
+            [showRowLines]="true"
+            [rowAlternationEnabled]="true"
+            [hoverStateEnabled]="true"
+            [allowColumnResizing]="true"
+            [columnHidingEnabled]="true"
+            (onRowUpdating)="onRowUpdating($event)">
+          
+            <dxo-toolbar>
+              <dxi-item location="before">
+                  <div *dxTemplate>
+                      <div class="text-2xl tracking-tight">
+                          Contacts
+                      </div>
+                  </div>
+              </dxi-item>
+              <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
+              <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
+              <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+              <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+          </dxo-toolbar>
+
+              <dxo-search-panel [visible]="true"></dxo-search-panel>
+              <dxo-filter-row [visible]="true"></dxo-filter-row>
+              <dxo-group-panel [visible]="false"></dxo-group-panel>
+          
+              <dxo-editing 
+                mode="popup"
+                [allowUpdating]="true"
+                [allowAdding]="true"
+                [allowDeleting]="true"
+                [useIcons]="true">
+                  <dxo-popup
+                      title="Contact"
+                      [showTitle]="true"
+                      [width]="500"
+                      [height]="320"
+                      [resizeEnabled]="true"
+                      [position]="{ my: 'center', at: 'center'}">
+                  </dxo-popup>
+                <dxo-form [colCount]="1" labelMode="floating">
+                    <dxi-item dataField="contactType">
+                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
+                        </dxi-validation-rule>
+                    </dxi-item>
+                    <dxi-item dataField="text">
+                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
+                        </dxi-validation-rule>
+                    </dxi-item>
+                    <dxi-item itemType="group" [colCount]="2">
+                        <dxi-item dataField="confirm"></dxi-item>
+                        <dxi-item dataField="isDefault"></dxi-item>
+                    </dxi-item>
+                </dxo-form>
+              </dxo-editing>
+          
+              <dxi-column dataField="text" dataType="string"></dxi-column>
+              <dxi-column dataField="contactType" dataType="string">
+                <dxo-lookup [dataSource]="contactTypes" valueExpr="id" displayExpr="name"></dxo-lookup>
+              </dxi-column>
+              <dxi-column dataField="confirm" dataType="boolean"></dxi-column>
+              <dxi-column dataField="isDefault" dataType="boolean"></dxi-column>
+              <dxi-column dataField="isDeleted" dataType="boolean"></dxi-column>
+      
+              <dxo-paging [pageSize]="20"></dxo-paging>
+              <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
+          </dx-data-grid>

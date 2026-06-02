@@ -1,0 +1,67 @@
+<div class="w-full max-w-4xl">
+    <dx-form labelMode="floating" [formData]="model" [colCount]="1">
+        <dxi-item dataField="appId" editorType="dxLookup" [editorOptions]="{
+                                                            dataSource: apps,
+                                                            valueExpr: 'id',
+                                                            displayExpr: 'name',
+                                                            searchExpr : 'name',
+                                                            dropDownOptions: {
+                                                              hideOnOutsideClick: true,
+                                                              title:'Aplications'
+                                                            },
+                                                            onValueChanged: onAppValueChanged
+                                                        }">
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+            <dxo-label text="App"></dxo-label>
+        </dxi-item>
+        <dxi-item dataField="url"></dxi-item>
+
+        <dxi-item itemType="group" [colCount]="2">
+            <dxi-item dataField="price" editorType="dxNumberBox" [editorOptions]="{ min: 0, showSpinButtons: true, showClearButton: true }">
+            </dxi-item>
+            <dxi-item dataField="currency" editorType="dxSelectBox" [editorOptions]="{
+                                                              dataSource: currenciesDataSoruce
+                                                              }">
+            </dxi-item>
+            <dxi-item dataField="paymentType" editorType="dxSelectBox" [editorOptions]="{
+                                            dataSource: pamentTypes
+                                            }">
+            </dxi-item>
+            <dxi-item dataField="priceCalculatorType" editorType="dxSelectBox" [editorOptions]="{
+                                            dataSource: priceCalculatorTypes
+                                            }">
+            </dxi-item>
+        </dxi-item>
+
+        <dxi-item dataField="subApps">
+            <div *dxTemplate="let f of 'subApps'">
+                <dx-data-grid id="subGridContainer" 
+                    [dataSource]="subApps"
+                    keyExpr="appId"
+                    [selectedRowKeys]="selectedItems"
+                    [showBorders]="true">
+                    <dxo-selection [selectAllMode]="'allPages'" [showCheckBoxesMode]="'always'" mode="multiple">
+                    </dxo-selection>
+                    <dxo-editing mode="batch" [allowUpdating]="true">
+                    </dxo-editing>
+                    <dxi-column dataField="app.name" dataType="string" caption="App" [allowEditing]="false"></dxi-column>
+                    <dxi-column dataField="price" dataType="number"></dxi-column>
+                    <dxi-column dataField="currency" dataType="string">
+                        <dxo-lookup [dataSource]="currenciesDataSoruce"></dxo-lookup>
+                    </dxi-column>
+                    <dxi-column dataField="appType" dataType="string"></dxi-column>
+                    <dxi-column dataField="priceCalculatorType" dataType="string">
+                        <dxo-lookup [dataSource]="priceCalculatorTypes"></dxo-lookup>
+                    </dxi-column>
+                    <dxi-column dataField="presentationType" dataType="string" [allowEditing]="false">
+                        <dxo-lookup [dataSource]="presentationTypes" valueExpr="id" displayExpr="name"></dxo-lookup>
+                    </dxi-column>
+                </dx-data-grid>
+            </div>
+        </dxi-item>
+    </dx-form>
+    <dx-toolbar class="mt-4">
+        <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
+        <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
+    </dx-toolbar>
+</div>

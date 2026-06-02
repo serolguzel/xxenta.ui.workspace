@@ -1,0 +1,12 @@
+<div class="w-full max-w-3xl">
+    <dx-form #hotelForm id="form" [formData]="data" labelLocation="top" labelMode="floating">
+        <dxi-item dataField="email">
+            <dxi-validation-rule type="email" [message]="'validation.invalid-emails' | transloco"></dxi-validation-rule>
+            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+        </dxi-item>
+    </dx-form>
+    <dx-toolbar class="mt-4">
+        <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
+        <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
+    </dx-toolbar>
+</div>

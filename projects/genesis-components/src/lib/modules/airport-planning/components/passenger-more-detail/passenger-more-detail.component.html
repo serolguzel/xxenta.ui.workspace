@@ -1,0 +1,68 @@
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+    <table class="w-full text-sm text-left rtl:text-right dark:text-blue-400">
+        <thead class="text-gray-700 uppercase dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3 bg-blue-50 dark:bg-blue-800">{{
+                    'labels.transfer-info' | transloco }}</th>
+                <th scope="col" class="px-6 py-3"></th>
+                <th scope="col" class="px-6 py-3 bg-blue-50 dark:bg-blue-800">{{
+                    'labels.flight-info' | transloco }}</th>
+                <th scope="col" class="px-6 py-3"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="row"
+                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-blue-50 dark:text-white dark:bg-blue-800">
+                    {{ 'labels.transfer-code' | transloco }}
+                </th>
+                <td class="px-6 py-4">
+                    <span *ngIf="!data.transferPlan?.taskCode">{{ 'labels.not-planned' | transloco
+                        }}</span>
+                    {{data.transferPlan?.taskCode}}
+                </td>
+
+                <td class="px-6 py-4 bg-blue-50 dark:bg-blue-800">{{
+                    'labels.flight-time' | transloco }}</td>
+                <td class="px-6 py-4">
+                    <span *ngIf="data.reservation.transferRouteType == 'Arrival'">{{ data.reservation.flight?.arrivalTime }}</span>
+                    <span *ngIf="data.reservation.transferRouteType == 'Departure'">{{ data.reservation.flight?.departureTime }}</span>
+                </td>
+            </tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="row"
+                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-blue-50 dark:text-white dark:bg-blue-800">
+                    {{ 'labels.transfer-date' | transloco }}
+                </th>
+                <td class="px-6 py-4">{{data.reservation.transferDate | date: 'dd.MM.yyyy'}}</td>
+                <td class="px-6 py-4 bg-blue-50 dark:bg-blue-800">{{
+                    'labels.flight-date' | transloco }}</td>
+                <td class="px-6 py-4">{{ data.reservation.flight?.flightDate | date: 'dd.MM.yyyy'}}</td>
+            </tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="row"
+                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-blue-50 dark:text-white dark:bg-blue-800">
+                    {{ 'labels.direction' | transloco }}
+                </th>
+                <td class="px-6 py-4">{{data.reservation.transferRouteType}}</td>
+                <td class="px-6 py-4 bg-blue-50 dark:bg-blue-800">{{
+                    'labels.flight-code' | transloco }}</td>
+                <td class="px-6 py-4">{{data.reservation.flight?.flightCode}}</td>
+            </tr>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+                <th scope="row"
+                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-blue-50 dark:text-white dark:bg-blue-800">
+                    {{ 'labels.transfer-time' | transloco }}
+                </th>
+                <td class="px-6 py-4">
+                    <span *ngIf="!data.reservation.beginTime">{{ 'labels.not-planned' | transloco
+                        }}</span>
+                    {{data.reservation.beginTime}}
+                </td>
+                <td class="px-6 py-4 bg-blue-50 dark:bg-blue-800">{{ 'labels.terminal'
+                    | transloco }}</td>
+                <td class="px-6 py-4">{{data.reservation.flight?.terminalCode}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

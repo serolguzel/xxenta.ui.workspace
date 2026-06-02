@@ -1,0 +1,35 @@
+
+
+<div class="relative flex flex-col flex-auto items-center px-6 sm:px-12">
+    <div class="w-full max-w-3xl">
+      <div id="dropzone-external" class="mt-3 mb-3 dropzone-external" [ngClass]="isUploaded ? 'uploaded-file' : ''">
+        <div id="dropzone-text" class="flex-box">
+          <span>{{ 'descriptions.dropHere' | transloco }}</span>
+          <span>{{ 'descriptions.clickToUpload' | transloco }}</span>
+        </div>
+        <dx-progress-bar #uploadProgress 
+          [min]="0" 
+          [max]="100" 
+          [showStatus]="false" 
+          [visible]="progressVisible"
+          [value]="progressValue">
+        </dx-progress-bar>
+      </div>
+      <div class="full mb-3">
+        <dx-file-uploader 
+          #fileUploader 
+          dialogTrigger="#dropzone-external" 
+          dropZone="#dropzone-external"
+          [multiple]="options.multiple" 
+          [allowedFileExtensions]="options.allowedFileExtensions!"
+          uploadMode="instantly" 
+          [uploadUrl]="uploadUrl"
+          [uploadHeaders]="uploadHeaders"
+          [visible]="true"
+          (onUploaded)="onUploaded($event)"
+          (onProgress)="onProgress($event)" 
+          (onUploadStarted)="onUploadStarted($event)">
+        </dx-file-uploader>
+      </div>
+    </div>
+  </div>

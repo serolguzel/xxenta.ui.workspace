@@ -1,0 +1,190 @@
+<div class="w-full flex flex-col">
+  <div class="p-6 sm:p-10 bg-white shadow-lg rounded-lg">
+    <div class="flex flex-col md:flex-row">
+      <!-- Left Section: Transfer Info -->
+      <div class="md:w-2/3 sm:w-full">
+        <dx-toolbar>
+          <dxi-item location="before">
+            <dx-text-box [(value)]="voucher" [width]="200" placeholder="Voucher ara...">
+              <dxi-button name="search" location="after" [options]="btnVoucher"></dxi-button>
+            </dx-text-box>
+          </dxi-item>
+          <dxi-item location="after">
+            <div *dxTemplate>
+              <div class="text-orange-700 text-md py-2 px-4">{{item.transferRouteType}}</div>
+            </div>
+          </dxi-item>
+          <dxi-item location="after" widget="dxButton" [options]="btnPrint" [visible]="false"></dxi-item>
+        </dx-toolbar>
+
+        <!-- Transfer Information -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+          <div class="p-4 border rounded-lg shadow-sm">
+            <strong>{{ 'labels.task-number' | transloco }}:</strong> {{ item.taskCode }}
+          </div>
+          <div class="p-4 border rounded-lg shadow-sm">
+            <strong>{{ 'labels.transfer-begin-time' | transloco }}:</strong> {{ item.beginTime }}
+          </div>
+          <div class="p-4 border rounded-lg shadow-sm">
+            <strong>{{ 'labels.destination' | transloco }}:</strong> {{ item.toLocation?.name || 'N/A' }}
+          </div>
+          <div class="p-4 border rounded-lg shadow-sm">
+            <strong>{{ 'labels.license-plate' | transloco }}:</strong> {{ item.vehicle?.plateCode }}
+          </div>
+          <div class="p-4 border rounded-lg shadow-sm">
+            <strong>{{ 'labels.window-number' | transloco }}:</strong> {{ item.vehicle?.windowNumber }}
+          </div>
+
+          <div class="p-4 border rounded-lg shadow-sm">
+            <strong>{{ 'labels.number-of-guests' | transloco }}:</strong> {{ item.guests.length }}
+          </div>
+
+          <div class="p-4 border rounded-lg shadow-sm">
+            <strong>Info Coctail Date Time:</strong> {{ item.infoCocktailDate | date: 'dd.MM.yyyy'}}-{{item.infoCocktailTime}}
+          </div>
+          <div class="p-4 border rounded-lg shadow-sm">
+            <strong>Guide:</strong> {{ item.guide?.displayName }}
+          </div>
+        </div>
+
+        <!-- Guests List -->
+        <table class="w-full mt-6 text-sm text-left border rounded-lg">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-3">{{ 'labels.guest-name' | transloco }}</th>
+              <th class="px-4 py-3">{{ 'labels.nationality' | transloco }}</th>
+              <th class="px-4 py-3" *ngIf="item.transferRouteType == 'Arrival'">{{ 'labels.at-desk' | transloco }}</th>
+              <th class="px-4 py-3">{{ 'labels.self-transfer' | transloco }}</th>
+              <th class="px-4 py-3">{{ 'labels.no-show' | transloco }}</th>
+              <th class="px-4 py-3">{{ 'labels.isgeton' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let guest of item.guests" class="border-b hover:bg-gray-50">
+              <td class="px-4 py-3 flex items-center">
+                <img class="w-10 h-10 rounded-full mr-2" [src]="guest.profile" alt="Guest Profile"/>
+                <div>
+                  <div class="font-semibold">{{ guest.title }}. {{ guest.firstName }} {{ guest.lastName }}</div>
+                  <div class="text-gray-500">{{ guest.guestType }}</div>
+                </div>
+              </td>
+              <td class="px-4 py-3">{{ guest.nationality }}</td>
+              <td class="px-4 py-3">
+                <mat-checkbox [checked]="guest.selfTransfer" (change)="onItemSelfTransferValueChanged($event, guest)"></mat-checkbox>
+              </td>
+              <td class="px-4 py-3">
+                <mat-checkbox [checked]="guest.noShow" (change)="onItemNoShowValueChanged($event, guest)"></mat-checkbox>
+              </td>
+              <td class="px-4 py-3">
+                <mat-checkbox [checked]="guest.isGetOn" [disabled]="true"></mat-checkbox>
+                <span>{{guest.getOnDate | date: 'dd.MM.yyyy HH:mm'}}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Comments and Extras -->
+        <mat-tab-group mat-align-tabs="start" class="mt-6" (selectedTabChange)="selectedTabChanged($event)">
+          <mat-tab label="{{ 'labels.comments' | transloco }}">
+            <app-transfer-plan-notes [transferNotes]="transferNotes"></app-transfer-plan-notes>
+          </mat-tab>
+          <mat-tab label="{{ 'labels.extras' | transloco }}">
+            <app-transfer-plan-extras [extras]="reservationExtras"></app-transfer-plan-extras>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+
+      <!-- Right Section: QR Code and Audit Trail -->
+      <div class="md:w-1/3 md:pl-8 mt-6 md:mt-0">
+        <div class="border rounded-lg p-4 shadow-sm">
+          <img [src]="item.qrCode" class="w-full max-w-xs mx-auto" alt="Qr Code"/>
+          <transfer-res-audit-trail 
+            [link]="options.editTransferReservation(item.return?.id)" 
+            [data]="item" 
+            [auditTrails]="auditTrails"></transfer-res-audit-trail>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="print" style="display: none;">
+  <section id="printcontent" class="sheet">
+    <div class="info-content">
+      <table style="margin-left: 25px;">
+        <tr>
+          <td colspan="3" style="text-align: center; font-size: 15px;"> <strong>{{ 'labels.bus-number' | transloco }}:</strong>
+            {{item.vehicle?.windowNumber}}</td>
+        </tr>
+        <tr>
+          <th style="text-align: left;">Name</th>
+          <td>:</td>
+          <td>{{ maskName(item.guests[0]?.firstName)}} {{maskName(item.guests[0]?.lastName)}}</td>
+        </tr>
+        <tr>
+          <th style="text-align: left;">Voucher No</th>
+          <td>:</td>
+          <td>{{ item.oprVoucher }}</td>
+        </tr>
+        <tr style="font-size: 12px;">
+          <th style="text-align: left;">Hotel</th>
+          <td>:</td>
+          <td>{{ item.toLocation?.name }}</td>
+        </tr>
+        <tr *ngIf="item.infoCocktailDate && item.infoCocktailTime" style="font-size: 12px;">
+          <td colspan="3"><strong>Info Cocktail Termin: </strong>{{item.infoCocktailDate | date: 'dd.MM.yyyy'}}
+            {{item.infoCocktailTime}}</td>
+        </tr>
+        <tr  style="font-size: 12px;">
+          <th style="text-align: left;">Treffpunkt</th>
+          <td>:</td>
+           <td>{{ 'labels.at-reception' | transloco }}</td>
+        </tr>
+        <tr style="font-size: 12px;">
+          <th style="text-align: left;">für Transferftragen</th>
+          <td>:</td>
+          <td>+(90) 549 180 7217</td>
+        </tr>
+        <tr style="font-size: 12px;">
+          <th style="text-align: left;">für Reiseleitung</th>
+          <td>:</td>
+          <td>+(90) 530 312 2350</td>
+        </tr>
+      </table>
+      <div class="barcode-content">
+        <table>
+          <tr>
+            <td style="font-weight: bold; text-align: center;">{{ item.transferType?.id }}</td>
+          </tr>
+          <tr>
+            <td style="font-size: 10px; text-align: center;">{{ item.transferDate | date: 'dd.MM.yyyy' }}</td>
+          </tr>
+          <tr>
+            <td style="justify-items: center;"><img [src]="item.whatsappSupport" class="barcode_image" alt="QR Code"></td>
+          </tr>
+          <tr>
+            <td style="font-size: 11px; text-align: center;">
+              Sende 7/24 REISELEITUNG <br/>
+              eine Nachricht auf WhatsApp.
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="message1">
+
+      </div>
+    </div>
+    <div class="message2">
+
+    </div>
+    <div class="barcode-content2">
+      <div class="barcode-code">
+        <img [src]="item.qrCode" class="barcode_image2">
+      </div>
+    </div>
+    <div class="message3">
+      <span><strong>{{ 'labels.hand-over-to-guide-de' | transloco }}</strong></span><br>
+      <span><strong>{{ 'labels.hand-over-to-guide-en' | transloco }}</strong></span>
+    </div>
+  </section>
+</div>

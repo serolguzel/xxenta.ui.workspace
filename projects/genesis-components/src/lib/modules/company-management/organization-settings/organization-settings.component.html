@@ -1,0 +1,27 @@
+<div class="flex flex-auto">
+    <div class="mx-auto flex w-full max-w-xs flex-auto flex-col sm:max-w-5xl">
+        <nav class="flex min-w-[240px] flex-col gap-1">
+            <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                <organization-settings-excel-import *ngFor="let item of settings"
+                    [data]="item" (onDeleteClick)="deleteItem(item)"></organization-settings-excel-import>
+            </ul>
+
+            <div class="flex-auto">
+                <dx-form #settingsForm id="form" [colCount]="2" [formData]="model" labelLocation="top"
+                    labelMode="floating">
+
+                    <dxi-item dataField="key" editorType="dxTextBox">
+                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                    </dxi-item>
+
+                    <dxi-item dataField="value" editorType="dxTextBox">
+                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
+                    </dxi-item>
+                </dx-form>
+                <dx-toolbar class="mt-4">
+                    <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
+                </dx-toolbar>
+            </div>
+        </nav>
+    </div>
+</div>

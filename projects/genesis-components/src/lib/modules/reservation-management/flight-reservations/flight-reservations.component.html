@@ -1,0 +1,246 @@
+<dx-data-grid
+    id="gridContainer"
+    #reservationGrid
+    [dataSource]="dataSource"
+    [remoteOperations]="true"
+    columnResizingMode="nextColumn"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    [allowColumnReordering]="true"
+    [showColumnLines]="false"
+    [showBorders]="true"
+    [showRowLines]="true"
+>
+    <dxo-toolbar>
+        <dxi-item
+            location="before"
+            locateInMenu="auto"
+            widget="dxLookup"
+            [options]="companyOptions"
+        ></dxi-item>
+        <!--
+    <dxi-item location="before" locateInMenu="auto" widget="dxDateBox" [options]="{
+          width: 180,
+          format: 'yyyy-MM-dd',
+          displayFormat: 'dd.MM.yyyy',
+          placeholder: 'Tarnsfer Tarihi:',
+          onValueChanged: onDateValueChanged
+        }"></dxi-item>
+    <dxi-item location="before" locateInMenu="auto" widget="dxSelectBox" [options]="transferRouteTypeOptions"></dxi-item>
+    <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [options]="tansferOptions"></dxi-item>
+    <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [options]="vehicleTypeOptions"></dxi-item>
+-->
+        <dxi-item
+            locateInMenu="auto"
+            location="before"
+            widget="dxButton"
+            [options]="{
+                icon: 'search',
+                text: 'Ara',
+                type: 'default',
+                onClick: search,
+            }"
+        >
+        </dxi-item>
+        <dxi-item
+            locateInMenu="auto"
+            location="after"
+            widget="dxButton"
+            [options]="{
+                icon: 'add',
+                onClick: createItem,
+            }"
+        >
+        </dxi-item>
+        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
+        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
+    </dxo-toolbar>
+    <dxo-filter-row [visible]="true"></dxo-filter-row>
+    <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
+    <dxo-group-panel [visible]="false"></dxo-group-panel>
+    <dxo-master-detail
+        [enabled]="true"
+        template="masterDetail"
+    ></dxo-master-detail>
+    <dxo-column-chooser
+        #columnChooser
+        [enabled]="true"
+        mode="dragAndDrop"
+        title="Kolan Seç"
+    >
+        <dxo-position
+            my="right top"
+            at="right bottom"
+            of=".dx-datagrid-column-chooser-button"
+        ></dxo-position>
+        <dxo-search
+            [enabled]="true"
+            [editorOptions]="{ placeholder: 'labels.column-search' | transloco }"
+        ></dxo-search>
+        <dxo-selection
+            [allowSelectAll]="true"
+            [selectByClick]="true"
+            [recursive]="true"
+        ></dxo-selection>
+    </dxo-column-chooser>
+
+    <dxi-column
+        dataField="voucher"
+        dataType="string"
+        caption="Voucher"
+        cellTemplate="linkTemplate"
+    ></dxi-column>
+
+    <dxi-column
+        dataField="oprVoucher"
+        dataType="string"
+        caption="Opr. Voucher"
+        cellTemplate="linkTemplate"
+    ></dxi-column>
+
+    <dxi-column
+        dataField="pnrNumber"
+        dataType="string"
+        caption="PNR"
+        cellTemplate="linkTemplate"
+    ></dxi-column>
+
+    <dxi-column
+        dataField="flightCode"
+        dataType="string"
+        caption="Uçuş Kodu"
+        [allowFiltering]="false"
+        [allowSearch]="false"
+        [allowSorting]="false"
+    >
+    </dxi-column>
+
+    <dxi-column
+        dataField="terminalCode"
+        dataType="string"
+        caption="Terminal"
+        [allowFiltering]="false"
+        [allowSearch]="false"
+        [allowSorting]="false"
+    >
+    </dxi-column>
+
+    <dxi-column
+        dataField="routeType"
+        dataType="string"
+        caption="Yön"
+    ></dxi-column>
+    <dxi-column
+        dataField="departureDate"
+        dataType="date"
+        format="dd.MM.yyyy"
+        caption="Uçuş Tarihi"
+    ></dxi-column>
+    <dxi-column
+        dataField="departureTime"
+        dataType="string"
+        caption="Kalkış Saati"
+    ></dxi-column>
+    <dxi-column
+        dataField="arrivalTime"
+        dataType="string"
+        caption="Varış Saati"
+    ></dxi-column>
+
+    <dxi-column
+        dataField="fromAirport"
+        dataType="string"
+        caption="Nerden"
+        [width]="180"
+        [allowFiltering]="false"
+        [allowSearch]="false"
+        [allowSorting]="false"
+        cellTemplate="fromTemp"
+    >
+    </dxi-column>
+
+    <dxi-column
+        dataField="toAirport"
+        dataType="string"
+        caption="Nereye"
+        [allowFiltering]="false"
+        [allowSearch]="false"
+        [allowSorting]="false"
+        cellTemplate="toTemp"
+    >
+    </dxi-column>
+
+    <dxi-column
+        dataField="operator.name"
+        dataType="string"
+        caption="Operatör"
+        [allowFiltering]="false"
+        [allowSearch]="false"
+        [allowSorting]="false"
+    >
+    </dxi-column>
+
+    <dxi-column
+        dataField="createDate"
+        dataType="date"
+        format="dd.MM.yyyy"
+        caption="Kayıt Tarihi"
+        [visible]="false">
+    </dxi-column>
+
+    <div *dxTemplate="let masterDetailItem of 'masterDetail'">
+        <flight-guest-list-view [guests]="masterDetailItem.data.guests"></flight-guest-list-view>
+    </div>
+
+    <div class="flex-auto" *dxTemplate="let d of 'linkTemplate'">
+        <a [routerLink]="options.editFlightReservation(d.data.id)">
+            <span class="flex font-bold">
+                {{ d.value }}
+            </span>
+        </a>
+    </div>
+
+    <div class="flex-auto" *dxTemplate="let d of 'fromTemp'">
+        <div class="flex items-center">
+            <img
+                src="assets/icons/flight-take-off_32.png"
+                alt=""
+                class="h-8 w-8 rounded-full border p-[4px]"
+            />
+
+            <div class="ml-3 flex flex-col">
+                <span class="flex font-bold">
+                    {{ d.value }}
+                </span>
+                <span class="flex text-secondary mt-1 text-xs leading-none">
+                    {{ d.data.from?.name }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-auto" *dxTemplate="let d of 'toTemp'">
+        <div class="flex items-center">
+            <img
+                src="assets/icons/landing-flight_32.png"
+                alt=""
+                class="h-8 w-8 rounded-full border p-[4px]"
+            />
+            <div class="ml-3 flex flex-col">
+                <span class="flex font-bold">
+                    {{ d.value }}
+                </span>
+                <span class="flex text-secondary mt-1 text-xs leading-none">
+                    {{ d.data.to?.name }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <dxo-paging [pageSize]="20"></dxo-paging>
+    <dxo-pager
+        [showPageSizeSelector]="true"
+        [showInfo]="true"
+        [allowedPageSizes]="[10, 20, 30]"
+    ></dxo-pager>
+</dx-data-grid>

@@ -65,7 +65,10 @@ const themes = {
 const config = {
     darkMode   : 'class',
     content    : [
-        './projects/**/*.{html,ts}'
+        './projects/**/*.{html,ts}',
+        './src/**/*.{html,ts}',
+        './tailwind/**/*.{html,ts}',
+        './node_modules/genesis-shell/**/*.{html,ts}'
     ],
     important  : true,
     theme      : {

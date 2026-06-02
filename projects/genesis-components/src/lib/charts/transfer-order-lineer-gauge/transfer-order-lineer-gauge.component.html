@@ -1,0 +1,40 @@
+<div class="w-full" id="transferLinerGauge" [ngClass]="{'h-full': data.length == 0}">
+  <ng-container *ngIf="data && data.length > 0; else noData">
+    <div class="mb-2" *ngFor="let item of data">
+      <ng-container>
+        <div class="font-medium">{{ item.taskCode }} - {{ item.beginTime }}</div>
+        <h3 *ngIf="item?.counter(item) === item.estimatedTime">{{ 'labels.completed' | transloco }}</h3>
+        <div class="flex justify-between">
+          <div class="flex flex-col text-center" *ngFor="let location of item.allLocations">
+            <div #tooltip class="cursor-pointer">
+              <div class="text-xs">{{ location.code }}</div>
+              <span>•</span>
+            </div>
+            <dx-tooltip [target]="tooltip" [visible]="false" maxWidth="280" [showEvent]="'mouseenter'"
+              [hideEvent]="'mouseleave'">
+              <dx-list [dataSource]="location.hotels" class="text-left text-sm" />
+            </dx-tooltip>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" [style.width.%]="item?.counter(item)"></div>
+        </div>
+      </ng-container>
+      <div class="border border-slate-300 mt-2"></div>
+    </div>
+  </ng-container>
+
+  <ng-template #noData class="h-[200px]">
+    <genesis-alert [type]="'accent'" [showIcon]="false" appearance="outline">{{ 'labels.no-transfer' | transloco }}
+    </genesis-alert>
+  </ng-template>
+</div>
+
+<dx-load-panel #loadPanel shadingColor="rgba(0,0,0,0.4)" 
+  [position]="{ of: '#transferLinerGauge' }"
+  [(visible)]="loadingVisible"
+  [showIndicator]="true" 
+  [showPane]="true"
+  [shading]="true" 
+  [hideOnOutsideClick]="false">
+</dx-load-panel>
