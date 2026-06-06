@@ -42,27 +42,31 @@ export class ClientFormComponent implements OnInit {
 
   allowedGrantTypes: CodeNamePair[] = [
     {
-      code: 'implicit',
+      code: 'gt:implicit',
       name: 'Implicit'
     },
     {
-      code: 'authorization_code',
+      code: 'gt:authorization_code',
       name: 'Code'
     },
     {
-      code: 'hybrid',
-      name: 'Hybrid'
+      code: 'gt:refresh_token',
+      name: 'RefreshToken'
     },
     {
-      code: 'client_credentials',
+      code: 'gt:urn:ietf:params:oauth:grant-type:token-exchange',
+      name: 'TokenExchange'
+    },
+    {
+      code: 'gt:client_credentials',
       name: 'ClientCredentials'
     },
     {
-      code: 'password',
+      code: 'gt:password',
       name: 'Password'
     },
     {
-      code: 'urn:ietf:params:oauth:grant-type:device_code',
+      code: 'gt:urn:ietf:params:oauth:grant-type:device_code',
       name: 'DeviceFlow'
     }
   ]

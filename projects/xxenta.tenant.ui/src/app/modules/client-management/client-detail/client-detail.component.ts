@@ -26,7 +26,7 @@ import { TranslocoModule } from '@jsverse/transloco';
 })
 export class ClientDetailComponent implements OnInit {
   @ViewChild(ClientFormComponent, { static: false }) clientForm: ClientFormComponent;
-  client: CreateClientModel = <CreateClientModel>{
+  client: CreateClientModel = <CreateClientModel><unknown>{
     clientSecrets: []
   };
   hasCreate: boolean = true;
@@ -44,7 +44,7 @@ export class ClientDetailComponent implements OnInit {
   ngOnInit(): void {
 
     this.authService.getProfile().then((data: UserModel) => {
-      var hasPermission = data.role.includes(ConstantRoles.SystemAdmin) || data.role.includes(ConstantRoles.SuperAdmin) || data.role.includes(ConstantRoles.Admin);
+      var hasPermission = (data.role?.includes(ConstantRoles.SystemAdmin) || data.role?.includes(ConstantRoles.SuperAdmin) || data.role?.includes(ConstantRoles.Admin)) ?? false;
       this.hasCreate = hasPermission;
       this.hasDeleteButton = hasPermission;
     });
