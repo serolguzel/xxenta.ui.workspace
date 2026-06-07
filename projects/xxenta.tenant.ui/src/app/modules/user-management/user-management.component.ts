@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -34,6 +34,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(
+    private changeDetectorRef: ChangeDetectorRef,
     private eventService: ParamsEventService,
     private tenantService: TenantService) { }
 
@@ -56,6 +57,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
             });
             this.eventService.setUserChange$ = res;
             this.setMenuData(res);
+            this.changeDetectorRef.markForCheck();
           }
         });
       });

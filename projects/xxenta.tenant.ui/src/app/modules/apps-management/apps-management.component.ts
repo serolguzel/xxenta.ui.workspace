@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { BreadcrumbsModel, GenesisChildSidebarComponent, GenesisNavigationItem } from 'genesis-shell';
 import { Subject, takeUntil } from 'rxjs';
 import { ParamsEventService } from '../services/params-event.service';
@@ -27,6 +27,7 @@ export class AppsManagementComponent implements OnInit, OnDestroy {
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(
+    private changeDetectorRef: ChangeDetectorRef,
     private eventService: ParamsEventService,
     private tenantService: TenantService) {
     
@@ -48,6 +49,7 @@ export class AppsManagementComponent implements OnInit, OnDestroy {
           title: res.name,
         });
         this.setMenuData(res);
+        this.changeDetectorRef.markForCheck();
       });
     });
   }
@@ -61,7 +63,7 @@ export class AppsManagementComponent implements OnInit, OnDestroy {
     this.childMenuData = [
       {
         title: data.name || 'Actions',
-        subtitle: data.description,
+        subtitle: data.description ?? '',
         type: 'group',
         children: [
           {

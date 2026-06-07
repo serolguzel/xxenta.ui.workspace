@@ -2,9 +2,10 @@
     <user-form 
     [model]="user" 
     [disableSaveButton]="hasUpdate"
-    [hasDeleteButton]="hasDelete"
+    [disableDeleteButton]="disableDeleteButton"
     [visibleCustomerLookup]="options.permissions?.visibleCustomerLookup!"
     [visibleUserType]="options.permissions?.visibleUserType!"
     (onSaveClick)="onSaveClick($event)"
-    (onCancelClick)="onCancelClick($event)"></user-form>
+    (onCancelClick)="onCancelClick($event)"
+    (onDeleteClick)="onDeleteClick($event)"></user-form>
 </div>

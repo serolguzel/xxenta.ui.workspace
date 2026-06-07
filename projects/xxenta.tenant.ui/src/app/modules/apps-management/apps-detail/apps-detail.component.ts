@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DxFormComponent, DxFormModule, DxToolbarModule } from 'devextreme-angular';
 import { AppsModel } from '../../services/models/tenant.models';
@@ -14,8 +14,7 @@ import { OrganizationService } from 'genesis-components';
     DxFormModule,
     DxToolbarModule,
     TranslocoModule
-  ],
-  
+  ]
 })
 export class AppsDetailComponent implements OnInit {
   @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
@@ -35,6 +34,7 @@ export class AppsDetailComponent implements OnInit {
   };
 
   constructor(
+    private readonly changeDetectorRef: ChangeDetectorRef,
     private readonly tenantService: TenantService,
     private readonly organizationService: OrganizationService,
     private readonly activatedRoute: ActivatedRoute
@@ -45,6 +45,7 @@ export class AppsDetailComponent implements OnInit {
     let appId = this.activatedRoute.snapshot.params.appId;
     this.tenantService.GetAppById(appId).then((res: AppsModel) => {
       this.app = res;
+      this.changeDetectorRef.markForCheck();
     });
   }
 
@@ -59,6 +60,7 @@ export class AppsDetailComponent implements OnInit {
     let appId = this.activatedRoute.snapshot.params.appId;
     this.tenantService.GetAppById(appId).then((res: AppsModel) => {
       this.app = res;
+      this.changeDetectorRef.markForCheck();
     });
   }
 }

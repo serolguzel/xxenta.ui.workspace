@@ -46,8 +46,7 @@
       <dxo-label [text]="'labels.identity-number' | transloco"></dxo-label>
     </dxi-item>
 
-    <dxi-item dataField="phoneAreaCode" editorType="dxLookup"
-      [editorOptions]="lookupService.countryPhoneCodesLookUpOptions">
+    <dxi-item dataField="phoneAreaCode" editorType="dxLookup" [editorOptions]="lookupService.countryPhoneCodesLookUpOptions">
       <dxo-label [text]="'labels.phone-country-code' | transloco"></dxo-label>
     </dxi-item>
 
@@ -72,5 +71,6 @@
 </dx-form>
 <dx-toolbar class="mt-4">
   <dxi-item location="after" widget="dxButton" [disabled]="disableSaveButton" [options]="btnSave"></dxi-item>
+  <dxi-item location="before" widget="dxButton" [disabled]="disableDeleteButton" [options]="btnDelete"></dxi-item>
   <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
 </dx-toolbar>

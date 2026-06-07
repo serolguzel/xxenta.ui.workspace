@@ -57,7 +57,7 @@
             "stylePreprocessorOptions": {
               "includePaths": [
                 ".",
-                "node_modules/genesis-shell/src/styles"
+                "dist/genesis-shell/src/styles"
               ]
             },
             "security": {
@@ -108,6 +108,32 @@
         },
         "test": {
           "builder": "@angular/build:unit-test"
+        }
+      }
+    },
+    "genesis-shell": {
+      "projectType": "library",
+      "root": "projects/genesis-shell",
+      "sourceRoot": "projects/genesis-shell/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/genesis-shell/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/genesis-shell/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/genesis-shell/tsconfig.spec.json"
+          }
         }
       }
     },

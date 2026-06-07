@@ -14,6 +14,11 @@ export class UserService extends CoreService {
     return this.getCall(`User/${userId}`);
   }
 
+  public DeleteUser(userId: string): Promise<UserModel> {
+    return this.deleteCall(`User/${userId}`);
+  }
+
+
   public UpdateUser(userId: string, request: UpdateUser): Promise<CommandResponse<string>> {
     return this.putCall(`User/${userId}`, request);
   }

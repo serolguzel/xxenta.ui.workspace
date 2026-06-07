@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { DxDataGridModule, DxTemplateModule, DxNumberBoxModule, DxSelectBoxModule } from 'devextreme-angular';
 import { TenantService } from '../../services/tenant.service';
 import CustomStore from 'devextreme/data/custom_store';
@@ -12,7 +12,6 @@ import { DataSourceBuilder, OrganizationService } from 'genesis-components';
   templateUrl: './sub-apps-component.component.html',
   standalone: true,
   imports: [
-    RouterLink,
     DxDataGridModule,
     DxTemplateModule,
     DxNumberBoxModule,
@@ -32,7 +31,7 @@ export class SubAppsComponentComponent implements OnInit {
   isUpdate: boolean = false;
   constructor(
     private readonly organizationService: OrganizationService, 
-    private tenantService: TenantService,
+    private readonly tenantService: TenantService,
     private readonly activatedRoute: ActivatedRoute
   ) {
 
@@ -70,7 +69,6 @@ export class SubAppsComponentComponent implements OnInit {
       return this.tenantService.ExistAppCode(e.value).then((res: CommandResponse<boolean>) => {
         return !res.aggregatorId;
       });
-
     } else {
       return false;
     }

@@ -4,11 +4,11 @@
   "compileOnSave": false,
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "paths": {
+      "genesis-shell": ["./dist/genesis-shell"],
       "genesis-components": ["./dist/genesis-components"]
     },
     "declaration": false,

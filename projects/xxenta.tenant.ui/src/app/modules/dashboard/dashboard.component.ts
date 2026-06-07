@@ -70,7 +70,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             .subscribe((config: GenesisConfig) => {
                 let scheme = config.scheme;
                 this.onValueChanged(scheme === 'light' ? 'light' : scheme === 'dark' ? 'dark' : 'custom');
-                console.log('GenesisConfig updated:', config);
             });
     }
 

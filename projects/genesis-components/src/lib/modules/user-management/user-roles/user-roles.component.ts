@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { DxFormComponent, DxFormModule, DxTagBoxModule, DxToolbarModule } from 'devextreme-angular';
 import { ActivatedRoute } from '@angular/router';
-import { RoleResponse, UserRoleModel } from '../components/user-form/user-form.models';
+import { RoleResponse, UserRoleModel, UserRoleResponse } from '../components/user-form/user-form.models';
 import { CoreService } from 'genesis-coreservice';
 import { TranslocoModule } from '@jsverse/transloco';
 
@@ -22,6 +22,7 @@ export class UserRolesComponent implements OnInit {
   roles: RoleResponse[] = [];
   userToolbars: any[] = [];
   constructor(
+    private changeDetectorRef: ChangeDetectorRef,
     private coreService: CoreService,
     private activatedRoute: ActivatedRoute,
   ) {
@@ -40,20 +41,15 @@ export class UserRolesComponent implements OnInit {
     }];
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.model.userId = this.activatedRoute.snapshot.params['userId'];
-    Promise.all([
-      this.coreService.getCall(`User/GetRoles`)
-        .then((res: RoleResponse[]) => {
-          this.roles = res;
-        })
-    ]).then(() => {
-      this.coreService.getCall(`Role/GetUserRole/${this.model.userId}`).then((response: string[]) => {
-        if (response) {
-          this.model.roleIds = response;
-        }
-      });
-    });
+    this.roles = await this.coreService.getCall(`Role`) as RoleResponse[];
+    this.model.roleIds = [];
+    var response = await this.coreService.getCall(`Role/${this.model.userId}`) as UserRoleResponse[];
+    if (response) {
+      this.model.roleIds = response.map(x => x.roleId);
+      this.changeDetectorRef.markForCheck();
+    }
   }
 
   save() {

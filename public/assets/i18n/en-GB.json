@@ -100,7 +100,9 @@
     "required": "Required field!",
     "name-exists": "This name already exists!",
     "code-exists": "This code already exists!",
-    "secret-warning": "Please save the secret key. It will not be shown again."
+    "secret-warning": "Please save the secret key. It will not be shown again.",
+    "are-you-sure": "Are you sure?",
+    "delete-confirmation-description": "Are you sure you want to delete this item?"
   },
   "descriptions": {
     "name-placeholder": "Enter API resource name",

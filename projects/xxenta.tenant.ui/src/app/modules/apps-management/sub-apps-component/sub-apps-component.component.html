@@ -78,8 +78,8 @@
         </dxo-form>
     </dxo-editing>
   
-      <dxi-column dataField="name" dataType="string" cellTemplate="nameTemp"></dxi-column>
-      <dxi-column dataField="code" dataType="string" cellTemplate="nameTemp"></dxi-column>
+      <dxi-column dataField="name" dataType="string"></dxi-column>
+      <dxi-column dataField="code" dataType="string"></dxi-column>
       <dxi-column dataField="icon" dataType="string" [visible]="false"></dxi-column>
       <dxi-column dataField="link" dataType="string" [visible]="false"></dxi-column>
       <dxi-column dataField="presentationType" dataType="string">
@@ -89,18 +89,10 @@
         <dxo-lookup [dataSource]="appTypes"></dxo-lookup>
       </dxi-column>
       <dxi-column dataField="noShow" dataType="boolean"></dxi-column>
-      <dxi-column dataField="description" dataType="string" cellTemplate="nameTemp"></dxi-column>
+      <dxi-column dataField="description" dataType="string"></dxi-column>
       <dxi-column dataField="parentId" dataType="string" [visible]="false"></dxi-column>
       <dxi-column dataField="price" dataType="number" [visible]="false"></dxi-column>
       <dxi-column dataField="currency" dataType="string" [visible]="false"></dxi-column>
-
-      <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
-        <a [routerLink]="'detail/'+d.data.id">
-            <span class="flex font-bold">
-                {{d.value}}
-            </span>
-        </a>
-    </div>
 
       <dxo-paging [pageSize]="10"></dxo-paging>
       <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>

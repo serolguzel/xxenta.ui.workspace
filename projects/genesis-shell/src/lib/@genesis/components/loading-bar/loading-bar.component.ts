@@ -1,6 +1,6 @@
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { NgIf } from '@angular/common';
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { GenesisLoadingService } from 'genesis-coreservice';
 import { Subject, takeUntil } from 'rxjs';
@@ -15,65 +15,44 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class GenesisLoadingBarComponent implements OnChanges, OnInit, OnDestroy {
     @Input() autoMode: boolean = true;
-    mode: 'determinate' | 'indeterminate';
+    mode?: 'determinate' | 'indeterminate';
     progress: number = 0;
     show: boolean = false;
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    private unsubscribeAll: Subject<any> = new Subject<any>();
 
-    /**
-     * Constructor
-     */
-    constructor(private genesisLoadingService: GenesisLoadingService) {
+    constructor(private genesisLoadingService: GenesisLoadingService, private cdr: ChangeDetectorRef) {
     }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * On changes
-     *
-     * @param changes
-     */
+    
     ngOnChanges(changes: SimpleChanges): void {
-        // Auto mode
         if ('autoMode' in changes) {
-            // Set the auto mode in the service
             this.genesisLoadingService.setAutoMode(coerceBooleanProperty(changes.autoMode.currentValue));
         }
     }
 
-    /**
-     * On init
-     */
     ngOnInit(): void {
-        // Subscribe to the service
         this.genesisLoadingService.mode$
-            .pipe(takeUntil(this._unsubscribeAll))
+            .pipe(takeUntil(this.unsubscribeAll))
             .subscribe((value) => {
                 this.mode = value;
             });
 
         this.genesisLoadingService.progress$
-            .pipe(takeUntil(this._unsubscribeAll))
+            .pipe(takeUntil(this.unsubscribeAll))
             .subscribe((value) => {
                 this.progress = value;
             });
 
         this.genesisLoadingService.show$
-            .pipe(takeUntil(this._unsubscribeAll))
+            .pipe(takeUntil(this.unsubscribeAll))
             .subscribe((value) => {
                 this.show = value;
+                this.cdr.detectChanges();
             });
 
     }
 
-    /**
-     * On destroy
-     */
     ngOnDestroy(): void {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
+        this.unsubscribeAll.next(null);
+        this.unsubscribeAll.complete();
     }
 }

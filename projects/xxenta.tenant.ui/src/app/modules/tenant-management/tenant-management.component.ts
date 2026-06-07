@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { BreadcrumbsModel, GenesisChildSidebarComponent, GenesisNavigationItem } from 'genesis-shell';
 import { Subject, takeUntil } from 'rxjs';
 import { confirm } from 'devextreme/ui/dialog';
@@ -30,6 +30,7 @@ export class TenantManagementComponent implements OnInit, OnDestroy {
   private unsubscribeAll: Subject<any> = new Subject<any>();
 
   constructor(
+    private changeDetectorRef: ChangeDetectorRef,
     private eventService: OrganizationEventService,
     private tenantService: TenantService,
     private organizationService: OrganizationService) {
@@ -56,6 +57,7 @@ export class TenantManagementComponent implements OnInit, OnDestroy {
           });
           this.organizationService.GetOrganizationApps(res.id).then((apps: OrganizationAppsModel[]) => {
             this.setMenuData(res, apps);
+            this.changeDetectorRef.markForCheck();
           });
 
           this.eventService.setOrganizationChange$ = res;

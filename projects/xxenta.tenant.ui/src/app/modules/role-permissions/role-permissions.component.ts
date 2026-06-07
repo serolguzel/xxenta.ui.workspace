@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { DxAccordionModule, DxSwitchModule, DxTemplateModule, DxTextBoxModule, DxToolbarModule } from 'devextreme-angular';
 import { BreadcrumbsModel, GenesisBreadcrumbsComponent } from 'genesis-shell';
 import { NgFor } from '@angular/common';
@@ -34,6 +34,7 @@ export class RolePermissionsComponent implements OnInit {
   filterText: string = '';
 
   constructor(
+    private readonly changeDetectorRef: ChangeDetectorRef,
     private tenantService: TenantService,
     public translocoService: TranslocoService
   ) { }
@@ -64,6 +65,7 @@ export class RolePermissionsComponent implements OnInit {
       this.compyData = [];
       this.data = res;
       this.compyData = res;
+      this.changeDetectorRef.markForCheck();
     });
   }
 

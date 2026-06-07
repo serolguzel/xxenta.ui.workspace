@@ -68,7 +68,7 @@ const config = {
         './projects/**/*.{html,ts}',
         './src/**/*.{html,ts}',
         './tailwind/**/*.{html,ts}',
-        './node_modules/genesis-shell/**/*.{html,ts}'
+        './dist/genesis-shell/**/*.{html,ts}'
     ],
     important  : true,
     theme      : {

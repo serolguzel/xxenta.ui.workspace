@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { DxFormComponent, DxFormModule, DxToolbarModule } from 'devextreme-angular';
 import { ActivatedRoute } from '@angular/router';
 import { UpdateUserEmail } from '../components/user-form/user-form.models';
@@ -18,7 +18,6 @@ import { TranslocoModule } from '@jsverse/transloco';
 export class UserEmailComponent implements OnInit {
   @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
   @Output() onCancelClick: EventEmitter<UpdateUserEmail>;
-
   @Input() data: UpdateUserEmail = <UpdateUserEmail>{};
 
   btnSave = {
@@ -34,6 +33,7 @@ export class UserEmailComponent implements OnInit {
   };
 
   constructor(
+    private changeDetectorRef: ChangeDetectorRef,
     private coreService: CoreService,
     private activatedRoute: ActivatedRoute
   ) {
@@ -44,6 +44,7 @@ export class UserEmailComponent implements OnInit {
     let res = await this.coreService.getCall(`User/GetUserLookUpById/${this.data.userId}`);
     if (res) {
       this.data.email = res.email;
+      this.changeDetectorRef.markForCheck();
     }
   }
 

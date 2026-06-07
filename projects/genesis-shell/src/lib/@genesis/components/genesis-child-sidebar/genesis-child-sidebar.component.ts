@@ -1,6 +1,7 @@
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { NgClass } from '@angular/common';
 import {
+    ChangeDetectorRef,
     Component,
     Input,
     OnDestroy,
@@ -17,6 +18,7 @@ import { GenesisBreadcrumbsComponent } from '../genesis-breadcrumbs';
 import { BreadcrumbsModel } from '../genesis-breadcrumbs/breadcrumbs.model';
 import { ChildSidebarComponent } from './child-sidebar';
 import { GenesisNavigationItem } from '../navigation/navigation.types';
+import { GenesisConfig, GenesisConfigService } from '../..';
 
 @Component({
     selector: 'genesis-child-sidebar',
@@ -24,15 +26,15 @@ import { GenesisNavigationItem } from '../navigation/navigation.types';
     encapsulation: ViewEncapsulation.None,
     standalone: true,
     imports: [
-    NgClass,
-    CdkScrollable,
-    RouterOutlet,
-    MatSidenavModule,
-    MatButtonModule,
-    MatIconModule,
-    GenesisBreadcrumbsComponent,
-    ChildSidebarComponent
-],
+        NgClass,
+        CdkScrollable,
+        RouterOutlet,
+        MatSidenavModule,
+        MatButtonModule,
+        MatIconModule,
+        GenesisBreadcrumbsComponent,
+        ChildSidebarComponent
+    ],
 })
 export class GenesisChildSidebarComponent implements OnInit, OnDestroy {
     @Input() PageTitle: string = '';
@@ -41,35 +43,43 @@ export class GenesisChildSidebarComponent implements OnInit, OnDestroy {
     @Input() ShowSidebarTitle: boolean = false;
     @Input() Breadcrumbs: Array<BreadcrumbsModel> = [];
     @Input() MenuData: GenesisNavigationItem[] = [];
-    @Input() IsBgWhite: boolean = true;
     @Input() IsDefaultPadding: boolean = true;
     @Input() HideDrawer: boolean = false;
     drawerMode: 'over' | 'side' = 'side';
     drawerOpened: boolean = true;
-
+    config?: GenesisConfig;
     private unsubscribeAll: Subject<any> = new Subject<any>();
 
     constructor(
+        private changeDetectorRef: ChangeDetectorRef,
+        private readonly configService: GenesisConfigService,
         private genesisMediaWatcherService: GenesisMediaWatcherService,
-    ) {}
+    ) { }
 
     ngOnDestroy(): void {
         this.unsubscribeAll.next(null);
         this.unsubscribeAll.complete();
     }
     ngOnInit(): void {
+        this.configService.config$
+            .pipe(takeUntil(this.unsubscribeAll))
+            .subscribe((config: GenesisConfig) => {
+                this.config = config;
+                this.changeDetectorRef.detectChanges();
+            });
+
         this.genesisMediaWatcherService.onMediaChange$
             .pipe(takeUntil(this.unsubscribeAll))
             .subscribe(({ matchingAliases }) => {
                 if (matchingAliases.includes('lg')) {
                     this.drawerMode = 'side';
-                    if(!this.HideDrawer)
+                    if (!this.HideDrawer)
                         this.drawerOpened = true;
                     else
                         this.drawerOpened = false;
                 } else {
                     this.drawerMode = 'over';
-                    if(!this.HideDrawer)
+                    if (!this.HideDrawer)
                         this.drawerOpened = false;
                 }
             });

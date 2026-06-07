@@ -97,7 +97,7 @@ const theming = withOptions((options) => ({
         const sassMap = jsonToSassMap(JSON.stringify({'user-themes': themes}));
 
         /* Get the file path */
-        const filename = resolve('node_modules/genesis-shell/src/styles/user-themes.scss');
+        const filename = resolve('dist/genesis-shell/src/styles/user-themes.scss');
 
         /* Read the file and get its data */
         let data;

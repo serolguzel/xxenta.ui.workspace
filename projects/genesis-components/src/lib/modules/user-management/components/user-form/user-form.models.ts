@@ -64,6 +64,11 @@ export interface RoleResponse {
     normalizedName: string;
 }
 
+export interface UserRoleResponse {
+    userId: string;
+    roleId: string;
+}
+
 export const userMapping = {
     UserModelToUpdateUserModel(data: UserModel): UpdateUser {
         return {

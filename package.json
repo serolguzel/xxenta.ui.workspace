@@ -43,7 +43,6 @@
     "file-saver": "^2.0.5",
     "genesis-apiservices": "^21.0.1",
     "genesis-coreservice": "^21.0.1",
-    "genesis-shell": "^21.0.18",
     "highlight.js": "^11.11.1",
     "lodash-es": "^4.18.1",
     "luxon": "^3.7.2",
