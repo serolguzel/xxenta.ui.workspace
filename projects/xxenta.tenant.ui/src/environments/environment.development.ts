@@ -29,6 +29,7 @@ export const environment = {
     sideBarLogo: 'https://meta.weorbis.com/xxenta/logos/xxenta_symbol.png',
     sideBarCompanyName: 'BACKOFFICE',
     sideBarFlueLogo: 'https://meta.weorbis.com/xxenta/logos/xxenta_symbol.png',
+    sideBarTheme: 'dark',
     showLanguage: false,
     showNotification: true,
     showApps: true,

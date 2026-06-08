@@ -49,19 +49,22 @@ export class TenantManagementComponent implements OnInit, OnDestroy {
         ];
 
         this.organizationService.GetOrganizationRecursiveById(customerId).then((res: OrganizationRecursiveModel) => {
+          if (res == null) {
+            return;
+          }
           this.customer = res
           if (res.parent != null)
             this.recursiveCompany(res.parent);
+          this.changeDetectorRef.markForCheck();
           this.breadcrumbs.push({
             title: res.name
           });
-          this.organizationService.GetOrganizationApps(res.id).then((apps: OrganizationAppsModel[]) => {
-            this.setMenuData(res, apps);
-            this.changeDetectorRef.markForCheck();
-          });
 
           this.eventService.setOrganizationChange$ = res;
-
+          this.organizationService.GetOrganizationApps(res.id).then((apps: OrganizationAppsModel[]) => {
+            this.setMenuData(res, apps);
+            this.changeDetectorRef.detectChanges();
+          });
         });
       });
   }

@@ -85,6 +85,144 @@ $dark-base: (
 
 $sans-font-family: '"Inter var", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif';
 
+/* Define M3 system typography tokens required by Angular Material v21 MDC components.
+   M2 API (mat.m2-define-*) does not emit --mat-sys-* tokens; we map them manually
+   from the M2 typography config values below. */
+:root {
+    /* label-large → $button  (menu items, chips, tab labels, etc.) */
+    --mat-sys-label-large-font: #{$sans-font-family};
+    --mat-sys-label-large-size: 0.875rem;
+    --mat-sys-label-large-line-height: 1.25rem;
+    --mat-sys-label-large-weight: 500;
+    --mat-sys-label-large-tracking: 0.006rem;
+
+    /* label-medium */
+    --mat-sys-label-medium-font: #{$sans-font-family};
+    --mat-sys-label-medium-size: 0.75rem;
+    --mat-sys-label-medium-line-height: 1rem;
+    --mat-sys-label-medium-weight: 500;
+    --mat-sys-label-medium-tracking: 0.031rem;
+
+    /* label-small → $overline */
+    --mat-sys-label-small-font: #{$sans-font-family};
+    --mat-sys-label-small-size: 0.75rem;
+    --mat-sys-label-small-line-height: 1rem;
+    --mat-sys-label-small-weight: 500;
+    --mat-sys-label-small-tracking: 0.031rem;
+
+    /* body-large → $body-1 */
+    --mat-sys-body-large-font: #{$sans-font-family};
+    --mat-sys-body-large-size: 0.875rem;
+    --mat-sys-body-large-line-height: 1.5rem;
+    --mat-sys-body-large-weight: 400;
+    --mat-sys-body-large-tracking: 0.031rem;
+
+    /* body-medium → $body-2 */
+    --mat-sys-body-medium-font: #{$sans-font-family};
+    --mat-sys-body-medium-size: 0.875rem;
+    --mat-sys-body-medium-line-height: 1.5rem;
+    --mat-sys-body-medium-weight: 400;
+    --mat-sys-body-medium-tracking: 0.016rem;
+
+    /* body-small → $caption */
+    --mat-sys-body-small-font: #{$sans-font-family};
+    --mat-sys-body-small-size: 0.75rem;
+    --mat-sys-body-small-line-height: 1rem;
+    --mat-sys-body-small-weight: 400;
+    --mat-sys-body-small-tracking: 0.025rem;
+
+    /* title-large → $headline-6 */
+    --mat-sys-title-large-font: #{$sans-font-family};
+    --mat-sys-title-large-size: 0.875rem;
+    --mat-sys-title-large-line-height: 1.5rem;
+    --mat-sys-title-large-weight: 400;
+    --mat-sys-title-large-tracking: 0;
+
+    /* title-medium → $subtitle-1 */
+    --mat-sys-title-medium-font: #{$sans-font-family};
+    --mat-sys-title-medium-size: 1rem;
+    --mat-sys-title-medium-line-height: 1.75rem;
+    --mat-sys-title-medium-weight: 400;
+    --mat-sys-title-medium-tracking: 0.009rem;
+
+    /* title-small → $subtitle-2 */
+    --mat-sys-title-small-font: #{$sans-font-family};
+    --mat-sys-title-small-size: 0.875rem;
+    --mat-sys-title-small-line-height: 1.25rem;
+    --mat-sys-title-small-weight: 600;
+    --mat-sys-title-small-tracking: 0.006rem;
+
+    /* headline-large → $headline-3 */
+    --mat-sys-headline-large-font: #{$sans-font-family};
+    --mat-sys-headline-large-size: 1.125rem;
+    --mat-sys-headline-large-line-height: 1.75rem;
+    --mat-sys-headline-large-weight: 600;
+    --mat-sys-headline-large-tracking: 0;
+
+    /* headline-medium → $headline-4 */
+    --mat-sys-headline-medium-font: #{$sans-font-family};
+    --mat-sys-headline-medium-size: 0.875rem;
+    --mat-sys-headline-medium-line-height: 1.25rem;
+    --mat-sys-headline-medium-weight: 600;
+    --mat-sys-headline-medium-tracking: 0;
+
+    /* headline-small → $headline-5 */
+    --mat-sys-headline-small-font: #{$sans-font-family};
+    --mat-sys-headline-small-size: 0.875rem;
+    --mat-sys-headline-small-line-height: 1.5rem;
+    --mat-sys-headline-small-weight: 400;
+    --mat-sys-headline-small-tracking: 0;
+
+    /* display-large → $headline-1 */
+    --mat-sys-display-large-font: #{$sans-font-family};
+    --mat-sys-display-large-size: 1.875rem;
+    --mat-sys-display-large-line-height: 2.25rem;
+    --mat-sys-display-large-weight: 800;
+    --mat-sys-display-large-tracking: -0.016rem;
+
+    /* display-medium → $headline-2 */
+    --mat-sys-display-medium-font: #{$sans-font-family};
+    --mat-sys-display-medium-size: 1.25rem;
+    --mat-sys-display-medium-line-height: 1.75rem;
+    --mat-sys-display-medium-weight: 700;
+    --mat-sys-display-medium-tracking: 0;
+
+    /* display-small → $headline-3 */
+    --mat-sys-display-small-font: #{$sans-font-family};
+    --mat-sys-display-small-size: 1.125rem;
+    --mat-sys-display-small-line-height: 1.75rem;
+    --mat-sys-display-small-weight: 600;
+    --mat-sys-display-small-tracking: 0;
+
+    /* Shape tokens */
+    --mat-sys-corner-none: 0;
+    --mat-sys-corner-extra-small: 4px;
+    --mat-sys-corner-extra-small-top: 4px 4px 0 0;
+    --mat-sys-corner-small: 8px;
+    --mat-sys-corner-medium: 12px;
+    --mat-sys-corner-large: 16px;
+    --mat-sys-corner-large-start: 16px 0 0 16px;
+    --mat-sys-corner-large-end: 0 16px 16px 0;
+    --mat-sys-corner-large-top: 16px 16px 0 0;
+    --mat-sys-corner-extra-large: 28px;
+    --mat-sys-corner-extra-large-top: 28px 28px 0 0;
+    --mat-sys-corner-full: 9999px;
+
+    /* State layer opacity tokens */
+    --mat-sys-hover-state-layer-opacity: 0.04;
+    --mat-sys-focus-state-layer-opacity: 0.12;
+    --mat-sys-pressed-state-layer-opacity: 0.12;
+    --mat-sys-dragged-state-layer-opacity: 0.16;
+
+    /* Elevation shadow tokens */
+    --mat-sys-level0: 0px 0px 0px 0px rgba(0,0,0,.2), 0px 0px 0px 0px rgba(0,0,0,.14), 0px 0px 0px 0px rgba(0,0,0,.12);
+    --mat-sys-level1: 0px 2px 1px -1px rgba(0,0,0,.2), 0px 1px 1px 0px rgba(0,0,0,.14), 0px 1px 3px 0px rgba(0,0,0,.12);
+    --mat-sys-level2: 0px 3px 3px -2px rgba(0,0,0,.2), 0px 3px 4px 0px rgba(0,0,0,.14), 0px 1px 8px 0px rgba(0,0,0,.12);
+    --mat-sys-level3: 0px 3px 5px -1px rgba(0,0,0,.2), 0px 6px 10px 0px rgba(0,0,0,.14), 0px 1px 18px 0px rgba(0,0,0,.12);
+    --mat-sys-level4: 0px 5px 5px -3px rgba(0,0,0,.2), 0px 8px 10px 1px rgba(0,0,0,.14), 0px 3px 14px 2px rgba(0,0,0,.12);
+    --mat-sys-level5: 0px 7px 8px -4px rgba(0,0,0,.2), 0px 12px 17px 2px rgba(0,0,0,.14), 0px 5px 22px 4px rgba(0,0,0,.12);
+}
+
 /* Create a base theme without any color to set the density and typography */
 @include mat.all-component-themes((
     color: null,
@@ -157,10 +295,124 @@ $sans-font-family: '"Inter var", ui-sans-serif, system-ui, -apple-system, BlinkM
     #{map.get($theme, selector)} .light,
     #{map.get($theme, selector)}.light {
         @include mat.all-component-colors($light-theme);
+
+        /* M3 system color tokens — light mode */
+        --mat-sys-primary: #{map.get(map.get($theme, primary), DEFAULT)};
+        --mat-sys-on-primary: #{map.get(map.get(map.get($theme, primary), contrast), DEFAULT)};
+        --mat-sys-primary-container: #{map.get(map.get($theme, primary), 100)};
+        --mat-sys-on-primary-container: #{map.get(map.get($theme, primary), 700)};
+        --mat-sys-inverse-primary: #{map.get(map.get($theme, primary), 300)};
+        --mat-sys-primary-fixed: #{map.get(map.get($theme, primary), DEFAULT)};
+        --mat-sys-primary-fixed-dim: #{map.get(map.get($theme, primary), DEFAULT)};
+        --mat-sys-on-primary-fixed: #{map.get(map.get(map.get($theme, primary), contrast), DEFAULT)};
+        --mat-sys-on-primary-fixed-variant: #{map.get(map.get(map.get($theme, primary), contrast), DEFAULT)};
+        --mat-sys-surface-tint: #{map.get(map.get($theme, primary), DEFAULT)};
+
+        --mat-sys-secondary: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-on-secondary: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+        --mat-sys-secondary-container: #{map.get(map.get($theme, accent), 100)};
+        --mat-sys-on-secondary-container: #{map.get(map.get($theme, accent), 700)};
+        --mat-sys-secondary-fixed: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-secondary-fixed-dim: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-on-secondary-fixed: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+        --mat-sys-on-secondary-fixed-variant: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+
+        --mat-sys-tertiary: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-on-tertiary: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+        --mat-sys-tertiary-container: #{map.get(map.get($theme, accent), 100)};
+        --mat-sys-on-tertiary-container: #{map.get(map.get($theme, accent), 700)};
+        --mat-sys-tertiary-fixed: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-tertiary-fixed-dim: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-on-tertiary-fixed: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+        --mat-sys-on-tertiary-fixed-variant: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+
+        --mat-sys-error: #{map.get(map.get($theme, warn), DEFAULT)};
+        --mat-sys-on-error: #{map.get(map.get(map.get($theme, warn), contrast), DEFAULT)};
+        --mat-sys-error-container: #{map.get(map.get($theme, warn), 50)};
+        --mat-sys-on-error-container: #{map.get(map.get($theme, warn), 700)};
+
+        --mat-sys-background: #F1F5F9;
+        --mat-sys-on-background: rgba(0, 0, 0, 0.87);
+        --mat-sys-surface: #FFFFFF;
+        --mat-sys-surface-bright: #FFFFFF;
+        --mat-sys-surface-container-lowest: #FFFFFF;
+        --mat-sys-surface-container-low: #F8FAFC;
+        --mat-sys-surface-container: #ffffff;
+        --mat-sys-surface-container-high: #E2E8F0;
+        --mat-sys-surface-container-highest: #CBD5E1;
+        --mat-sys-surface-dim: #CBD5E1;
+        --mat-sys-surface-variant: #e2e8f0;
+        --mat-sys-on-surface: rgba(0, 0, 0, 0.87);
+        --mat-sys-on-surface-variant: rgba(0, 0, 0, 0.54);
+        --mat-sys-inverse-surface: #334155;
+        --mat-sys-inverse-on-surface: #FFFFFF;
+        --mat-sys-outline: rgba(0, 0, 0, 0.12);
+        --mat-sys-outline-variant: rgba(0, 0, 0, 0.38);
+        --mat-sys-shadow: #000000;
+        --mat-sys-scrim: #000000;
+        --mat-sys-neutral10: rgba(0, 0, 0, 0.87);
+        --mat-sys-neutral-variant20: #334155;
     }
 
     #{map.get($theme, selector)} .dark,
     #{map.get($theme, selector)}.dark {
         @include mat.all-component-colors($dark-theme);
+
+        /* M3 system color tokens — dark mode */
+        --mat-sys-primary: #{map.get(map.get($theme, primary), DEFAULT)};
+        --mat-sys-on-primary: #{map.get(map.get(map.get($theme, primary), contrast), DEFAULT)};
+        --mat-sys-primary-container: #{map.get(map.get($theme, primary), 900)};
+        --mat-sys-on-primary-container: #{map.get(map.get($theme, primary), 50)};
+        --mat-sys-inverse-primary: #{map.get(map.get($theme, primary), 600)};
+        --mat-sys-primary-fixed: #{map.get(map.get($theme, primary), DEFAULT)};
+        --mat-sys-primary-fixed-dim: #{map.get(map.get($theme, primary), DEFAULT)};
+        --mat-sys-on-primary-fixed: #{map.get(map.get(map.get($theme, primary), contrast), DEFAULT)};
+        --mat-sys-on-primary-fixed-variant: #{map.get(map.get(map.get($theme, primary), contrast), DEFAULT)};
+        --mat-sys-surface-tint: #{map.get(map.get($theme, primary), DEFAULT)};
+
+        --mat-sys-secondary: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-on-secondary: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+        --mat-sys-secondary-container: #{map.get(map.get($theme, accent), 900)};
+        --mat-sys-on-secondary-container: #{map.get(map.get($theme, accent), 50)};
+        --mat-sys-secondary-fixed: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-secondary-fixed-dim: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-on-secondary-fixed: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+        --mat-sys-on-secondary-fixed-variant: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+
+        --mat-sys-tertiary: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-on-tertiary: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+        --mat-sys-tertiary-container: #{map.get(map.get($theme, accent), 900)};
+        --mat-sys-on-tertiary-container: #{map.get(map.get($theme, accent), 50)};
+        --mat-sys-tertiary-fixed: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-tertiary-fixed-dim: #{map.get(map.get($theme, accent), DEFAULT)};
+        --mat-sys-on-tertiary-fixed: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+        --mat-sys-on-tertiary-fixed-variant: #{map.get(map.get(map.get($theme, accent), contrast), DEFAULT)};
+
+        --mat-sys-error: #{map.get(map.get($theme, warn), DEFAULT)};
+        --mat-sys-on-error: #{map.get(map.get(map.get($theme, warn), contrast), DEFAULT)};
+        --mat-sys-error-container: #{map.get(map.get($theme, warn), 900)};
+        --mat-sys-on-error-container: #{map.get(map.get($theme, warn), 50)};
+
+        --mat-sys-background: #0e172a;
+        --mat-sys-on-background: #FFFFFF;
+        --mat-sys-surface: #0c2920;
+        --mat-sys-surface-bright: #1c422f;
+        --mat-sys-surface-container-lowest: #07160f;
+        --mat-sys-surface-container-low: #0a2419;
+        --mat-sys-surface-container: #112e24;
+        --mat-sys-surface-container-high: #163829;
+        --mat-sys-surface-container-highest: #1c422f;
+        --mat-sys-surface-dim: #07160f;
+        --mat-sys-surface-variant: #1c422f;
+        --mat-sys-on-surface: #FFFFFF;
+        --mat-sys-on-surface-variant: rgba(255, 255, 255, 0.7);
+        --mat-sys-inverse-surface: #FFFFFF;
+        --mat-sys-inverse-on-surface: #0c2920;
+        --mat-sys-outline: rgba(255, 255, 255, 0.12);
+        --mat-sys-outline-variant: rgba(255, 255, 255, 0.38);
+        --mat-sys-shadow: #000000;
+        --mat-sys-scrim: #000000;
+        --mat-sys-neutral10: #FFFFFF;
+        --mat-sys-neutral-variant20: rgba(255, 255, 255, 0.54);
     }
 }

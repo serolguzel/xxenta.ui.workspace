@@ -3,8 +3,8 @@
     vertical-align: inherit !important;
 }
 
-.dx-datagrid-headers .dx-datagrid-table .dx-row>td,
-.dx-treelist-headers .dx-treelist-table .dx-row>td {
+.dx-datagrid-rowsview .dx-row>td,
+.dx-treelist-rowsview .dx-row>td {
     border-bottom: 1px solid #ddd;
     padding: 12px;
     text-align: center !important;

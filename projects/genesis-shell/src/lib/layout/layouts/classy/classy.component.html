@@ -2,8 +2,11 @@
 <genesis-loading-bar [autoMode]="true"></genesis-loading-bar>
 
 <!-- Navigation -->
-<genesis-vertical-navigation class="ligth:bg-gray-100 dark:bg-gray-900 print:hidden" [ngClass]="{'light': config.scheme === 'light', 'dark': config.scheme === 'dark'}" [mode]="isScreenSmall ? 'over' : 'side'"
-  [name]="'mainNavigation'" [navigation]="navigation.default" [opened]="!isScreenSmall">
+<genesis-vertical-navigation class="ligth:bg-gray-100 dark:bg-gray-900 print:hidden" [ngClass]="{
+  'light': config.scheme === 'light' && appConfig.sideBarTheme !== 'dark', 
+  'dark': config.scheme === 'dark' || appConfig.sideBarTheme === 'dark',
+}" [mode]="isScreenSmall ? 'over' : 'side'" [name]="'mainNavigation'" [navigation]="navigation.default"
+  [opened]="!isScreenSmall">
   <!-- Navigation header hook -->
   <ng-container genesisVerticalNavigationContentHeader>
     <div class="flex items-center w-full p-4 pl-6">
@@ -29,10 +32,12 @@
         <div class="w-full whitespace-nowrap text-ellipsis overflow-hidden text-center leading-normal font-medium">
           {{ user.displayName }}
         </div>
-        <div class="w-full mt-0.5 whitespace-nowrap text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary">
+        <div
+          class="w-full mt-0.5 whitespace-nowrap text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary">
           {{ user.email ?? user.userName }}
         </div>
-        <div *ngIf="user.company" class="w-full mt-0.5 whitespace-nowrap text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary">
+        <div *ngIf="user.company"
+          class="w-full mt-0.5 whitespace-nowrap text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary">
           {{ user.company }}
         </div>
       </div>
@@ -66,7 +71,7 @@
       <user></user>
       <languages *ngIf="appConfig.showLanguage"></languages>
       <genesis-chat-agent *ngIf="appConfig.showChatAgent"></genesis-chat-agent>
-      
+
       <!-- 
             <genesis-fullscreen class="hidden md:block"></genesis-fullscreen>
             <messages></messages>
@@ -80,7 +85,7 @@
   </div>
 
   <!-- Content -->
-  <div class="flex flex-col flex-auto content-area" [ngClass]="{'bg-white': config.scheme === 'light'}" >
+  <div class="flex flex-col flex-auto content-area" [ngClass]="{'bg-white': config.scheme === 'light'}">
     <router-outlet *ngIf="true"></router-outlet>
   </div>
 

@@ -61,7 +61,7 @@ import { ThemeSwitchComponent } from '../common/theme-switch/theme-switch.compon
   ]
 })
 export class ClassyLayoutComponent implements OnInit, OnDestroy {
-  isScreenSmall: boolean;
+  isScreenSmall?: boolean;
   isAppsPanel: boolean = false;
   navigation: Navigation = <Navigation>{};
   user: UserModel = <UserModel>{};
