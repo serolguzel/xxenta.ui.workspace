@@ -41,6 +41,12 @@
     },
     {
       "path": "./projects/genesis-components/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/xxenta-learning-tool/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/xxenta-learning-tool/tsconfig.spec.json"
     }
   ]
 }

@@ -55,10 +55,7 @@
               "projects/xxenta.tenant.ui/src/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": [
-                ".",
-                "dist/genesis-shell/src/styles"
-              ]
+              "includePaths": [".", "dist/genesis-shell/src/styles"]
             },
             "security": {
               "allowedHosts": []
@@ -160,6 +157,80 @@
           "options": {
             "tsConfig": "projects/genesis-components/tsconfig.spec.json"
           }
+        }
+      }
+    },
+    "xxenta-learning-tool": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/xxenta-learning-tool",
+      "sourceRoot": "projects/xxenta-learning-tool/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/xxenta-learning-tool/src/main.ts",
+            "tsConfig": "projects/xxenta-learning-tool/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/xxenta-learning-tool/public"
+              }
+            ],
+            "styles": ["projects/xxenta-learning-tool/src/styles.scss"],
+            "server": "projects/xxenta-learning-tool/src/main.server.ts",
+            "outputMode": "server",
+            "security": {
+              "allowedHosts": []
+            },
+            "ssr": {
+              "entry": "projects/xxenta-learning-tool/src/server.ts"
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "xxenta-learning-tool:build:production"
+            },
+            "development": {
+              "buildTarget": "xxenta-learning-tool:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
         }
       }
     }
