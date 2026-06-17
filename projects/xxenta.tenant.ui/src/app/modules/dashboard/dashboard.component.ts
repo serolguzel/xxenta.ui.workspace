@@ -7,12 +7,13 @@ import {
     DxToolbarModule,
 } from 'devextreme-angular';
 import themes from 'devextreme/ui/themes';
-import { AUTH_CONFIG_GEN, IAuthConfig } from 'genesis-coreservice';
+import { AUTH_CONFIG_GEN, AuthService, IAuthConfig, UserModel } from 'genesis-coreservice';
 import { SendNotificationToAllClients } from '../services/models/tenant.models';
 import { TenantService } from '../services/tenant.service';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 import { GenesisConfig, GenesisConfigService } from 'genesis-shell';
 import { Subject, takeUntil } from 'rxjs';
+import { Profile } from 'oidc-client';
 
 @Component({
     selector: 'app-dashboard',
@@ -57,8 +58,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         onClick: this.generateSubscription.bind(this)
     };
     private unsubscribeAll: Subject<any> = new Subject<any>();
+    user: UserModel = <UserModel>{};
     constructor(
         private tenantService: TenantService,
+        private readonly authService: AuthService,
         private translocoService: TranslocoService,
         private readonly configService: GenesisConfigService,
         @Inject(AUTH_CONFIG_GEN) public authConfig: IAuthConfig,
@@ -71,6 +74,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 let scheme = config.scheme;
                 this.onValueChanged(scheme === 'light' ? 'light' : scheme === 'dark' ? 'dark' : 'custom');
             });
+        //var user =  this.authService.user?.profile;
+        this.authService.getProfile().then((res: UserModel) => {
+            this.user = res;
+             console.log(this.user);
+        });
     }
 
     ngOnDestroy(): void {

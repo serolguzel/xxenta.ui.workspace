@@ -10,8 +10,8 @@ export const environment = {
   }),
   authConfig: <IAuthConfig><unknown>{
     issuer: 'https://xid.weorbis.com/',
-    redirectUri: 'http://localhost:4000/callback',
-    postLogoutRedirectUri: 'http://localhost:4000/logout',
+    redirectUri: 'https://xtenant-ui.weorbis.com/callback',
+    postLogoutRedirectUri: 'https://xtenant-ui.weorbis.com/logout',
     clientId: 'xxenta.tenant.ui',
     dummyClientSecret: '812f66a1cdc44de5a5a9eb310e2baa86',
     scope: 'profile email roles xxenta.tenant.api owner_id permission',

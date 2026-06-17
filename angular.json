@@ -87,6 +87,27 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "stage": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "10mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/xxenta.tenant.ui/src/environments/environment.ts",
+                  "with": "projects/xxenta.tenant.ui/src/environments/environment.stage.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"

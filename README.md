@@ -20,7 +20,8 @@ sudo chown -R $(whoami) /folder/path
 
 sudo ng build genesis-shell
 
-sudo ng serve xxenta.tenant.ui
+sudo ng serve xxenta.tenant.ui --port 4000
+sudo ng build xxenta.tenant.ui --configuration=stage
 
 
 ng g application angular --style=scss
