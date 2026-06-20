@@ -84,7 +84,7 @@ export const userMapping = {
             defaultRoute: data.defaultRoute,
             departmentId: data.departmentId,
             gender: data.gender,
-            userType: data.userType,
+            userType: data.userType ?? UserType.User,
             identityNumber: data.identityNumber,
             isActive: data.isActive,
             emailConfirmed: data.emailConfirmed

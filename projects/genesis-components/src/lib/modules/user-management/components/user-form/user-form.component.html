@@ -1,5 +1,4 @@
 <dx-form #hotelForm id="form" [formData]="model" labelLocation="top" labelMode="floating">
-
   <dxi-item itemType="group" [colCount]="2">
     <dxi-item dataField="userName" editorType="dxTextBox" [editorOptions]="{
                 disabled: model.id != undefined
@@ -8,7 +7,7 @@
       <dxo-label [text]="'labels.username' | transloco"></dxo-label>
     </dxi-item>
 
-    <dxi-item itemType="group" [colCount]="visibleUserType ? 2 : 1">
+    <dxi-item itemType="group" [colCount]="visibleUserType ? 2 : 1" [visible]="false">
       <dxi-item dataField="userType" editorType="dxSelectBox" [visible]="visibleUserType" [editorOptions]="{
                     dataSource: userTypes,
                     displayExpr: 'name',
@@ -26,7 +25,9 @@
         <dxo-label [text]="'labels.gender' | transloco"></dxo-label>
       </dxi-item>
     </dxi-item>
+  </dxi-item>
 
+  <dxi-item itemType="group" [colCount]="2">
     <dxi-item dataField="firstName">
       <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
       <dxo-label [text]="'labels.first-name' | transloco"></dxo-label>
@@ -36,7 +37,9 @@
       <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
       <dxo-label [text]="'labels.last-name' | transloco"></dxo-label>
     </dxi-item>
+  </dxi-item>
 
+  <dxi-item itemType="group" [colCount]="2">
     <dxi-item dataField="email" editorType="dxTextBox">
       <dxi-validation-rule type="email" [message]="'messages.invalid-emails' | transloco"></dxi-validation-rule>
       <dxo-label [text]="'labels.email' | transloco"></dxo-label>
@@ -46,7 +49,7 @@
       <dxo-label [text]="'labels.identity-number' | transloco"></dxo-label>
     </dxi-item>
 
-    <dxi-item dataField="phoneAreaCode" editorType="dxLookup" [editorOptions]="lookupService.countryPhoneCodesLookUpOptions">
+    <dxi-item dataField="phoneAreaCode" editorType="dxLookup" [editorOptions]="countryPhoneCodes">
       <dxo-label [text]="'labels.phone-country-code' | transloco"></dxo-label>
     </dxi-item>
 

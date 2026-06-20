@@ -140,12 +140,13 @@ export class TenantManagementComponent implements OnInit, OnDestroy {
           return !(data.parentId == null);
         }
       },
+      // {
+      //   title: 'Mappings',
+      //   type: 'basic',
+      //   icon: 'feather:git-merge',
+      //   link: `mappings/${data.id}`
+      // }, 
       {
-        title: 'Mappings',
-        type: 'basic',
-        icon: 'feather:git-merge',
-        link: `mappings/${data.id}`
-      }, {
         title: 'Applications',
         type: 'basic',
         icon: 'apps',
@@ -170,7 +171,8 @@ export class TenantManagementComponent implements OnInit, OnDestroy {
       },
       {
         type: 'divider'
-      }, {
+      }, 
+      {
         title: 'Users',
         type: 'basic',
         icon: 'heroicons_solid:users',
@@ -188,27 +190,27 @@ export class TenantManagementComponent implements OnInit, OnDestroy {
           return !data.isTenant;
         }
       },
-      {
-        title: 'Pax Counter',
-        type: 'basic',
-        icon: 'format_list_numbered',
-        link: `pax-counter/${data.id}`,
-        hidden: (item: GenesisNavigationItem) => {
-          return !data.isTenant;
-        }
-      },
+      // {
+      //   title: 'Pax Counter',
+      //   type: 'basic',
+      //   icon: 'format_list_numbered',
+      //   link: `pax-counter/${data.id}`,
+      //   hidden: (item: GenesisNavigationItem) => {
+      //     return !data.isTenant;
+      //   }
+      // },
       {
         type: 'divider',
         hidden: (item: GenesisNavigationItem) => {
           return !data.isTenant;
         }
       },
-      {
-        title: 'Airports',
-        type: 'basic',
-        icon: 'local_airport',
-        link: `airports/${data.id}`
-      },
+      // {
+      //   title: 'Airports',
+      //   type: 'basic',
+      //   icon: 'local_airport',
+      //   link: `airports/${data.id}`
+      // },
       {
         title: 'Settings',
         type: 'basic',

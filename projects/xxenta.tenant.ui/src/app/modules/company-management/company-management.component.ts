@@ -111,12 +111,12 @@ export class CompanyManagementComponent implements OnInit, OnDestroy {
           return !(data.parentId == null);
         }
       },
-      {
-        title: 'Mappings',
-        type: 'basic',
-        icon: 'feather:git-merge',
-        link: `mappings/${data.id}`
-      },
+      // {
+      //   title: 'Mappings',
+      //   type: 'basic',
+      //   icon: 'feather:git-merge',
+      //   link: `mappings/${data.id}`
+      // },
       {
         type: 'divider'
       },
@@ -147,15 +147,15 @@ export class CompanyManagementComponent implements OnInit, OnDestroy {
           return !(data.parentId == null && data.isTenant);
         }
       },
-      {
-        title: 'Pax Counter',
-        type: 'basic',
-        icon: 'format_list_numbered',
-        link: `pax-counter/${data.id}`,
-        hidden: (item: GenesisNavigationItem) => {
-          return !(data.parentId == null);
-        }
-      },
+      // {
+      //   title: 'Pax Counter',
+      //   type: 'basic',
+      //   icon: 'format_list_numbered',
+      //   link: `pax-counter/${data.id}`,
+      //   hidden: (item: GenesisNavigationItem) => {
+      //     return !(data.parentId == null);
+      //   }
+      // },
       {
         type: 'divider'
       },

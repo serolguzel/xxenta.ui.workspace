@@ -94,7 +94,10 @@
     "clear-selection": "Clear Selection",
     "push-to-accounting": "Payments Push to Accounting",
     "customer-push-to-accounting": "Customer Push to Accounting",
-    "generate-subscription": "Generate Subscription"
+    "generate-subscription": "Generate Subscription",
+    "currency": "Currency",
+    "currencies": "Currencies",
+    "isdefault": "Is Default"
   },
   "messages": {
     "required": "Required field!",

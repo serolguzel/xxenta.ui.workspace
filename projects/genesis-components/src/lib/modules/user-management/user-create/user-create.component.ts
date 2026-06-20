@@ -60,7 +60,8 @@ export class UserCreateComponent implements OnInit {
       e.emailConfirmed = false;
     else
       e.emailConfirmed = true;
-    
+    if(!e.userType)
+      e.userType = UserType.User;
     this.userService.CreateUser(e).then((res: CommandResponse<string>) => {
       if (res) {
         this.router.navigate([`${this.options.detailBaseRoute}/${res.aggregatorId}`]);

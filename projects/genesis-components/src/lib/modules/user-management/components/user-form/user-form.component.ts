@@ -73,10 +73,16 @@ export class UserFormComponent {
     onClick: this.cancel.bind(this)
   };
 
+  countryPhoneCodes = {
+    ...this.lookupService.countryPhoneCodesLookUpOptions,
+    disabled: false
+  }
+
   constructor(
     private translocoService: TranslocoService,
     public lookupService: LookupService) {
     this.customerLookUpOptions = this.lookupService.customerLookUpOptions({isTenant: true});
+    this.countryPhoneCodes.disabled = false;
    }
 
   save() {
