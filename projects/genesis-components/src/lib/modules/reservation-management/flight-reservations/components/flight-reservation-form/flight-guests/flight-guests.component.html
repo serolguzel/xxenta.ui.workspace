@@ -58,7 +58,7 @@
     <div class="col-12 md:col-4">
       <p-floatlabel>
         <p-select appendTo="body" inputId="title" formControlName="title"
-          [options]="guestTitles" [optionLabel]="titleDisplay" optionValue="code" class="w-full" />
+          [options]="guestTitles" optionLabel="name" optionValue="code" class="w-full" />
         <label for="title">{{ 'labels.title' | transloco }}</label>
       </p-floatlabel>
       @if (form.get('title')?.invalid && form.get('title')?.touched) {
@@ -79,7 +79,7 @@
     <div class="col-12 md:col-4">
       <p-floatlabel>
         <p-select appendTo="body" inputId="guestType" formControlName="guestType"
-          [options]="guestTypes" [optionLabel]="titleDisplay" optionValue="code" class="w-full" />
+          [options]="guestTypes" optionLabel="name" optionValue="code" class="w-full" />
         <label for="guestType">{{ 'labels.guest-type' | transloco }}</label>
       </p-floatlabel>
     </div>

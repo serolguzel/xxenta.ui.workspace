@@ -1,40 +1,45 @@
-<div class="w-full" id="transferLinerGauge" [ngClass]="{'h-full': data.length == 0}">
-  <ng-container *ngIf="data && data.length > 0; else noData">
-    <div class="mb-2" *ngFor="let item of data">
-      <ng-container>
+<div class="relative w-full" id="transferLinerGauge" [ngClass]="{'h-full': data.length == 0}">
+  @if (data && data.length > 0) {
+    @for (item of data; track item.taskId) {
+      <div class="mb-2">
         <div class="font-medium">{{ item.taskCode }} - {{ item.beginTime }}</div>
-        <h3 *ngIf="item?.counter(item) === item.estimatedTime">{{ 'labels.completed' | transloco }}</h3>
+        @if (item?.counter(item) === item.estimatedTime) {
+          <h3>{{ 'labels.completed' | transloco }}</h3>
+        }
         <div class="flex justify-between">
-          <div class="flex flex-col text-center" *ngFor="let location of item.allLocations">
-            <div #tooltip class="cursor-pointer">
-              <div class="text-xs">{{ location.code }}</div>
-              <span>•</span>
+          @for (location of item.allLocations; track location.code) {
+            <div class="relative flex flex-col text-center">
+              <div class="cursor-pointer"
+                (mouseenter)="hoveredLocation = location.code"
+                (mouseleave)="hoveredLocation = null">
+                <div class="text-xs">{{ location.code }}</div>
+                <span>•</span>
+              </div>
+              @if (hoveredLocation === location.code && location.hotels?.length) {
+                <div class="absolute top-full left-1/2 z-20 mt-1 -translate-x-1/2 rounded border border-slate-300 bg-white p-2 text-left text-sm shadow-lg"
+                  style="max-width: 280px;">
+                  @for (hotel of location.hotels; track hotel) {
+                    <div>{{ hotel }}</div>
+                  }
+                </div>
+              }
             </div>
-            <dx-tooltip [target]="tooltip" [visible]="false" maxWidth="280" [showEvent]="'mouseenter'"
-              [hideEvent]="'mouseleave'">
-              <dx-list [dataSource]="location.hotels" class="text-left text-sm" />
-            </dx-tooltip>
-          </div>
+          }
         </div>
         <div class="progress-container">
           <div class="progress-bar" [style.width.%]="item?.counter(item)"></div>
         </div>
-      </ng-container>
-      <div class="border border-slate-300 mt-2"></div>
-    </div>
-  </ng-container>
-
-  <ng-template #noData class="h-[200px]">
+        <div class="border border-slate-300 mt-2"></div>
+      </div>
+    }
+  } @else {
     <genesis-alert [type]="'accent'" [showIcon]="false" appearance="outline">{{ 'labels.no-transfer' | transloco }}
     </genesis-alert>
-  </ng-template>
-</div>
+  }
 
-<dx-load-panel #loadPanel shadingColor="rgba(0,0,0,0.4)" 
-  [position]="{ of: '#transferLinerGauge' }"
-  [(visible)]="loadingVisible"
-  [showIndicator]="true" 
-  [showPane]="true"
-  [shading]="true" 
-  [hideOnOutsideClick]="false">
-</dx-load-panel>
+  @if (loadingVisible) {
+    <div class="absolute inset-0 flex items-center justify-center bg-black/40 z-10">
+      <p-progressspinner strokeWidth="4" [style]="{ width: '50px', height: '50px' }" />
+    </div>
+  }
+</div>

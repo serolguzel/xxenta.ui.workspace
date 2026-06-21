@@ -1,56 +1,92 @@
 <div class="w-full max-w-3xl">
-    <dx-form #customerForm id="form" 
-      [formData]="app" 
-      labelLocation="top"
-      labelMode="floating">
-      <dxi-item dataField="code" editorType="dxTextBox" [editorOptions]="{
-        disabled: false
-      }">
-        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-    </dxi-item>
+  <form [formGroup]="form" class="mt-2">
+    <div class="grid">
+      <div class="col-12">
+        <p-floatlabel>
+          <input pInputText id="code" formControlName="code" class="w-full" />
+          <label for="code">{{ 'labels.code' | transloco }}</label>
+        </p-floatlabel>
+        @if (form.get('code')?.invalid && form.get('code')?.touched) {
+          <small class="p-error">{{ 'messages.required' | transloco }}</small>
+        }
+      </div>
 
-        <dxi-item dataField="name" editorType="dxTextBox" [editorOptions]="{
-            disabled: false
-          }">
-            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-        </dxi-item>
+      <div class="col-12">
+        <p-floatlabel>
+          <input pInputText id="name" formControlName="name" class="w-full" />
+          <label for="name">{{ 'labels.name' | transloco }}</label>
+        </p-floatlabel>
+        @if (form.get('name')?.invalid && form.get('name')?.touched) {
+          <small class="p-error">{{ 'messages.required' | transloco }}</small>
+        }
+      </div>
 
-        <dxi-item dataField="description" editorType="dxTextBox" [editorOptions]="{
-            disabled: false
-          }">
-            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-        </dxi-item>
+      <div class="col-12">
+        <p-floatlabel>
+          <input pInputText id="description" formControlName="description" class="w-full" />
+          <label for="description">{{ 'labels.description' | transloco }}</label>
+        </p-floatlabel>
+        @if (form.get('description')?.invalid && form.get('description')?.touched) {
+          <small class="p-error">{{ 'messages.required' | transloco }}</small>
+        }
+      </div>
 
-        <dxi-item dataField="icon" editorType="dxTextBox" [editorOptions]="{
-                    disabled: false
-                  }">
-          <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-        </dxi-item>
-        <dxi-item dataField="link"></dxi-item>
-        <dxi-item dataField="clientId"></dxi-item>
-        <dxi-item itemType="group" [colCount]="2">
-          <dxi-item dataField="price" editorType="dxNumberBox"
-            [editorOptions]="{ min: 0, showSpinButtons: true, showClearButton: true }">
-          </dxi-item>
-        
-          <dxi-item dataField="currency" editorType="dxSelectBox" [editorOptions]="{
-                                                                      dataSource: currenciesDataSoruce,
-                                                                      showClearButton: true
-                                                                      }">
-          </dxi-item>
-        
-          <dxi-item dataField="noShow" editorType="dxCheckBox"></dxi-item>
-          <dxi-item dataField="presentationType" editorType="dxSelectBox" [editorOptions]="{
-                        dataSource: presentationTypes,
-                        valueExpr: 'id',
-                        displayExpr: 'name'
-                      }"></dxi-item>
-        </dxi-item>
+      <div class="col-12">
+        <p-floatlabel>
+          <input pInputText id="icon" formControlName="icon" class="w-full" />
+          <label for="icon">{{ 'labels.icon' | transloco }}</label>
+        </p-floatlabel>
+        @if (form.get('icon')?.invalid && form.get('icon')?.touched) {
+          <small class="p-error">{{ 'messages.required' | transloco }}</small>
+        }
+      </div>
 
-    </dx-form>
+      <div class="col-12">
+        <p-floatlabel>
+          <input pInputText id="link" formControlName="link" class="w-full" />
+          <label for="link">{{ 'labels.link' | transloco }}</label>
+        </p-floatlabel>
+      </div>
 
-    <dx-toolbar class="mt-4">
-        <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
-        <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
-    </dx-toolbar>
+      <div class="col-12">
+        <p-floatlabel>
+          <input pInputText id="clientId" formControlName="clientId" class="w-full" />
+          <label for="clientId">{{ 'labels.client-id' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <p-floatlabel>
+          <p-inputnumber inputId="price" formControlName="price" [min]="0" [showButtons]="true" class="w-full" />
+          <label for="price">{{ 'labels.price' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <p-floatlabel>
+          <p-select inputId="currency" formControlName="currency" [options]="currenciesDataSoruce"
+            [showClear]="true" appendTo="body" class="w-full" />
+          <label for="currency">{{ 'labels.currency' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="col-12 md:col-6 flex align-items-center gap-2 pt-3">
+        <p-checkbox formControlName="noShow" [binary]="true" inputId="noShow" />
+        <label for="noShow">{{ 'labels.no-show' | transloco }}</label>
+      </div>
+
+      <div class="col-12 md:col-6">
+        <p-floatlabel>
+          <p-select inputId="presentationType" formControlName="presentationType" [options]="presentationTypes"
+            optionLabel="name" optionValue="id" appendTo="body" class="w-full" />
+          <label for="presentationType">{{ 'labels.presentation-type' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+    </div>
+  </form>
+
+  <div class="flex justify-content-between mt-4">
+    <p-button [label]="'labels.cancel' | transloco" icon="pi pi-times" severity="secondary" (onClick)="cancel()" />
+    <p-button [label]="'labels.save' | transloco" icon="pi pi-save" (onClick)="save()" />
+  </div>
 </div>

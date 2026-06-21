@@ -4,16 +4,16 @@
         <div class="flex flex-col w-full max-w-screen-xl mx-auto px-6 sm:px-8">
             <div class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-4 sm:my-8">
                 <h1 class="flex w-full text-xl">Welcome {{user.displayName}}</h1>
-                <dx-toolbar>
-                    <dxi-toolbar-item location="before" locateInMenu="auto" widget="dxButton" [visible]="false"
-                        [options]="btnGenerateSubscrtion"></dxi-toolbar-item>
-
-                    <dxi-toolbar-item location="after" locateInMenu="auto" widget="dxButton" [visible]="false"
-                        [options]="btnPushCustomerToAccounting"></dxi-toolbar-item>
-
-                    <dxi-toolbar-item location="after" locateInMenu="auto" widget="dxButton" [visible]="false"
-                        [options]="btnPushToAccounting"></dxi-toolbar-item>
-                </dx-toolbar>
+                <div class="flex items-center gap-2">
+                    @if (showActionButtons) {
+                    <p-button [label]="'labels.generate-subscription' | transloco" icon="pi pi-coffee"
+                        severity="secondary" (onClick)="generateSubscription()" />
+                    <p-button [label]="'labels.customer-push-to-accounting' | transloco" icon="pi pi-download"
+                        severity="secondary" (onClick)="pushCustomersToAccounting()" />
+                    <p-button [label]="'labels.push-to-accounting' | transloco" icon="pi pi-download"
+                        severity="secondary" (onClick)="pushToAccounting()" />
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -26,16 +26,19 @@
                             'labels.send-notification' | transloco }}</div>
 
                         <div class="flex flex-col flex-auto mt-6">
-                            <dx-form #hotelForm id="form" [formData]="model" labelLocation="top" labelMode="floating">
-                                <dxi-item dataField="text" editorType="dxTextArea"
-                                    [label]="{text: 'labels.notification-text' | transloco}">
-                                    <dxi-validation-rule type="required"
-                                        [message]="'messages.required' | transloco"></dxi-validation-rule>
-                                </dxi-item>
-                            </dx-form>
-                            <dx-toolbar class="mt-4">
-                                <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
-                            </dx-toolbar>
+                            <form [formGroup]="form">
+                                <p-floatlabel>
+                                    <textarea pTextarea id="text" formControlName="text" rows="4"
+                                        class="w-full"></textarea>
+                                    <label for="text">{{ 'labels.notification-text' | transloco }}</label>
+                                </p-floatlabel>
+                                @if (form.get('text')?.invalid && form.get('text')?.touched) {
+                                <small class="p-error">{{ 'messages.required' | transloco }}</small>
+                                }
+                            </form>
+                            <div class="flex justify-content-end mt-4">
+                                <p-button [label]="'labels.save' | transloco" icon="pi pi-save" (onClick)="send()" />
+                            </div>
                         </div>
                     </div>
                     <div class="col-span-4 bg-card shadow rounded-2xl overflow-hidden p-6">

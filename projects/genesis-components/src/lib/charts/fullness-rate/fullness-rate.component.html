@@ -1,13 +1,6 @@
-<apx-chart
-    [series]="chartOptions.series!"
-    [chart]="chartOptions.chart!"
-    [legend]="chartOptions.legend!"
-    [dataLabels]="chartOptions.dataLabels!"
-    [plotOptions]="chartOptions.plotOptions!"
-    [fill]="chartOptions.fill!"
-    [tooltip]="chartOptions.tooltip!"
-    [colors]="chartOptions.colors!"
-    [xaxis]="chartOptions.xaxis!"
-    [yaxis]="chartOptions.yaxis!"
-    [stroke]="chartOptions.stroke!"
-></apx-chart>
+<p-chart
+    class="flex-auto w-full"
+    type="bar"
+    [data]="chartData"
+    [options]="chartOptions">
+</p-chart>

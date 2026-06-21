@@ -1,47 +1,36 @@
-import { Component, OnInit } from '@angular/core';
-import { DxDataGridModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { CommandResponse } from 'genesis-coreservice';
-import { TenantService } from '../services/tenant.service';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
-import { DataSourceBuilder } from 'genesis-components';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from 'genesis-components';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { TenantService } from '../services/tenant.service';
 
 @Component({
   selector: 'app-api-scopes',
   templateUrl: './api-scopes.component.html',
   standalone: true,
   imports: [
-    DxDataGridModule,
-    TranslocoModule
+    FormsModule,
+    TranslocoModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
+    CheckboxModule,
+    FloatLabelModule,
+    InputTextModule,
   ],
   providers: [
     TenantService
   ]
 })
-export class ApiScopesComponent implements OnInit {
-  dataSource: CustomStore;
-  constructor(
-    private tenantService: TenantService
-  ) {
-    
-  }
-  ngOnInit(): void {
-    this.dataSource = new DataSourceBuilder(this.tenantService)
-      .load('ApiScope', { requireTotalCount: true })
-      .insert('ApiScope')
-      .remove('ApiScope')
-      .setKey("name")
-      .build();
-  }
-
-  validationCallback = (e: any) => {
-    if(e.value){
-      return this.tenantService.ExistApiScopeName(e.value).then((res: CommandResponse<boolean>)=> {
-        return !res.aggregatorId;
-      });
-     
-    }else{
-      return false;
-    }
-  }
+export class ApiScopesComponent {
+  columns: GenesisColumn[] = [
+    { field: 'name', header: 'Name', filter: true },
+    { field: 'displayName', header: 'Display Name', filter: true },
+    { field: 'description', header: 'Description', filter: true },
+    { field: 'required', header: 'Required', type: 'boolean' },
+    { field: 'emphasize', header: 'Emphasize', type: 'boolean' },
+    { field: 'showInDiscoveryDocument', header: 'Show In Discovery Document', type: 'boolean' },
+  ];
 }

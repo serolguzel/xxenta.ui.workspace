@@ -1,10 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { DxButtonModule, DxDataGridModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { DataSourceBuilder, RoleResponse } from 'genesis-components';
-import { CoreService } from 'genesis-coreservice';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { SelectModule } from 'primeng/select';
+import {
+  GenesisCellDirective,
+  GenesisColumn,
+  GenesisDataTableComponent,
+  RoleResponse,
+} from 'genesis-components';
 import { TenantService } from '../../services/tenant.service';
 
 @Component({
@@ -12,47 +20,48 @@ import { TenantService } from '../../services/tenant.service';
   templateUrl: './apps-navigations.component.html',
   standalone: true,
   imports: [
-    DxDataGridModule,
-    DxButtonModule,
-    TranslocoModule
+    FormsModule,
+    TranslocoModule,
+    CheckboxModule,
+    FloatLabelModule,
+    InputTextModule,
+    MultiSelectModule,
+    SelectModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
   ],
-  providers: [
-    TenantService
-  ]
+  providers: [TenantService],
 })
 export class AppsNavigationsComponent implements OnInit {
+  private readonly tenantService = inject(TenantService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly translocoService = inject(TranslocoService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  dataSource: CustomStore;
-  navigationTypes: string[] = ['aside', 'basic', 'collapsable', 'divider', 'group', 'spacer'];
   appId: string = '';
+  loadPath: string = '';
+  navigationTypes: string[] = ['aside', 'basic', 'collapsable', 'divider', 'group', 'spacer'];
   roles: RoleResponse[] = [];
-  constructor(
-    private readonly coreService: CoreService,
-    private readonly tenantsService: TenantService,
-    private readonly activatedRoute: ActivatedRoute
-  ) { }
 
-  ngOnInit() {
-    this.appId = this.activatedRoute.snapshot.params.appId;
-    this.tenantsService.GetRoles()
-            .then((res: RoleResponse[]) => {
-              this.roles = res;
-            })
-    this.dataSource = new DataSourceBuilder(this.coreService)
-      .load(`Navigation/${this.appId}`, { requireTotalCount: true })
-      .insert('Navigation')
-      .updateFullModel('Navigation', "id")
-      .remove('Navigation')
-      .setKey("id")
-      .build();
-  }
+  columns: GenesisColumn[] = [
+    { field: 'title', header: this.translocoService.translate('labels.title') },
+    { field: 'subtitle', header: this.translocoService.translate('labels.subtitle') },
+    { field: 'type', header: this.translocoService.translate('labels.type') },
+    { field: 'active', header: this.translocoService.translate('labels.active'), type: 'boolean' },
+    { field: 'disabled', header: this.translocoService.translate('labels.disabled'), type: 'boolean' },
+    { field: 'tootip', header: this.translocoService.translate('labels.tooltip') },
+    { field: 'link', header: this.translocoService.translate('labels.link') },
+    { field: 'icon', header: this.translocoService.translate('labels.icon') },
+    { field: 'isDeleted', header: this.translocoService.translate('labels.is-deleted'), type: 'boolean' },
+  ];
 
-  onInitNewRow = (e: any) => {
-    e.data.appsId = this.appId;
-  }
+  ngOnInit(): void {
+    this.appId = this.activatedRoute.snapshot.params['appId'];
+    this.loadPath = `Navigation/${this.appId}`;
 
-  onRowUpdating = (e: any) => {
-    const assign = (<any>Object).assign({}, e.oldData, e.newData);
-    e.newData = assign;
+    this.tenantService.GetRoles().then((res: RoleResponse[]) => {
+      this.roles = res;
+      this.cdr.detectChanges();
+    });
   }
 }

@@ -1,220 +1,79 @@
-import {Component, ViewEncapsulation} from '@angular/core';
-import {
-    NgApexchartsModule
-} from "ng-apexcharts";
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChartModule } from 'primeng/chart';
 import colors from "tailwindcss/colors";
-import { ChartOptions } from '../apex-chart-options';
 
 @Component({
   selector: 'monthly-pp-cost',
   templateUrl: './monthly-pp-cost.component.html',
   styleUrls: ['./monthly-pp-cost.component.scss'],
   standalone: true,
-  imports: [NgApexchartsModule],
+  imports: [ChartModule],
   encapsulation: ViewEncapsulation.None
 })
-export class MonthlyPpCostComponent {
-    public chartOptions: Partial<ChartOptions> | any;
-    constructor() {
-        this.chartOptions = {
-            series: [
+export class MonthlyPpCostComponent implements OnInit {
+    chartData: any;
+    chartOptions: any;
+
+    private points = [
+        { x: "Ocak", y: 7.8, goal: 8, over: false },
+        { x: "Subat", y: 7, goal: 8, over: false },
+        { x: "Mart", y: 8.8, goal: 8, over: true },
+        { x: "Nisan", y: 9.1, goal: 8, over: true },
+        { x: "Mayis", y: 7.1, goal: 8, over: false },
+        { x: "Haziran", y: 6.53, goal: 8, over: false },
+        { x: "Temmuz", y: 7.77, goal: 8, over: false },
+        { x: "Agustos", y: 7.45, goal: 8, over: false },
+        { x: "Eylul", y: 6.98, goal: 8, over: false },
+        { x: "Ekim", y: 7.24, goal: 8, over: false },
+        { x: "Kasim", y: 7.9, goal: 8, over: false },
+        { x: "Aralik", y: 8.3, goal: 8, over: true },
+    ];
+
+    ngOnInit(): void {
+        this.buildChart();
+    }
+
+    private buildChart(): void {
+        const labels = this.points.map(p => p.x);
+        this.chartData = {
+            labels,
+            datasets: [
                 {
-                    name: "Maliyet",
-                    data: [
-                        {
-                            x: "Ocak",
-                            y: 7.8,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ]
-                        },
-                        {
-                            x: "Subat",
-                            y: 7,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 8,
-                                    strokeColor: colors.orange['500']
+                    type: 'bar',
+                    label: 'Maliyet',
+                    data: this.points.map(p => p.y),
+                    backgroundColor: this.points.map(p =>
+                        p.over ? colors.red['700'] : colors.emerald['600']
+                    ),
+                    borderColor: this.points.map(p =>
+                        p.over ? colors.red['700'] : colors.emerald['600']
+                    ),
+                    borderWidth: 1,
+                    barPercentage: 0.6,
+                },
+                {
+                    type: 'line',
+                    label: 'Butce',
+                    data: this.points.map(p => p.goal),
+                    borderColor: colors.orange['500'],
+                    backgroundColor: colors.orange['500'],
+                    borderWidth: 2,
+                    stepped: true,
+                    pointRadius: 0,
+                    fill: false,
+                }
+            ]
+        };
 
-                                }
-                            ]
-                        },
-                        {
-                            x: "Mart",
-                            y: 8.8,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-
-                                }
-                            ],
-                            fillColor: colors.red['700'],
-                            strokeColor: colors.red['700'],
-                        },
-                        {
-                            x: "Nisan",
-                            y: 9.1,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ],
-                            fillColor: colors.red['700'],
-                            strokeColor: colors.red['700'],
-                        },
-                        {
-                            x: "Mayis",
-                            y: 7.1,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ]
-                        },
-                        {
-                            x: "Haziran",
-                            y: 6.53,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ]
-                        },
-                        {
-                            x: "Temmuz",
-                            y: 7.77,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ]
-                        },
-                        {
-                            x: "Agustos",
-                            y: 7.45,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ]
-                        },
-                        {
-                            x: "Eylul",
-                            y: 6.98,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ]
-                        },
-                        {
-                            x: "Ekim",
-                            y: 7.24,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ]
-                        },
-                        {
-                            x: "Kasim",
-                            y: 7.9,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ]
-                        },
-                        {
-                            x: "Aralik",
-                            y: 8.3,
-                            goals: [
-                                {
-                                    name: "Butce",
-                                    value: 8,
-                                    strokeWidth: 10,
-                                    strokeColor: colors.orange['500']
-                                }
-                            ],
-                            fillColor: colors.red['700'],
-                            strokeColor: colors.red['700'],
-                        }
-                    ]
-                }
-            ],
-            chart: {
-                height: 400,
-                type: "bar",
-                zoom:{
-                    enabled: false,
-                },
-                toolbar:{
-                    show: false
-                },
-                animations: {
-                    enabled: false,
-                },
+        this.chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
             },
-            plotOptions: {
-                bar: {
-                    columnWidth: "60%"
-                }
-            },
-            fill: {
-                opacity: 0.3,
-                colors:[colors.emerald['600']]
-            },
-            stroke: {
-                width: 1,
-                colors:[colors.emerald['600']]
-            },
-            dataLabels: {
-                enabled: false
-            },
-            legend: {
-                show: true,
-                showForSingleSeries: true,
-                customLegendItems: ["Maliyet", "Butce"],
-                markers: {
-                    fillColors: [colors.emerald['600'], colors.orange['500']],
-                }
-            },
-            tooltip:{
-                cssClass: 'removeGoalLabelMarker'
+            scales: {
+                x: {},
+                y: {}
             }
         };
     }

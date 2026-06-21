@@ -1,99 +1,76 @@
- <dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource"
-    [remoteOperations]="false"
-    [showColumnLines]="false"
-    [showBorders]="true"
-    [showRowLines]="true"
-    [rowAlternationEnabled]="true"
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="true"
-    [columnHidingEnabled]="true"
-    (onEditingStart)="onEditingStart($event)"
-    (onInitNewRow)="onInitNewRow($event)"
-    (onRowUpdating)="onRowUpdating($event)">
-  
-      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
-      <dxo-filter-row [visible]="true"></dxo-filter-row>
-      <dxo-group-panel [visible]="false"></dxo-group-panel>
-  
-      <dxo-toolbar>
-          <dxi-item location="before">
-            <div *dxTemplate>
-              <div class="text-2xl tracking-tight">
-                {{ 'labels.sub-apps' | transloco }}
-              </div>
-            </div>
-          </dxi-item>
-          <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-        </dxo-toolbar>
-        
-      <dxo-editing 
-        mode="popup"
-        [allowUpdating]="true"
-        [allowAdding]="true"
-        [allowDeleting]="false"
-        [useIcons]="true">
-        <dxo-popup
-            [title]="'labels.app' | transloco"
-            [showTitle]="true"
-            [width]="600"
-            [height]="540"
-            [resizeEnabled]="true"
-            [position]="{ my: 'center', at: 'center'}">
-        </dxo-popup>
-        <dxo-form [colCount]="1" labelLocation="top" labelMode="floating">
-            <dxi-item itemType="group" [colCount]="2">
-              <dxi-item dataField="code" [editorOptions]="{
-                  disabled: isUpdate
-                }">
-                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                <dxi-validation-rule type="async" [message]="'messages.code-exists' | transloco"
-                  [validationCallback]="validationCallback"></dxi-validation-rule>
-              </dxi-item>
-            
-              <dxi-item dataField="name">
-                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-              </dxi-item>
-            </dxi-item>
-            <dxi-item dataField="description"></dxi-item>
-            <dxi-item dataField="link"></dxi-item>
-            
-            <dxi-item dataField="icon"></dxi-item>
-            <dxi-item itemType="group" [colCount]="2">
-              <dxi-item dataField="price" editorType="dxNumberBox" [editorOptions]="{ showSpinButtons: true, showClearButton: true }">
-            </dxi-item>
+<genesis-data-table
+  [title]="'labels.sub-apps' | transloco"
+  [lazy]="false"
+  [editable]="true"
+  loadPath="Apps"
+  insertPath="Apps"
+  updatePath="Apps"
+  deletePath="Apps"
+  updateKey="id"
+  [extraParams]="{ parentId: appId }"
+  [editorTitle]="'labels.app' | transloco"
+  editorWidth="600px"
+  [pageSize]="10"
+  [columns]="columns"
+  [newRowDefaults]="{ parentId: appId }">
 
-            <dxi-item dataField="currency" editorType="dxSelectBox" [editorOptions]="{
-                                                              dataSource: currenciesDataSoruce,
-                                                              showClearButton: true
-                                                              }">
-            </dxi-item>
+  <ng-template gdtCell="$editor" let-row>
+    <div class="flex flex-col gap-4 pt-2">
+      <div class="grid grid-cols-2 gap-4">
+        <p-floatlabel>
+          <input pInputText id="code" [(ngModel)]="row.code" [disabled]="!!row.id" class="w-full" />
+          <label for="code">{{ 'labels.code' | transloco }}</label>
+        </p-floatlabel>
+        <p-floatlabel>
+          <input pInputText id="name" [(ngModel)]="row.name" class="w-full" />
+          <label for="name">{{ 'labels.name' | transloco }}</label>
+        </p-floatlabel>
+      </div>
 
-              <dxi-item dataField="appType"></dxi-item>
-              <dxi-item dataField="presentationType"></dxi-item>
-              <dxi-item dataField="noShow"></dxi-item>
-            </dxi-item>
-        </dxo-form>
-    </dxo-editing>
-  
-      <dxi-column dataField="name" dataType="string"></dxi-column>
-      <dxi-column dataField="code" dataType="string"></dxi-column>
-      <dxi-column dataField="icon" dataType="string" [visible]="false"></dxi-column>
-      <dxi-column dataField="link" dataType="string" [visible]="false"></dxi-column>
-      <dxi-column dataField="presentationType" dataType="string">
-        <dxo-lookup [dataSource]="presentationTypes" valueExpr="id" displayExpr="name"></dxo-lookup>
-      </dxi-column>
-      <dxi-column dataField="appType" dataType="string">
-        <dxo-lookup [dataSource]="appTypes"></dxo-lookup>
-      </dxi-column>
-      <dxi-column dataField="noShow" dataType="boolean"></dxi-column>
-      <dxi-column dataField="description" dataType="string"></dxi-column>
-      <dxi-column dataField="parentId" dataType="string" [visible]="false"></dxi-column>
-      <dxi-column dataField="price" dataType="number" [visible]="false"></dxi-column>
-      <dxi-column dataField="currency" dataType="string" [visible]="false"></dxi-column>
+      <p-floatlabel>
+        <input pInputText id="description" [(ngModel)]="row.description" class="w-full" />
+        <label for="description">{{ 'labels.description' | transloco }}</label>
+      </p-floatlabel>
 
-      <dxo-paging [pageSize]="10"></dxo-paging>
-      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-    </dx-data-grid>
+      <p-floatlabel>
+        <input pInputText id="link" [(ngModel)]="row.link" class="w-full" />
+        <label for="link">{{ 'labels.link' | transloco }}</label>
+      </p-floatlabel>
+
+      <p-floatlabel>
+        <input pInputText id="icon" [(ngModel)]="row.icon" class="w-full" />
+        <label for="icon">{{ 'labels.icon' | transloco }}</label>
+      </p-floatlabel>
+
+      <div class="grid grid-cols-2 gap-4">
+        <p-floatlabel>
+          <p-inputnumber inputId="price" [(ngModel)]="row.price" [showButtons]="true" class="w-full" />
+          <label for="price">{{ 'labels.price' | transloco }}</label>
+        </p-floatlabel>
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="currency" [(ngModel)]="row.currency" [options]="currencies"
+            [showClear]="true" [filter]="true" class="w-full" />
+          <label for="currency">{{ 'labels.currency' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="appType" [(ngModel)]="row.appType" [options]="appTypes"
+            [filter]="true" class="w-full" />
+          <label for="appType">{{ 'labels.app-type' | transloco }}</label>
+        </p-floatlabel>
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="presentationType" [(ngModel)]="row.presentationType"
+            [options]="presentationTypes" optionLabel="name" optionValue="id" [filter]="true" class="w-full" />
+          <label for="presentationType">{{ 'labels.presentation-type' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="flex align-items-center gap-2">
+        <p-checkbox [(ngModel)]="row.noShow" [binary]="true" inputId="noShow" />
+        <label for="noShow">{{ 'labels.no-show' | transloco }}</label>
+      </div>
+    </div>
+  </ng-template>
+</genesis-data-table>

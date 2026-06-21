@@ -1,13 +1,6 @@
-<apx-chart
-    [series]="chartOptions.series!"
-    [chart]="chartOptions.chart!"
-    [yaxis]="chartOptions.yaxis!"
-    [xaxis]="chartOptions.xaxis!"
-    [labels]="chartOptions.labels!"
-    [stroke]="chartOptions.stroke!"
-    [plotOptions]="chartOptions.plotOptions!"
-    [markers]="chartOptions.markers!"
-    [fill]="chartOptions.fill!"
-    [tooltip]="chartOptions.tooltip!"
-    [dataLabels]="chartOptions.dataLabels!"
-></apx-chart>
+<p-chart
+  type="bar"
+  [data]="chartData"
+  [options]="chartOptions"
+  [style]="{ height: '350px' }"
+></p-chart>

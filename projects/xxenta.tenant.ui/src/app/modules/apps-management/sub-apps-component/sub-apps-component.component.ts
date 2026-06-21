@@ -1,76 +1,64 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { DxDataGridModule, DxTemplateModule, DxNumberBoxModule, DxSelectBoxModule } from 'devextreme-angular';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import {
+  GenesisCellDirective,
+  GenesisColumn,
+  GenesisDataTableComponent,
+  OrganizationService,
+} from 'genesis-components';
+import { IdNamePair } from 'genesis-coreservice';
 import { TenantService } from '../../services/tenant.service';
-import CustomStore from 'devextreme/data/custom_store';
-import { CommandResponse } from 'genesis-coreservice';
-import { TranslocoModule } from '@jsverse/transloco';
-import { DataSourceBuilder, OrganizationService } from 'genesis-components';
 
 @Component({
   selector: 'app-sub-apps-component',
   templateUrl: './sub-apps-component.component.html',
   standalone: true,
   imports: [
-    DxDataGridModule,
-    DxTemplateModule,
-    DxNumberBoxModule,
-    DxSelectBoxModule,
-    TranslocoModule
+    FormsModule,
+    TranslocoModule,
+    CheckboxModule,
+    FloatLabelModule,
+    InputNumberModule,
+    InputTextModule,
+    SelectModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
   ],
-  providers: [
-    TenantService
-  ]
+  providers: [TenantService],
 })
 export class SubAppsComponentComponent implements OnInit {
   @Input() appId: string = '';
-  dataSource: CustomStore;
-  presentationTypes = this.tenantService.presentationTypes;
-  currenciesDataSoruce = this.organizationService.weOrbisCurrencies;
-  appTypes = this.organizationService.appTypes;
-  isUpdate: boolean = false;
-  constructor(
-    private readonly organizationService: OrganizationService, 
-    private readonly tenantService: TenantService,
-    private readonly activatedRoute: ActivatedRoute
-  ) {
 
-  }
+  private readonly organizationService = inject(OrganizationService);
+  private readonly tenantService = inject(TenantService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly translocoService = inject(TranslocoService);
 
-  ngOnInit() {
-    let applicationId = this.appId != '' ? this.appId : this.activatedRoute.snapshot.params.appId;
-    this.dataSource = new DataSourceBuilder(this.tenantService)
-      .load('Apps', { requireTotalCount: true, parentId: applicationId })
-      .insert('Apps')
-      .updateFullModel('Apps', "id")
-      .remove('Apps')
-      .setKey("id")
-      .build();
-  }
+  presentationTypes: IdNamePair[] = this.tenantService.presentationTypes;
+  currencies: string[] = this.organizationService.weOrbisCurrencies;
+  appTypes: string[] = this.organizationService.appTypes;
 
-  onEditingStart = (e: any) => {
-    this.isUpdate = true;
-  }
-  
-  onInitNewRow = (e: any) => {
-    this.isUpdate = false;
-    let appId = this.activatedRoute.snapshot.params.appId;
-    e.data['parentId'] = appId;
-  }
+  columns: GenesisColumn[] = [
+    { field: 'name', header: this.translocoService.translate('labels.name') },
+    { field: 'code', header: this.translocoService.translate('labels.code') },
+    { field: 'icon', header: this.translocoService.translate('labels.icon'), hidden: true },
+    { field: 'link', header: this.translocoService.translate('labels.link'), hidden: true },
+    { field: 'presentationType', header: this.translocoService.translate('labels.presentation-type') },
+    { field: 'appType', header: this.translocoService.translate('labels.app-type') },
+    { field: 'noShow', header: this.translocoService.translate('labels.no-show'), type: 'boolean' },
+    { field: 'description', header: this.translocoService.translate('labels.description') },
+  ];
 
-  onRowUpdating = (e: any) => {
-    this.isUpdate = true;
-    var assign = (<any>Object).assign({}, e.oldData, e.newData);
-    e.newData = assign;
-  }
-
-  validationCallback = (e: any) => {
-    if (e.value && !this.isUpdate) {
-      return this.tenantService.ExistAppCode(e.value).then((res: CommandResponse<boolean>) => {
-        return !res.aggregatorId;
-      });
-    } else {
-      return false;
+  ngOnInit(): void {
+    if (!this.appId) {
+      this.appId = this.activatedRoute.snapshot.params['appId'];
     }
   }
 }

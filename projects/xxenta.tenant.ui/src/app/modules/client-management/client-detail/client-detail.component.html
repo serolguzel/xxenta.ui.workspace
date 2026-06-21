@@ -30,7 +30,7 @@
                         <div>
                           <span *ngIf="client.clientSecrets.length > 0">{{client.clientSecrets[0].value}}</span>
                         </div>
-                        <dx-button icon="refresh" (onClick)="generateClinetSecret($event)"></dx-button>
+                        <p-button icon="pi pi-refresh" [text]="true" [rounded]="true" (onClick)="generateClinetSecret($event)" />
                       </dd>
                     </div>
                   </dl>

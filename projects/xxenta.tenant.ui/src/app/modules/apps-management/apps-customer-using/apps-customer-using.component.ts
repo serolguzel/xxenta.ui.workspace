@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TranslocoModule } from '@jsverse/transloco';
-import { DxButtonModule, DxDataGridModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { DataSourceBuilder, LookupService } from 'genesis-components';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import {
+  GenesisCellDirective,
+  GenesisColumn,
+  GenesisDataTableComponent,
+} from 'genesis-components';
 import { CoreService } from 'genesis-coreservice';
 
 @Component({
@@ -11,32 +13,37 @@ import { CoreService } from 'genesis-coreservice';
   templateUrl: './apps-customer-using.component.html',
   standalone: true,
   imports: [
-    DxDataGridModule,
-    DxButtonModule,
-    TranslocoModule
-  ]
+    TranslocoModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
+  ],
 })
 export class AppsCustomerUsingComponent implements OnInit {
-  dataSource: CustomStore;
-  appsDataSource: CustomStore;
-  customerLookUpOptions: any = this.lookupService.customerLookUpOptions({});
+  private readonly coreService = inject(CoreService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly translocoService = inject(TranslocoService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor(
-    private readonly coreService: CoreService,
-    private readonly lookupService: LookupService,
-    private readonly activatedRoute: ActivatedRoute
-  ) { }
+  loadPath: string = '';
+  appNames: Record<string, string> = {};
 
-  ngOnInit() {
-    let appId = this.activatedRoute.snapshot.params.appId;
-    this.appsDataSource = new DataSourceBuilder(this.coreService)
-      .load('Apps/GetAppsLookup')
-      .setKey('id')
-      .build();
+  columns: GenesisColumn[] = [
+    { field: 'organization.name', header: this.translocoService.translate('labels.customer'), filter: true },
+    { field: 'appId', header: this.translocoService.translate('labels.application') },
+    { field: 'registerDate', header: this.translocoService.translate('labels.register-date'), type: 'date' },
+  ];
 
-    this.dataSource = new DataSourceBuilder(this.coreService)
-      .load(`OrganizationApps/${appId}`, { requireTotalCount: true })
-      .setKey("organizationId")
-      .build();
+  ngOnInit(): void {
+    const appId = this.activatedRoute.snapshot.params['appId'];
+    this.loadPath = `OrganizationApps/${appId}`;
+
+    this.coreService.getCall('Apps/GetAppsLookup').then((apps: any) => {
+      const list = Array.isArray(apps) ? apps : (apps?.data ?? []);
+      this.appNames = list.reduce((acc: Record<string, string>, a: any) => {
+        acc[a.id] = a.name;
+        return acc;
+      }, {});
+      this.cdr.detectChanges();
+    });
   }
 }

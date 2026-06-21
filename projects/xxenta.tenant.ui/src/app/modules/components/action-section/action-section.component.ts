@@ -1,19 +1,13 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { DxToolbarModule } from 'devextreme-angular';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'action-section',
   templateUrl: './action-section.component.html',
   standalone: true,
   imports: [
-    MatIconModule,
-    MatButtonModule,
-    MatMenuModule,
-    DxToolbarModule
-]
+    ButtonModule
+  ]
 })
 export class ActionSectionComponent implements OnInit {
   @Output() onReservationClick: EventEmitter<any>;
@@ -28,9 +22,9 @@ export class ActionSectionComponent implements OnInit {
     icon: 'save',
     text: 'Tur Sat',
     type: "default",
-    onClick: ()=>{}
+    onClick: () => { }
   };
-  
+
   btnTourTransferPlan = {
     icon: 'assets/icons/bus_32.png',
     text: 'Transfer Planla',
@@ -38,16 +32,16 @@ export class ActionSectionComponent implements OnInit {
   };
 
   constructor(
-    
-  ) { 
+
+  ) {
     this.onReservationClick = new EventEmitter();
     this.onTransferPlanClick = new EventEmitter();
   }
   ngOnInit() {
-    
+
   }
 
-  reservationClick (){
+  reservationClick() {
     this.onReservationClick.emit();
   }
 

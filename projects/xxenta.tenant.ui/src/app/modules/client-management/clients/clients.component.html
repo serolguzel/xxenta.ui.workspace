@@ -1,60 +1,33 @@
 <div class="p-6">
-    <dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource"
-    [remoteOperations]="false"
-    [showColumnLines]="false"
-    [showBorders]="true"
-    [showRowLines]="true"
-    [rowAlternationEnabled]="true"
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="true"
-    [columnHidingEnabled]="true">
-  
-      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
-      <dxo-filter-row [visible]="true"></dxo-filter-row>
-      <dxo-group-panel [visible]="false"></dxo-group-panel>
-  
-      <dxo-toolbar>
-        <dxi-item location="before">
-          <div *dxTemplate>
-            <div class="text-2xl tracking-tight">{{ 'labels.clients' | transloco }}</div>
-          </div>
-        </dxi-item>
-        <dxi-item locateInMenu="auto" location="after">
-          <div *dxTemplate>
-            <dx-button icon="add" (onClick)="create($event)"></dx-button>
-          </div>
-        </dxi-item>
-        <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-      </dxo-toolbar>
-      
-      <dxo-editing mode="popup" 
-        [allowUpdating]="false" 
-        [allowAdding]="false" 
-        [allowDeleting]="true" 
-        [useIcons]="true">
-      </dxo-editing>
+  <genesis-data-table
+    #table
+    [title]="'labels.clients' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    loadPath="Client"
+    deletePath="Client"
+    updateKey="clientId"
+    dataKey="clientId"
+    [pageSize]="20"
+    [pageSizeOptions]="[10, 20, 30]"
+    [showCreateButton]="true"
+    [columns]="columns"
+    (createClick)="create()">
 
-      <dxi-column dataField="clientId" dataType="string" cellTemplate="nameTemp"></dxi-column>
-      <dxi-column dataField="clientName" dataType="string" cellTemplate="nameTemp"></dxi-column>
-      <dxi-column dataField="protocolType" dataType="string"></dxi-column>
-      <dxi-column dataField="accessTokenType" dataType="string"></dxi-column>
-      <dxi-column dataField="enabled" dataType="boolean"></dxi-column>
-      <dxi-column dataField="allowOfflineAccess" dataType="boolean"></dxi-column>
-      <dxi-column dataField="identityTokenLifetime" dataType="number"></dxi-column>
-      <dxi-column dataField="clientClaimsPrefix" dataType="string"></dxi-column>
-      <dxi-column dataField="created" dataType="date" format="dd.MM.yyyy hh:mm:ss"></dxi-column>
-     
-      <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
-        <a [routerLink]="'detail/'+d.data.clientId">
-            <span class="flex font-bold">
-                {{d.value}}
-            </span>
-        </a>
-    </div>
+    <ng-template gdtCell="clientId" let-row>
+      <a [routerLink]="'detail/' + row.clientId">
+        <span class="flex font-bold">{{ row.clientId }}</span>
+      </a>
+    </ng-template>
 
-      <dxo-paging [pageSize]="20"></dxo-paging>
-      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-    </dx-data-grid>
-  </div>
+    <ng-template gdtCell="clientName" let-row>
+      <a [routerLink]="'detail/' + row.clientId">
+        <span class="flex font-bold">{{ row.clientName }}</span>
+      </a>
+    </ng-template>
+
+    <ng-template gdtCell="$actions" let-row>
+      <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true" (onClick)="table.deleteRow(row)" />
+    </ng-template>
+  </genesis-data-table>
+</div>

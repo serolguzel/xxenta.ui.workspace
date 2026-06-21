@@ -1,60 +1,56 @@
-import { Component, OnInit } from '@angular/core';
-import { DxDataGridModule } from 'devextreme-angular';
-import { TenantService } from '../services/tenant.service';
-import CustomStore from 'devextreme/data/custom_store';
-import { Utility } from 'genesis-coreservice';
-import { DataSourceBuilder, LookupService } from 'genesis-components';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { CoreService } from 'genesis-coreservice';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from 'genesis-components';
+import { TenantService } from '../services/tenant.service';
 
 @Component({
   selector: 'app-configurations',
   templateUrl: './configurations.component.html',
   standalone: true,
   imports: [
-    DxDataGridModule,
-    TranslocoModule
+    FormsModule,
+    TranslocoModule,
+    CheckboxModule,
+    FloatLabelModule,
+    InputTextModule,
+    SelectModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
   ],
   providers: [
-    TenantService,
-    LookupService
+    TenantService
   ]
 })
 export class ConfigurationsComponent implements OnInit {
-  dataSource: CustomStore;
-  customerLookUpOptions: any = this.lookupService.customerLookUpOptions({isTenant: true}, this.translocoService.translate('labels.tenants'));
-  integrationDataSource: any = {
-    displayExpr: 'name',
-    valueExpr: 'id',
-    searchExpr: ['name', 'code'],
-    showClearButton: true,
-    itemTemplate: Utility.codeNameTemplate,
-    dropDownOptions: {
-      hideOnOutsideClick: true,
-      title: 'Integrations',
-    },
-  };
-  constructor(
-    private translocoService: TranslocoService,
-    private tenantService: TenantService,
-    private lookupService: LookupService
-  ) {
+  private readonly translocoService = inject(TranslocoService);
+  private readonly tenantService = inject(TenantService);
+  private readonly coreService = inject(CoreService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  }
+  organizations: any[] = [];
+  integrations: any[] = [];
+
+  columns: GenesisColumn[] = [
+    { field: 'organization.name', header: this.translocoService.translate('labels.organization'), filter: true },
+    { field: 'integration.name', header: this.translocoService.translate('labels.integration'), filter: true },
+    { field: 'key', header: this.translocoService.translate('labels.key'), filter: true },
+    { field: 'value', header: this.translocoService.translate('labels.value'), filter: true },
+    { field: 'isDefault', header: this.translocoService.translate('labels.is-default'), type: 'boolean' },
+  ];
+
   async ngOnInit(): Promise<void> {
-    this.integrationDataSource.items = await this.tenantService.GetIntegrationsLookup();
-
-    this.dataSource = new DataSourceBuilder(this.tenantService)
-      .load('Configuration', { requireTotalCount: true })
-      .updateFullModel('Configuration')
-      .insert('Configuration')
-      .remove('Configuration')
-      .setKey("id")
-      .build();
+    const [organizations, integrations] = await Promise.all([
+      this.coreService.getCall('Organization/GetOrganizationsLookup', { isTenant: true }),
+      this.tenantService.GetIntegrationsLookup(),
+    ]);
+    this.organizations = Array.isArray(organizations) ? organizations : (organizations?.data ?? []);
+    this.integrations = integrations ?? [];
+    this.cdr.detectChanges();
   }
-
-  onRowUpdating = (e: any) => {
-     var assign = (<any>Object).assign({}, e.oldData, e.newData);
-    e.newData = assign;
-  }
-
 }

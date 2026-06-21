@@ -1,63 +1,30 @@
-<dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource" 
-    [remoteOperations]="false" 
-    [showColumnLines]="false"
-    [showBorders]="true" [showRowLines]="true" 
-    [rowAlternationEnabled]="true" 
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="true" 
-    [columnHidingEnabled]="true"
-    (onInitNewRow)="onInitNewRow($event)"
-    (onRowUpdating)="onRowUpdating($event)">
+<div class="p-6">
+  <genesis-data-table
+    [title]="'labels.client-permissions' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    [loadPath]="loadPath"
+    [insertPath]="loadPath"
+    [deletePath]="loadPath"
+    updateKey="id"
+    [editorTitle]="'labels.client-permission' | transloco"
+    [pageSize]="10"
+    [columns]="columns"
+    [newRowDefaults]="{ type: 'permission' }">
 
-    <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
-    <dxo-filter-row [visible]="true"></dxo-filter-row>
-    <dxo-group-panel [visible]="false"></dxo-group-panel>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <input pInputText id="type" [(ngModel)]="row.type" [disabled]="true" class="w-full" />
+          <label for="type">{{ 'labels.type' | transloco }}</label>
+        </p-floatlabel>
 
-    <dxo-toolbar>
-        <dxi-item location="before">
-            <div *dxTemplate>
-                <div class="text-2xl tracking-tight">{{ 'labels.client-permissions' | transloco }}</div>
-            </div>
-        </dxi-item>
-        <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-    </dxo-toolbar>
-
-    <dxo-editing mode="popup" 
-        [allowUpdating]="false" 
-        [allowAdding]="true"
-        [allowDeleting]="true" 
-        [useIcons]="true">
-        <dxo-popup [title]="'labels.client-permission' | transloco" [showTitle]="true" 
-            [width]="500" [height]="300"
-            [resizeEnabled]="true"
-            [position]="{ my: 'center', at: 'center'}">
-        </dxo-popup>
-        <dxo-form [colCount]="1" labelLocation="top" labelMode="floating">
-            <dxi-item dataField="type" editorType="dxTextBox" [editorOptions]="{ disabled: true}"></dxi-item>
-            <dxi-item dataField="value" editorType="dxLookup">
-                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-            </dxi-item>
-        </dxo-form>
-    </dxo-editing>
-
-    <dxi-column dataField="type" dataType="string"></dxi-column>
-    <dxi-column dataField="value" dataType="string" [editorOptions]="{
-        dataSource: claimsDataSource,
-        displayExpr: 'code',
-        valueExpr: 'code',
-        searchExpr: ['state', 'code'],
-        dropDownOptions: {
-          hideOnOutsideClick: true,
-          title: translocoService.translate('labels.claims')
-        }
-      }">
-
-    </dxi-column>
-    <dxi-column dataField="description" dataType="string"></dxi-column>
-
-    <dxo-paging [pageSize]="10"></dxo-paging>
-    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-</dx-data-grid>
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="value" [(ngModel)]="row.value" [options]="claimsDataSource"
+            optionLabel="code" optionValue="code" [filter]="true" filterBy="state,code" class="w-full" />
+          <label for="value">{{ 'labels.claims' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

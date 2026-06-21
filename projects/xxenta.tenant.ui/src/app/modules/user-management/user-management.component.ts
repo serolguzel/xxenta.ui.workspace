@@ -1,7 +1,4 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSidenavModule } from '@angular/material/sidenav';
 import { UserLookupModel } from 'genesis-coreservice';
 import { BreadcrumbsModel, GenesisChildSidebarComponent, GenesisNavigationItem } from 'genesis-shell';
 import { Subject, takeUntil } from 'rxjs';
@@ -14,9 +11,6 @@ import { TenantService } from '../services/tenant.service';
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
-    MatSidenavModule,
-    MatButtonModule,
-    MatIconModule,
     GenesisChildSidebarComponent
   ],
   providers: [

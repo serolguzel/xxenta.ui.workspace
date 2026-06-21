@@ -1,91 +1,76 @@
 <div class="p-6 grow">
-  <dx-data-grid id="gridContainer" 
-    #logsGrid 
-    [dataSource]="dataSource"
-    [columnResizingMode]="'nextColumn'"
-    [remoteOperations]="true"
-    [columnAutoWidth]="true"
-    [rowAlternationEnabled]="true"
-    [allowColumnReordering]="true"
-    [showColumnLines]="false"
-    [showBorders]="true"
-    [showRowLines]="true"
-    [allowColumnResizing]="true"
-    [columnHidingEnabled]="false">
+  <genesis-data-table
+    #grid
+    loadPath="Logging"
+    [extraParams]="filter"
+    [columns]="columns"
+    [pageSize]="20"
+    [showSearch]="false"
+    [columnChooser]="true">
 
-    <dxo-filter-row [visible]="false"></dxo-filter-row>
-    <dxo-search-panel [visible]="false" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
-    <dxo-column-chooser #columnChooser [enabled]="true" mode="dragAndDrop" [title]="'labels.column-chooser' | transloco">
-      <dxo-position my="right top" at="right bottom" of=".dx-datagrid-column-chooser-button"></dxo-position>
-      <dxo-search [enabled]="true" [editorOptions]="{ placeholder: 'labels.column-search' | transloco }"></dxo-search>
-      <dxo-selection [allowSelectAll]="true" [selectByClick]="true" [recursive]="true"></dxo-selection>
-    </dxo-column-chooser>
-    
-    <dxo-toolbar>
-      <dxi-item locateInMenu="auto" location="before" widget="dxDateBox" [options]="createDateOptions"> </dxi-item>
-      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtMessageOptions"></dxi-item>
-      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtSourceOptions"></dxi-item>
-      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtVoucherOptions"></dxi-item>
-      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtHostOptions"></dxi-item>
-      <dxi-item location="before" locateInMenu="auto" widget="dxTextBox" [options]="txtCorrelationIdOptions"></dxi-item>
-      <dxi-item location="before" locateInMenu="auto" widget="dxSelectBox" [options]="lookupLoggingTypeOptions"></dxi-item>
+    <ng-template gdtCell="$toolbarStart">
+      <p-datepicker [(ngModel)]="createDateValue" (ngModelChange)="onDateChange()" dateFormat="dd.mm.yy"
+        [showClear]="true" appendTo="body" [placeholder]="'labels.create-date' | transloco" />
+      <input pInputText type="text" [(ngModel)]="filter.message" (ngModelChange)="onFilterChange()"
+        [placeholder]="('labels.message' | transloco) + ':'" class="w-48" />
+      <input pInputText type="text" [(ngModel)]="filter.source" (ngModelChange)="onFilterChange()"
+        [placeholder]="('labels.source' | transloco) + ':'" class="w-48" />
+      <input pInputText type="text" [(ngModel)]="filter.voucher" (ngModelChange)="onFilterChange()"
+        [placeholder]="('labels.voucher' | transloco) + ':'" class="w-48" />
+      <input pInputText type="text" [(ngModel)]="filter.host" (ngModelChange)="onFilterChange()"
+        [placeholder]="('labels.host' | transloco) + ':'" class="w-48" />
+      <input pInputText type="text" [(ngModel)]="filter.correlationId" (ngModelChange)="onFilterChange()"
+        [placeholder]="('labels.correlation-id' | transloco) + ':'" class="w-48" />
+      <p-select [(ngModel)]="filter.loggingType" (onChange)="onFilterChange()" [options]="loggingTypes"
+        optionLabel="text" optionValue="id" [showClear]="true" appendTo="body"
+        [placeholder]="('labels.logging-type' | transloco) + ':'" class="w-48" />
+    </ng-template>
 
-      <dxi-item location="after" locateInMenu="never" widget="dxButton" [options]="refreshButtonOptions"> </dxi-item>
-      <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-      <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-      <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-    </dxo-toolbar>
+    <ng-template gdtCell="$toolbarEnd">
+      <p-button icon="pi pi-refresh" [pTooltip]="'labels.refresh' | transloco" (onClick)="onRefresh()" />
+    </ng-template>
 
-    <dxi-column dataField="message" dataType="string" cellTemplate="linkTemp" [caption]="'labels.message' | transloco"></dxi-column>
-    <dxi-column dataField="voucher" dataType="string" cellTemplate="linkTemplate" [caption]="'labels.voucher' | transloco"></dxi-column>
-    <dxi-column dataField="source" dataType="string" cellTemplate="linkTemp" [caption]="'labels.source' | transloco"></dxi-column>
-    <dxi-column dataField="loggingType" dataType="string" [caption]="'labels.logging-type' | transloco"></dxi-column>
-    <dxi-column dataField="level" dataType="string" [caption]="'labels.level' | transloco"></dxi-column>
-    <dxi-column dataField="host" dataType="string" [caption]="'labels.host' | transloco"></dxi-column>
-    <dxi-column dataField="path" dataType="string" [caption]="'labels.path' | transloco" [visible]="false"></dxi-column>
-    <dxi-column dataField="method" dataType="string" [caption]="'labels.method' | transloco"></dxi-column>
-    <dxi-column dataField="correlationId" dataType="string" [caption]="'labels.correlation-id' | transloco" cellTemplate="corrIdTemplate"></dxi-column>
-
-    <dxi-column dataField="timestamp" dataType="date" format="dd.MM.yyyy HH:mm" [caption]="'labels.create-date' | transloco"></dxi-column>
-
-    <div class="flex-auto" *dxTemplate="let d of 'linkTemplate'">
+    <ng-template gdtCell="message" let-row>
       <div class="flex justify-start items-center">
-        <a [routerLink]="d.data.id" [queryParams]="filter">
-          <span class="flex font-bold">{{ d.value }}</span>
-        </a>
-        @if (d.value) {
-        <button [cdkCopyToClipboard]="d.value" class="ml-2 hover:bg-blue-50 p-[3px] rounded-full" (click)="onCopy(d.value)"
-          #tooltip="matTooltip" [matTooltip]="'labels.copy' | transloco" matTooltipPosition="above">
-          <mat-icon svgIcon="heroicons_outline:clipboard" *ngIf="compyValue !== d.value" class="icon-size-5"></mat-icon>
-          <mat-icon svgIcon="heroicons_outline:clipboard-document-check" *ngIf="compyValue === d.value"
-            class="icon-size-5 text-green-700"></mat-icon>
-        </button>
+        <a [routerLink]="row.id" [queryParams]="filter"><span class="font-bold">{{ row.message }}</span></a>
+        @if (row.message) {
+          <button [cdkCopyToClipboard]="row.message" class="ml-2 hover:bg-blue-50 p-[3px] rounded-full"
+            (click)="onCopy(row.message)" [pTooltip]="'labels.copy' | transloco" tooltipPosition="top">
+            <mat-icon [svgIcon]="compyValue === row.message ? 'heroicons_outline:clipboard-document-check' : 'heroicons_outline:clipboard'"
+              [ngClass]="compyValue === row.message ? 'icon-size-5 text-green-700' : 'icon-size-5'"></mat-icon>
+          </button>
         }
       </div>
-    </div>
-    
-    <div class="flex-auto" *dxTemplate="let d of 'corrIdTemplate'">
-      <div class="flex justify-start items-center">
-        <span class="flex font-bold">{{ d.value }}</span>
-        <button [cdkCopyToClipboard]="d.value" class="ml-2 hover:bg-blue-50 p-[3px] rounded-full" (click)="onCopy(d.value)"
-          #tooltip="matTooltip" [matTooltip]="'labels.copy' | transloco" matTooltipPosition="above">
-          <mat-icon svgIcon="heroicons_outline:clipboard" *ngIf="compyValue !== d.value" class="icon-size-5"></mat-icon>
-          <mat-icon svgIcon="heroicons_outline:clipboard-document-check" *ngIf="compyValue === d.value"
-            class="icon-size-5 text-green-700"></mat-icon>
-        </button>
-      </div>
-    </div>
-    
-    <div class="flex-auto" *dxTemplate="let d of 'linkTemp'">
-      <a [routerLink]="d.data.id">
-        <span class="flex font-bold">
-          {{ d.value }}
-        </span>
-      </a>
-    </div>
+    </ng-template>
 
-    <dxo-paging [pageSize]="20"></dxo-paging>
-    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-    <dxo-export [enabled]="true" [allowExportSelectedData]="true"></dxo-export>
-  </dx-data-grid>
+    <ng-template gdtCell="voucher" let-row>
+      <div class="flex justify-start items-center">
+        <a [routerLink]="row.id" [queryParams]="filter"><span class="font-bold">{{ row.voucher }}</span></a>
+        @if (row.voucher) {
+          <button [cdkCopyToClipboard]="row.voucher" class="ml-2 hover:bg-blue-50 p-[3px] rounded-full"
+            (click)="onCopy(row.voucher)" [pTooltip]="'labels.copy' | transloco" tooltipPosition="top">
+            <mat-icon [svgIcon]="compyValue === row.voucher ? 'heroicons_outline:clipboard-document-check' : 'heroicons_outline:clipboard'"
+              [ngClass]="compyValue === row.voucher ? 'icon-size-5 text-green-700' : 'icon-size-5'"></mat-icon>
+          </button>
+        }
+      </div>
+    </ng-template>
+
+    <ng-template gdtCell="source" let-row>
+      <a [routerLink]="row.id"><span class="font-bold">{{ row.source }}</span></a>
+    </ng-template>
+
+    <ng-template gdtCell="correlationId" let-row>
+      <div class="flex justify-start items-center">
+        <span class="font-bold">{{ row.correlationId }}</span>
+        @if (row.correlationId) {
+          <button [cdkCopyToClipboard]="row.correlationId" class="ml-2 hover:bg-blue-50 p-[3px] rounded-full"
+            (click)="onCopy(row.correlationId)" [pTooltip]="'labels.copy' | transloco" tooltipPosition="top">
+            <mat-icon [svgIcon]="compyValue === row.correlationId ? 'heroicons_outline:clipboard-document-check' : 'heroicons_outline:clipboard'"
+              [ngClass]="compyValue === row.correlationId ? 'icon-size-5 text-green-700' : 'icon-size-5'"></mat-icon>
+          </button>
+        }
+      </div>
+    </ng-template>
+  </genesis-data-table>
 </div>

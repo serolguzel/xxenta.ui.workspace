@@ -1,43 +1,48 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { DxAccordionModule, DxSwitchModule, DxTemplateModule, DxTextBoxModule, DxToolbarModule } from 'devextreme-angular';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BreadcrumbsModel, GenesisBreadcrumbsComponent } from 'genesis-shell';
-import { NgFor } from '@angular/common';
 import { RoleResponse } from 'genesis-components';
 import { RolePermission, RolePermissionModel } from '../services/models/client.model';
 import { TenantService } from '../services/tenant.service';
 import { AddOrRemoveRolePermission } from '../services/models/tenant.models';
-import { TranslocoService } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { AccordionModule } from 'primeng/accordion';
+import { SelectModule } from 'primeng/select';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-role-permissions',
   templateUrl: './role-permissions.component.html',
   standalone: true,
   imports: [
-    NgFor,
+    FormsModule,
     GenesisBreadcrumbsComponent,
-    DxAccordionModule,
-    DxTemplateModule,
-    DxSwitchModule,
-    DxTextBoxModule,
-    DxToolbarModule
+    AccordionModule,
+    SelectModule,
+    ToggleSwitchModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    TranslocoModule
   ],
   providers: [
     TenantService
   ]
 })
 export class RolePermissionsComponent implements OnInit {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+  private readonly tenantService = inject(TenantService);
+  readonly translocoService = inject(TranslocoService);
+
   breadcrumbs: Array<BreadcrumbsModel> = [];
   roles: RoleResponse[] = [];
   compyData: RolePermissionModel[] = [];
   data: RolePermissionModel[] = [];
   selectedRole: string;
   filterText: string = '';
-
-  constructor(
-    private readonly changeDetectorRef: ChangeDetectorRef,
-    private tenantService: TenantService,
-    public translocoService: TranslocoService
-  ) { }
 
   async ngOnInit(): Promise<void> {
     this.breadcrumbs = [
@@ -56,50 +61,49 @@ export class RolePermissionsComponent implements OnInit {
           this.selectedRole = res[0].id;
           this.loadData();
         }
+        this.changeDetectorRef.detectChanges();
       });
   }
 
   loadData() {
     this.tenantService.GetRolePermissions(this.selectedRole).then((res: RolePermissionModel[]) => {
-      this.data = [];
-      this.compyData = [];
-      this.data = res;
-      this.compyData = res;
-      this.changeDetectorRef.markForCheck();
+      this.data = res ?? [];
+      this.compyData = res ?? [];
+      this.changeDetectorRef.detectChanges();
     });
   }
 
-  onRoleValueChanged = (e: any) => {
+  onRoleValueChanged = (e: { value: string }) => {
     this.filterText = '';
     this.selectedRole = e.value;
     this.loadData();
   }
 
-  onValueChanged = (e: any) => {
-    this.filterText = e.value;
-    if (e.value.length > 0) {
-      this.data = this.filterItem(e.value);
+  onFilterChanged = (value: string) => {
+    this.filterText = value;
+    if (value && value.length > 0) {
+      this.data = this.filterItem(value);
     } else {
       this.data = this.compyData;
     }
   }
 
-  onRowValueChanged = (e: any, item: RolePermission) => {
-    let model = <AddOrRemoveRolePermission>{
+  onRowValueChanged = (e: { checked: boolean }, item: RolePermission) => {
+    const model = <AddOrRemoveRolePermission>{
       roleId: this.selectedRole,
       claimValue: item.claimValue,
-      hasRole: e.value
+      hasRole: e.checked
     };
     this.tenantService.AddOrRemoveRolePermission(model);
   }
 
   filterItem(value: string): RolePermissionModel[] {
-    let resultItems = [];
+    const resultItems: RolePermissionModel[] = [];
     for (let i = 0; i < this.compyData.length; i++) {
       const element = this.compyData[i];
-      let existChildItem = element.permissions.filter(x => x.claimValue.includes(value));
+      const existChildItem = element.permissions.filter(x => x.claimValue.includes(value));
       if (element.moduleName.includes(value) || existChildItem.length > 0) {
-        let model = <RolePermissionModel>{
+        const model = <RolePermissionModel>{
           moduleName: element.moduleName,
           permissions: existChildItem
         };

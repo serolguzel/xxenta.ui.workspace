@@ -1,69 +1,49 @@
 <div class="p-6">
-    <dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource"
-    [remoteOperations]="false"
-    [showColumnLines]="false"
-    [showBorders]="true"
-    [showRowLines]="true"
-    [rowAlternationEnabled]="true"
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="true"
-    [columnHidingEnabled]="true">
-  
-      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
-      <dxo-filter-row [visible]="true"></dxo-filter-row>
-      <dxo-group-panel [visible]="false"></dxo-group-panel>
-  
-      <dxo-toolbar>
-          <dxi-item location="before">
-            <div *dxTemplate>
-              <div class="text-2xl tracking-tight">{{ 'labels.api-scopes' | transloco }}</div>
-            </div>
-          </dxi-item>
-          <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-        </dxo-toolbar>
-        
-      <dxo-editing 
-        mode="popup"
-        [allowUpdating]="false"
-        [allowAdding]="true"
-        [allowDeleting]="true"
-        [useIcons]="true">
-        <dxo-popup
-            [title]="'labels.api-scope' | transloco"
-            [showTitle]="true"
-            [width]="600"
-            [height]="480"
-            [resizeEnabled]="true"
-            [position]="{ my: 'center', at: 'center'}">
-        </dxo-popup>
-        <dxo-form [colCount]="1" labelLocation="top" labelMode="floating">
-          <dxi-item dataField="name">
-            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-            <dxi-validation-rule type="async" [message]="'messages.name-exists' | transloco" [validationCallback]="validationCallback"></dxi-validation-rule>
-          </dxi-item>
+  <genesis-data-table
+    [title]="'labels.api-scopes' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    loadPath="ApiScope"
+    insertPath="ApiScope"
+    deletePath="ApiScope"
+    updateKey="name"
+    [editorTitle]="'labels.api-scope' | transloco"
+    [pageSize]="20"
+    [columns]="columns"
+    [newRowDefaults]="{ required: false, emphasize: false, showInDiscoveryDocument: false }">
 
-            <dxi-item dataField="displayName">
-              <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
-              </dxi-validation-rule>
-            </dxi-item>
-            <dxi-item dataField="description"></dxi-item>
-            <dxi-item dataField="required"></dxi-item>
-            <dxi-item dataField="emphasize"></dxi-item>
-            <dxi-item dataField="showInDiscoveryDocument"></dxi-item>
-        </dxo-form>
-    </dxo-editing>
-  
-      <dxi-column dataField="name" dataType="string"></dxi-column>
-      <dxi-column dataField="displayName" dataType="string"></dxi-column>
-      <dxi-column dataField="description" dataType="string"></dxi-column>
-      <dxi-column dataField="required" dataType="boolean"></dxi-column>
-      <dxi-column dataField="emphasize" dataType="boolean"></dxi-column>
-      <dxi-column dataField="showInDiscoveryDocument" dataType="boolean"></dxi-column>
-      
-      <dxo-paging [pageSize]="20"></dxo-paging>
-      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-    </dx-data-grid>
-  </div>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <input pInputText id="name" [(ngModel)]="row.name" class="w-full" />
+          <label for="name">{{ 'labels.name' | transloco }}</label>
+        </p-floatlabel>
+
+        <p-floatlabel>
+          <input pInputText id="displayName" [(ngModel)]="row.displayName" class="w-full" />
+          <label for="displayName">{{ 'labels.display-name' | transloco }}</label>
+        </p-floatlabel>
+
+        <p-floatlabel>
+          <input pInputText id="description" [(ngModel)]="row.description" class="w-full" />
+          <label for="description">{{ 'labels.description' | transloco }}</label>
+        </p-floatlabel>
+
+        <div class="flex flex-col gap-3">
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.required" [binary]="true" inputId="required" />
+            <label for="required">{{ 'labels.required' | transloco }}</label>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.emphasize" [binary]="true" inputId="emphasize" />
+            <label for="emphasize">{{ 'labels.emphasize' | transloco }}</label>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.showInDiscoveryDocument" [binary]="true" inputId="showInDiscoveryDocument" />
+            <label for="showInDiscoveryDocument">{{ 'labels.show-in-discovery-document' | transloco }}</label>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

@@ -1,19 +1,13 @@
-import { Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import {
-    DxFormComponent,
-    DxFormModule,
-    DxToolbarModule,
-} from 'devextreme-angular';
-import themes from 'devextreme/ui/themes';
+import { Component, Inject, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AUTH_CONFIG_GEN, AuthService, IAuthConfig, UserModel } from 'genesis-coreservice';
 import { SendNotificationToAllClients } from '../services/models/tenant.models';
 import { TenantService } from '../services/tenant.service';
-import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { GenesisConfig, GenesisConfigService } from 'genesis-shell';
-import { Subject, takeUntil } from 'rxjs';
-import { Profile } from 'oidc-client';
+import { TranslocoModule } from '@jsverse/transloco';
+import { Subject } from 'rxjs';
+import { ButtonModule } from 'primeng/button';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { TextareaModule } from 'primeng/textarea';
 
 @Component({
     selector: 'app-dashboard',
@@ -21,63 +15,41 @@ import { Profile } from 'oidc-client';
     styleUrls: ['./dashboard.component.scss'],
     standalone: true,
     imports: [
-        MatButtonModule,
-        MatIconModule,
-        DxFormModule,
-        DxToolbarModule,
+        ReactiveFormsModule,
         TranslocoModule,
+        ButtonModule,
+        FloatLabelModule,
+        TextareaModule,
     ],
     providers: [TenantService],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-    @ViewChild(DxFormComponent, { static: false }) form?: DxFormComponent;
+    private readonly fb = inject(FormBuilder);
+    private readonly tenantService = inject(TenantService);
+    private readonly authService = inject(AuthService);
+
     model: SendNotificationToAllClients = <SendNotificationToAllClients>{
         text: '',
     };
-    btnSave = {
-        icon: 'save',
-        text: this.translocoService.translate('labels.save'),
-        type: 'default',
-        onClick: this.send.bind(this),
-    };
-    btnPushToAccounting = {
-        icon: 'pulldown',
-        text: this.translocoService.translate('labels.push-to-accounting'),
-        onClick: this.pushToAccounting.bind(this)
-    };
+    form!: FormGroup;
 
-    btnPushCustomerToAccounting = {
-        icon: 'pulldown',
-        text: this.translocoService.translate('labels.customer-push-to-accounting'),
-        onClick: this.pushCustomersToAccounting.bind(this)
-    };
+    // Header action buttons were hidden in the original DevExtreme toolbar ([visible]="false").
+    showActionButtons = false;
 
-    btnGenerateSubscrtion = {
-        icon: 'coffee',
-        text: this.translocoService.translate('labels.generate-subscription'),
-        onClick: this.generateSubscription.bind(this)
-    };
     private unsubscribeAll: Subject<any> = new Subject<any>();
     user: UserModel = <UserModel>{};
+
     constructor(
-        private tenantService: TenantService,
-        private readonly authService: AuthService,
-        private translocoService: TranslocoService,
-        private readonly configService: GenesisConfigService,
         @Inject(AUTH_CONFIG_GEN) public authConfig: IAuthConfig,
     ) { }
 
     ngOnInit(): void {
-        this.configService.config$
-            .pipe(takeUntil(this.unsubscribeAll))
-            .subscribe((config: GenesisConfig) => {
-                let scheme = config.scheme;
-                this.onValueChanged(scheme === 'light' ? 'light' : scheme === 'dark' ? 'dark' : 'custom');
-            });
-        //var user =  this.authService.user?.profile;
+        this.form = this.fb.group({
+            text: [this.model.text ?? '', Validators.required],
+        });
+
         this.authService.getProfile().then((res: UserModel) => {
             this.user = res;
-             console.log(this.user);
         });
     }
 
@@ -87,8 +59,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     send() {
-        var valid = this.form?.instance.validate().isValid;
-        if (valid) {
+        this.form.markAllAsTouched();
+        if (this.form.valid) {
+            this.model = { ...this.model, ...this.form.getRawValue() };
             this.tenantService.SendNotificationToAllClients(this.model);
         }
     }
@@ -104,13 +77,4 @@ export class DashboardComponent implements OnInit, OnDestroy {
     generateSubscription() {
         this.tenantService.AddPaymentProcess();
     }
-
-    onValueChanged(scheme: string) {
-        const themeMap: Record<string, string> = {
-            light: 'generic.light',
-            dark: 'generic.dark',
-            custom: 'generic.contrast',
-        };
-        themes.current(themeMap[scheme] ?? 'generic.light');
-    };
 }

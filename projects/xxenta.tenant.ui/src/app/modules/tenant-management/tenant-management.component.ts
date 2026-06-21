@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { BreadcrumbsModel, GenesisChildSidebarComponent, GenesisNavigationItem } from 'genesis-shell';
 import { Subject, takeUntil } from 'rxjs';
-import { confirm } from 'devextreme/ui/dialog';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TenantService } from '../services/tenant.service';
 import {
   OrganizationAppsModel, OrganizationEventService,
@@ -13,10 +14,12 @@ import {
   templateUrl: './tenant-management.component.html',
   standalone: true,
   imports: [
-    GenesisChildSidebarComponent
+    GenesisChildSidebarComponent,
+    ConfirmDialogModule
   ],
   providers: [
-    OrganizationService
+    OrganizationService,
+    ConfirmationService
   ]
 })
 export class TenantManagementComponent implements OnInit, OnDestroy {
@@ -36,6 +39,8 @@ export class TenantManagementComponent implements OnInit, OnDestroy {
     private organizationService: OrganizationService) {
 
   }
+
+  private readonly confirmationService = inject(ConfirmationService);
 
   ngOnInit(): void {
     this.eventService.getOrganizationIdChange$
@@ -228,11 +233,10 @@ export class TenantManagementComponent implements OnInit, OnDestroy {
         type: 'basic',
         icon: 'heroicons_solid:trash',
         function: () => {
-          let confirmPopup = confirm(`${data.name} ait herşey geri dönüşümsüz silinecek. Silmek istediğinize emin misiniz?`, "Emin misiniz?");
-          confirmPopup.then((dialogResult) => {
-            if (dialogResult) {
-              this.tenantService.DeleteAllOwnerData(data.id);
-            }
+          this.confirmationService.confirm({
+            header: 'Emin misiniz?',
+            message: `${data.name} ait herşey geri dönüşümsüz silinecek. Silmek istediğinize emin misiniz?`,
+            accept: () => this.tenantService.DeleteAllOwnerData(data.id)
           });
         },
         hidden: (item: GenesisNavigationItem) => {

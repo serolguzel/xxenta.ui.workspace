@@ -1,10 +1,21 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import {
+  GenesisCellDirective,
+  GenesisColumn,
+  GenesisDataTableComponent,
+  InvoiceTempComponent,
+  OrganizationService
+} from 'genesis-components';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DialogModule } from 'primeng/dialog';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
 import { TenantService } from '../services/tenant.service';
-import CustomStore from 'devextreme/data/custom_store';
-import { DxDataGridComponent, DxDataGridModule, DxPopupModule, DxTemplateModule } from 'devextreme-angular';
-import { TranslocoModule } from '@jsverse/transloco';
-import { DataSourceBuilder, InvoiceTempComponent, OrganizationService } from 'genesis-components';
-import { DxiToolbarItemComponent } from "devextreme-angular/ui/toolbar";
 
 @Component({
   selector: 'app-invoices',
@@ -12,69 +23,76 @@ import { DxiToolbarItemComponent } from "devextreme-angular/ui/toolbar";
   styleUrl: './invoices.component.scss',
   standalone: true,
   imports: [
-    DxDataGridModule,
-    DxPopupModule,
-    DxTemplateModule,
+    FormsModule,
     TranslocoModule,
-    InvoiceTempComponent,
-    DxiToolbarItemComponent
-],
+    ButtonModule,
+    CheckboxModule,
+    DialogModule,
+    FloatLabelModule,
+    InputNumberModule,
+    InputTextModule,
+    SelectModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
+    InvoiceTempComponent
+  ],
   providers: [
     TenantService,
     OrganizationService
   ]
 })
 export class InvoicesComponent implements OnInit {
-  dataSource: CustomStore | undefined;
-  @ViewChild(DxDataGridComponent, { static: false }) invoiceGrid: DxDataGridComponent;
+  private readonly organizationService = inject(OrganizationService);
+  private readonly translocoService = inject(TranslocoService);
+
+  @ViewChild('grid') grid!: GenesisDataTableComponent;
+
   currenciesDataSoruce = this.organizationService.weOrbisCurrencies;
-  refreshButtonOptions = {
-    icon: 'refresh',
-    onClick: this.onRefresh.bind(this)
-  };
   selectedItems: any[] = [];
   showSendEmailForm: boolean = false;
-  constructor(
-    private organizationService: OrganizationService,
-    private tenantService: TenantService
-  ) {
 
-  }
+  columns: GenesisColumn[] = [];
+
   ngOnInit(): void {
-    this.dataSource = new DataSourceBuilder(this.tenantService)
-      .load('OrganizationPayment/GetInvoices', { requireTotalCount: true })
-      .updateFullModel('OrganizationPayment/UpdateInvoicePayment')
-      .setKey("id")
-      .build();
+    this.columns = [
+      { field: 'app.name', header: this.translocoService.translate('labels.app') },
+      { field: 'organization.name', header: this.translocoService.translate('labels.organization'), filter: true },
+      { field: 'paymentDate', header: this.translocoService.translate('labels.payment-date'), type: 'date' },
+      { field: 'paidDate', header: this.translocoService.translate('labels.paid-date'), type: 'date' },
+      { field: 'unitPrice', header: this.translocoService.translate('labels.unit-price'), type: 'text' },
+      { field: 'totalAmount', header: this.translocoService.translate('labels.total-amount'), type: 'text' },
+      { field: 'currency', header: this.translocoService.translate('labels.currency') },
+      { field: 'invoiceNumber', header: this.translocoService.translate('labels.invoice-number'), filter: true },
+      { field: 'isPaid', header: this.translocoService.translate('labels.is-paid'), type: 'boolean' },
+    ];
   }
 
-  onRowUpdating = (e: any) => {
-    e.newData = { ...e.oldData, ...e.newData };
+  onRefresh(): void {
+    this.grid.reload();
   }
 
-  selectionChangedHandler = (e: any) => {
-    console.log(e.selectedRowsData);
-    this.selectedItems = e.selectedRowsData;
-  };
-  onRefresh() {
-    this.invoiceGrid.instance.refresh();
+  isSelected(row: any): boolean {
+    return this.selectedItems.some(i => i.id === row.id);
   }
 
-  openSendEmailPopup = () => {
-    console.log('Sending emails for selected items:', this.selectedItems);
-    this.showSendEmailForm = true;
+  toggleSelection(row: any): void {
+    // single selection mode
+    this.selectedItems = this.isSelected(row) ? [] : [row];
   }
 
-  sendEmail = () => {
-    console.log('Sending emails for selected items:', this.selectedItems);
-  }
-
-  clearSelection = () => {
-    this.invoiceGrid.instance.clearSelection();
+  clearSelection = (): void => {
     this.selectedItems = [];
-  }
+  };
 
-  closePopupForm = () => {
+  openSendEmailPopup = (): void => {
+    this.showSendEmailForm = true;
+  };
+
+  sendEmail = (): void => {
+    console.log('Sending emails for selected items:', this.selectedItems);
+  };
+
+  closePopupForm = (): void => {
     this.showSendEmailForm = false;
-  }
+  };
 }

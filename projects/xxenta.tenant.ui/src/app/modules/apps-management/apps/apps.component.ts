@@ -1,15 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { DxDataGridModule, 
-  DxLookupModule, 
-  DxNumberBoxModule, 
-  DxSelectBoxModule, DxTemplateModule, DxTooltipModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { CommandResponse } from 'genesis-coreservice';
-import { TenantService } from '../../services/tenant.service';
-import { TranslocoModule } from '@jsverse/transloco';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import {
+  GenesisCellDirective,
+  GenesisColumn,
+  GenesisDataTableComponent,
+  OrganizationService,
+} from 'genesis-components';
+import { IdNamePair } from 'genesis-coreservice';
 import { SubAppsComponentComponent } from '../sub-apps-component/sub-apps-component.component';
-import { DataSourceBuilder, OrganizationService } from 'genesis-components';
+import { TenantService } from '../../services/tenant.service';
 
 @Component({
   selector: 'app-apps',
@@ -17,61 +22,34 @@ import { DataSourceBuilder, OrganizationService } from 'genesis-components';
   standalone: true,
   imports: [
     RouterLink,
-    DxDataGridModule,
-    DxTemplateModule,
-    DxNumberBoxModule,
-    DxSelectBoxModule,
+    FormsModule,
     TranslocoModule,
+    CheckboxModule,
+    FloatLabelModule,
+    InputTextModule,
+    SelectModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
     SubAppsComponentComponent,
-
-    DxLookupModule,
-    DxTooltipModule
   ],
-  providers: [
-    TenantService
-  ]
+  providers: [TenantService],
 })
-export class AppsComponent implements OnInit {
-  dataSource: CustomStore;
-  presentationTypes = this.tenantService.presentationTypes;
-  appTypes = this.organizationService.appTypes;
-  currenciesDataSoruce = this.organizationService.weOrbisCurrencies;
-  isUpdate: boolean = false;
-  constructor(
-    private readonly organizationService: OrganizationService,
-    private tenantService: TenantService
-  ) {
+export class AppsComponent {
+  private readonly organizationService = inject(OrganizationService);
+  private readonly tenantService = inject(TenantService);
+  private readonly translocoService = inject(TranslocoService);
 
-  }
+  presentationTypes: IdNamePair[] = this.tenantService.presentationTypes;
+  appTypes: string[] = this.organizationService.appTypes;
 
-  ngOnInit() {
-    this.dataSource = new DataSourceBuilder(this.tenantService)
-      .load('Apps', { requireTotalCount: true })
-      .insert('Apps')
-      .updateFullModel('Apps', "id")
-      .remove('Apps')
-      .setKey("id")
-      .build();
-  }
-  onInitNewRow = (e: any) => {
-    this.isUpdate = false;
-  }
-  onEditingStart = (e: any) => {
-    this.isUpdate = true;
-  }
-  onRowUpdating = (e: any) => {
-    var assign = (<any>Object).assign({}, e.oldData, e.newData);
-    e.newData = assign;
-  }
-
-  validationCallback = (e: any) => {
-    if (e.value && !this.isUpdate) {
-      return this.tenantService.ExistAppCode(e.value).then((res: CommandResponse<boolean>) => {
-        return !res.aggregatorId;
-      });
-
-    } else {
-      return false;
-    }
-  }
+  columns: GenesisColumn[] = [
+    { field: 'name', header: this.translocoService.translate('labels.name'), filter: true },
+    { field: 'code', header: this.translocoService.translate('labels.code'), filter: true },
+    { field: 'icon', header: this.translocoService.translate('labels.icon'), hidden: true },
+    { field: 'link', header: this.translocoService.translate('labels.link'), hidden: true },
+    { field: 'presentationType', header: this.translocoService.translate('labels.presentation-type') },
+    { field: 'appType', header: this.translocoService.translate('labels.app-type') },
+    { field: 'noShow', header: this.translocoService.translate('labels.no-show'), type: 'boolean' },
+    { field: 'description', header: this.translocoService.translate('labels.description') },
+  ];
 }

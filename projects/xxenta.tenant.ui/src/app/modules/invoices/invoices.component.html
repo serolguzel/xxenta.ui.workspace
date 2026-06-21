@@ -1,124 +1,89 @@
 <div class="p-6">
-    <dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource"
-    [remoteOperations]="true"
-    [showColumnLines]="false"
-    [showBorders]="true"
-    [showRowLines]="true"
-    [rowAlternationEnabled]="true"
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="false"
-    [columnHidingEnabled]="false"
-    (onRowUpdating)="onRowUpdating($event)"
-    (onSelectionChanged)="selectionChangedHandler($event)">
+  <genesis-data-table
+    #grid
+    [title]="'labels.invoices' | transloco"
+    loadPath="OrganizationPayment/GetInvoices"
+    [columns]="columns"
+    [editable]="true"
+    updatePath="OrganizationPayment/UpdateInvoicePayment"
+    updateKey="id"
+    [editorTitle]="'labels.invoice' | transloco"
+    editorWidth="640px"
+    [pageSize]="20">
 
-      <dxo-selection [showCheckBoxesMode]="'onClick'" mode="single"></dxo-selection>
-      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
-      <dxo-filter-row [visible]="true"></dxo-filter-row>
-      <dxo-group-panel [visible]="false"></dxo-group-panel>
-  
-      <dxo-toolbar>
-          <dxi-item location="before">
-            <div *dxTemplate>
-              <div class="text-2xl tracking-tight">
-                {{ 'labels.invoices' | transloco }}
-              </div>
-            </div>
-          </dxi-item>
-          <dxi-item location="after" locateInMenu="never" widget="dxButton" [options]="refreshButtonOptions"></dxi-item>
-          <dxi-item locateInMenu="auto" location="after" widget="dxButton" [disabled]="!(selectedItems.length > 0)" [options]="{
-                    icon: 'save',
-                    text: ('labels.send-email' | transloco),
-                    onClick: openSendEmailPopup
-                }">
-          </dxi-item>
-          <dxi-item locateInMenu="auto" location="after" widget="dxButton" [visible]="selectedItems.length > 0" [options]="{
-                    icon: 'clear',
-                    text: ('labels.clear-selection' | transloco),
-                    onClick: clearSelection
-                }">
-          </dxi-item>
-          <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-        </dxo-toolbar>
-        
-      <dxo-editing 
-        mode="popup"
-        [allowUpdating]="true"
-        [allowDeleting]="true"
-        [useIcons]="true">
-        <dxo-popup
-            [title]="'labels.invoice' | transloco"
-            [showTitle]="true"
-            [width]="640"
-            [height]="360"
-            [resizeEnabled]="true"
-            [position]="{ my: 'center', at: 'center'}">
-        </dxo-popup>
-        <dxo-form [colCount]="1" labelLocation="top" labelMode="floating">
-            <dxi-item itemType="group" [colCount]="3">
-                <dxi-item dataField="unitPrice" editorType="dxNumberBox" [editorOptions]="{ min: 0, showSpinButtons: true, showClearButton: true }">
-                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                </dxi-item>
-                <dxi-item dataField="totalAmount" editorType="dxNumberBox" [editorOptions]="{ min: 0, showSpinButtons: true, showClearButton: true }">
-                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                </dxi-item>
-                <dxi-item dataField="currency">
-                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                </dxi-item>
-            </dxi-item>
-            <dxi-item itemType="group" [colCount]="3">
-                <dxi-item dataField="invoiceNumber" [colSpan]="2"></dxi-item>
-                <dxi-item dataField="isPaid" [colSpan]="1"></dxi-item>
-            </dxi-item>
-        </dxo-form>
-    </dxo-editing>
-  
-    <dxi-column dataField="app.name" dataType="string" [caption]="'labels.app' | transloco"
-        [allowEditing]="false" 
-        [allowSearch]="false" 
-        [allowFiltering]="false"
-        [allowReordering]="false"
-        [allowSorting]="false"></dxi-column>
-    <dxi-column dataField="organization.name" dataType="string" [caption]="'labels.organization' | transloco"></dxi-column>
-    <dxi-column dataField="paymentDate" dataType="date" format="dd.MM.yyyy"></dxi-column>
-    <dxi-column dataField="paidDate" dataType="date" format="dd.MM.yyyy"></dxi-column>
-    <dxi-column dataField="unitPrice" dataType="number"></dxi-column>
-    <dxi-column dataField="totalAmount" dataType="number"></dxi-column>
-    <dxi-column dataField="currency" dataType="string" [allowGrouping]="false" [ariaExpanded]="false">
-        <dxo-lookup [dataSource]="currenciesDataSoruce"></dxo-lookup>
-    </dxi-column>
-    <dxi-column dataField="invoiceNumber" dataType="string"></dxi-column>
-    <dxi-column dataField="isPaid" dataType="boolean"></dxi-column>
+    <ng-template gdtCell="$toolbarEnd">
+      <p-button icon="pi pi-refresh" [text]="true" [rounded]="true" (onClick)="onRefresh()" />
+      <p-button
+        icon="pi pi-send"
+        [label]="'labels.send-email' | transloco"
+        [disabled]="selectedItems.length === 0"
+        (onClick)="openSendEmailPopup()" />
+      @if (selectedItems.length > 0) {
+        <p-button
+          icon="pi pi-times"
+          severity="secondary"
+          [label]="'labels.clear-selection' | transloco"
+          (onClick)="clearSelection()" />
+      }
+    </ng-template>
 
-    <dxo-paging [pageSize]="20"></dxo-paging>
-    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-    </dx-data-grid>
-  </div>
+    <ng-template gdtCell="$actions" let-row>
+      <div class="flex gap-1">
+        <p-button
+          [icon]="isSelected(row) ? 'pi pi-check-circle' : 'pi pi-circle'"
+          [text]="true"
+          [rounded]="true"
+          (onClick)="toggleSelection(row)" />
+        <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" (onClick)="grid.editRow(row)" />
+      </div>
+    </ng-template>
 
-  <dx-popup
-    class="popup"
-    [animation]="{ show: { type: 'fade' } }"
-    [resizeEnabled]="true"
-    [position]="{ my: 'center', at: 'center', of: 'window' }"
-    [width]="1200"
-    [height]="680"
-    [visible]="showSendEmailForm"
-    (onHiding)="closePopupForm()">
-    <dxi-toolbar-item text="{{ 'labels.add-guest' | transloco }}"location="before"></dxi-toolbar-item>
-    <div *dxTemplate="let data of 'content'" genesisPerfectScrollbar>
-        <invoice-temp></invoice-temp>
-    </div>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="grid pt-2">
+        <div class="col-12 md:col-4">
+          <p-floatlabel>
+            <p-inputnumber inputId="unitPrice" [(ngModel)]="row.unitPrice" [min]="0" [showButtons]="true" class="w-full" />
+            <label for="unitPrice">{{ 'labels.unit-price' | transloco }}</label>
+          </p-floatlabel>
+        </div>
+        <div class="col-12 md:col-4">
+          <p-floatlabel>
+            <p-inputnumber inputId="totalAmount" [(ngModel)]="row.totalAmount" [min]="0" [showButtons]="true" class="w-full" />
+            <label for="totalAmount">{{ 'labels.total-amount' | transloco }}</label>
+          </p-floatlabel>
+        </div>
+        <div class="col-12 md:col-4">
+          <p-floatlabel>
+            <p-select inputId="currency" [(ngModel)]="row.currency" [options]="currenciesDataSoruce"
+              appendTo="body" class="w-full" />
+            <label for="currency">{{ 'labels.currency' | transloco }}</label>
+          </p-floatlabel>
+        </div>
+        <div class="col-12 md:col-8">
+          <p-floatlabel>
+            <input pInputText id="invoiceNumber" [(ngModel)]="row.invoiceNumber" class="w-full" />
+            <label for="invoiceNumber">{{ 'labels.invoice-number' | transloco }}</label>
+          </p-floatlabel>
+        </div>
+        <div class="col-12 md:col-4 flex align-items-center gap-2 pt-3">
+          <p-checkbox [(ngModel)]="row.isPaid" [binary]="true" inputId="isPaid" />
+          <label for="isPaid">{{ 'labels.is-paid' | transloco }}</label>
+        </div>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>
 
-    <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="after" [options]="{
-            text: 'labels.add' | transloco,
-            icon: 'plus',
-            type: 'default',
-            locateInMenu: 'always',
-            useSubmitBehavior: true,
-            onClick: sendEmail,
-        }"
-    >
-    </dxi-toolbar-item>
-</dx-popup>
+<p-dialog
+  [(visible)]="showSendEmailForm"
+  [header]="'labels.add-guest' | transloco"
+  [modal]="true"
+  [style]="{ width: '1200px', height: '680px' }"
+  [draggable]="false"
+  [resizable]="true"
+  (onHide)="closePopupForm()">
+  <invoice-temp></invoice-temp>
+  <ng-template pTemplate="footer">
+    <p-button [label]="'labels.add' | transloco" icon="pi pi-plus" (onClick)="sendEmail()" />
+  </ng-template>
+</p-dialog>

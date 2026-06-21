@@ -55,7 +55,10 @@
               "projects/xxenta.tenant.ui/src/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": [".", "dist/genesis-shell/src/styles"]
+              "includePaths": [
+                ".",
+                "dist/genesis-shell/src/styles"
+              ]
             },
             "security": {
               "allowedHosts": []
@@ -204,7 +207,9 @@
                 "input": "projects/xxenta-learning-tool/public"
               }
             ],
-            "styles": ["projects/xxenta-learning-tool/src/styles.scss"],
+            "styles": [
+              "projects/xxenta-learning-tool/src/styles.scss"
+            ],
             "server": "projects/xxenta-learning-tool/src/main.server.ts",
             "outputMode": "server",
             "security": {

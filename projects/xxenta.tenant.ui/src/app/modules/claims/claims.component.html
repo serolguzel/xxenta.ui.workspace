@@ -1,64 +1,39 @@
 <div class="p-6">
-    <dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource"
-    [remoteOperations]="false"
-    [showColumnLines]="false"
-    [showBorders]="true"
-    [showRowLines]="true"
-    [rowAlternationEnabled]="true"
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="true"
-    [columnHidingEnabled]="true"
-    (onRowUpdating)="onRowUpdating($event)">
-  
-      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
-      <dxo-filter-row [visible]="true"></dxo-filter-row>
-      <dxo-group-panel [visible]="false"></dxo-group-panel>
-  
-      <dxo-toolbar>
-          <dxi-item location="before">
-            <div *dxTemplate>
-              <div class="text-2xl tracking-tight">{{ 'labels.claims' | transloco }}</div>
-            </div>
-          </dxi-item>
-          <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-        </dxo-toolbar>
-        
-      <dxo-editing 
-        mode="popup"
-        [allowAdding]="true"
-        [allowUpdating]="true"
-        [useIcons]="true">
-        <dxo-popup
-            [title]="'labels.claim' | transloco"
-            [showTitle]="true"
-            [width]="500"
-            [height]="380"
-            [resizeEnabled]="true"
-            [position]="{ my: 'center', at: 'center'}">
-        </dxo-popup>
-        <dxo-form [colCount]="1" labelLocation="top" labelMode="floating">
-          <dxi-item dataField="code" [disabled]="true">
-            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-          </dxi-item>
+  <genesis-data-table
+    [title]="'labels.claims' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    loadPath="Claim"
+    insertPath="Claim"
+    updatePath="Claim"
+    updateKey="code"
+    [editorTitle]="'labels.claim' | transloco"
+    [pageSize]="20"
+    [columns]="columns"
+    [newRowDefaults]="{ hasTenant: false }">
 
-            <dxi-item dataField="state">
-              <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
-              </dxi-validation-rule>
-            </dxi-item>
-            <dxi-item dataField="description"></dxi-item>
-            <dxi-item dataField="hasTenant"></dxi-item>
-        </dxo-form>
-    </dxo-editing>
-  
-      <dxi-column dataField="code" dataType="string"></dxi-column>
-      <dxi-column dataField="state" dataType="string"></dxi-column>
-      <dxi-column dataField="hasTenant" dataType="boolean"></dxi-column>
-      <dxi-column dataField="description" dataType="string"></dxi-column>
-      
-      <dxo-paging [pageSize]="20"></dxo-paging>
-      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-    </dx-data-grid>
-  </div>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <input pInputText id="code" [(ngModel)]="row.code" class="w-full" />
+          <label for="code">{{ 'labels.code' | transloco }}</label>
+        </p-floatlabel>
+
+        <p-floatlabel>
+          <input pInputText id="state" [(ngModel)]="row.state" class="w-full" />
+          <label for="state">{{ 'labels.state' | transloco }}</label>
+        </p-floatlabel>
+
+        <p-floatlabel>
+          <input pInputText id="description" [(ngModel)]="row.description" class="w-full" />
+          <label for="description">{{ 'labels.description' | transloco }}</label>
+        </p-floatlabel>
+
+        <div class="flex align-items-center gap-2">
+          <p-checkbox [(ngModel)]="row.hasTenant" [binary]="true" inputId="hasTenant" />
+          <label for="hasTenant">{{ 'labels.has-tenant' | transloco }}</label>
+        </div>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

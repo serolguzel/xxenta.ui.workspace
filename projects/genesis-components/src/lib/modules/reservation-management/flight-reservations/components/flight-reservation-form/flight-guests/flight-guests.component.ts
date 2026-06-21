@@ -42,20 +42,21 @@ export class FlightGuestsComponent implements OnInit {
   @Input() guests: FlightGuestModel[] = [];
   @Input() hasError: boolean = false;
 
-  guestTitles = Static.guestTitles;
-  guestTypes = Static.guestTypes;
+  // code -> { code, name } (name = çevrilmiş etiket, örn. labels.mr)
+  guestTitles = Static.guestTitles.map((t: any) => ({
+    ...t,
+    name: this.translocoService.translate(`labels.${String(t.code).toLowerCase()}`)
+  }));
+  guestTypes = Static.guestTypes.map((t: any) => ({
+    ...t,
+    name: this.translocoService.translate(`labels.${String(t.code).toLowerCase()}`)
+  }));
   countries: any[] = [];
   phoneCodes: any[] = [];
 
   form!: FormGroup;
   editVisible: boolean = false;
   private editIndex: number = -1;
-
-  // code -> translated name (örn. labels.mr)
-  titleDisplay = (item: any): string => {
-    if (!item) return '';
-    return this.translocoService.translate(`labels.${String(item.code).toLowerCase()}`);
-  };
 
   ngOnInit(): void {
     this.form = this.fb.group({

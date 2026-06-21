@@ -9,44 +9,38 @@
 
     <div class="flex-auto p-6 sm:p-10">
         <div class="w-full max-w-3xl">
-            <div class="mb-4">
-                <dx-toolbar>
-                    <dxi-item location="before" widget="dxSelectBox" [options]="{
-                        items: roles,
-                        value: selectedRole,
-                        displayExpr: 'name',
-                        valueExpr: 'id',
-                        placeholder: translocoService.translate('labels.select-role'),
-                        onValueChanged: onRoleValueChanged
-                    }"></dxi-item>
-                    <dxi-item location="after" widget="dxTextBox" [options]="{
-                        value: filterText,
-                        width: 240,
-                        placeholder: translocoService.translate('labels.search'),
-                        onValueChanged: onValueChanged
-                    }"></dxi-item>
-                  </dx-toolbar>
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <p-select [options]="roles" [(ngModel)]="selectedRole" optionLabel="name" optionValue="id"
+                    [placeholder]="'labels.select-role' | transloco" (onChange)="onRoleValueChanged($event)"
+                    appendTo="body" styleClass="w-full sm:w-auto" />
+                <p-iconfield iconPosition="left" class="w-full sm:w-auto">
+                    <p-inputicon styleClass="pi pi-search" />
+                    <input pInputText type="text" [ngModel]="filterText"
+                        (ngModelChange)="onFilterChanged($event)"
+                        [placeholder]="'labels.search' | transloco" class="w-full" style="width: 240px" />
+                </p-iconfield>
             </div>
-            <dx-accordion #accordion 
-                [dataSource]="data" 
-                [collapsible]="true" 
-                [multiple]="false"
-                [animationDuration]="300" 
-                [selectedItems]="data[0] ? [data[0]] : []"
-                id="accordion-container">
-                <div *dxTemplate="let item of 'title'">
-                    <div class="header">{{ item.moduleName }}</div>
-                </div>
-                <div *dxTemplate="let item of 'item'">
-                    <div class="dx-field" *ngFor="let row of item.permissions">
-                        <div class="dx-field-label">{{row.claimValue}}</div>
-                        <div class="dx-field-value">
-                            <dx-switch [value]="row.hasRole" (onValueChanged)="onRowValueChanged($event, row)"></dx-switch>
-                        </div>
-                    </div>
-                </div>
 
-            </dx-accordion>
+            <p-accordion [value]="data.length ? '0' : null" id="accordion-container">
+                @for (item of data; track item.moduleName; let i = $index) {
+                <p-accordion-panel [value]="i.toString()">
+                    <p-accordion-header>
+                        <span class="header font-medium">{{ item.moduleName }}</span>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                        @for (row of item.permissions; track row.claimValue) {
+                        <div class="flex items-center justify-between py-2">
+                            <div class="field-label">{{ row.claimValue }}</div>
+                            <div class="field-value">
+                                <p-toggleswitch [(ngModel)]="row.hasRole"
+                                    (onChange)="onRowValueChanged($event, row)" />
+                            </div>
+                        </div>
+                        }
+                    </p-accordion-content>
+                </p-accordion-panel>
+                }
+            </p-accordion>
         </div>
     </div>
 </div>

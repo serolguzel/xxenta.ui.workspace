@@ -1,12 +1,7 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { TranslocoModule } from '@jsverse/transloco';
-import {
-  DxLinearGaugeModule,
-  DxListModule,
-  DxLoadPanelModule,
-  DxTooltipModule,
-} from 'devextreme-angular';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import moment from 'moment';
 import {
   DistinctForLocationsModel,
@@ -22,13 +17,8 @@ import { GenesisAlertComponent } from 'genesis-shell';
   styleUrls: ['./transfer-order-lineer-gauge.component.scss'],
   standalone: true,
   imports: [
-    NgFor,
-    NgIf,
     NgClass,
-    DxLinearGaugeModule,
-    DxLoadPanelModule,
-    DxTooltipModule,
-    DxListModule,
+    ProgressSpinnerModule,
     TranslocoModule,
     GenesisAlertComponent
   ],
@@ -36,6 +26,8 @@ import { GenesisAlertComponent } from 'genesis-shell';
 export class TransferOrderLineerGaugeComponent implements OnInit {
   @Input() data: ExtendedTransferTaskModel[] = [];
   @Input() loadingVisible: boolean = false;
+
+  hoveredLocation: string | null = null;
 
   ngOnInit(): void {
 

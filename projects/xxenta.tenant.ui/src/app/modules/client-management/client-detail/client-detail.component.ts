@@ -5,7 +5,7 @@ import { ClientFormComponent, ClientSecretModel, CreateClientModel, LookupServic
 import { AuthService, CommandResponse, ConstantRoles, UserModel } from 'genesis-coreservice';
 import { ClientModel } from '../../services/models/client.model';
 import { TenantService } from '../../services/tenant.service';
-import { DxButtonModule } from 'devextreme-angular';
+import { ButtonModule } from 'primeng/button';
 import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
@@ -16,7 +16,7 @@ import { TranslocoModule } from '@jsverse/transloco';
     NgFor,
     NgIf,
     ClientFormComponent,
-    DxButtonModule,
+    ButtonModule,
     TranslocoModule
   ],
   providers: [

@@ -1,98 +1,65 @@
-<dx-data-grid id="gridContainer" 
-            [dataSource]="dataSource"
-            [remoteOperations]="false"
-            [showColumnLines]="false"
-            [showBorders]="true"
-            [showRowLines]="true"
-            [rowAlternationEnabled]="true"
-            [hoverStateEnabled]="true"
-            [allowColumnResizing]="true"
-            [columnHidingEnabled]="false"
-            (onInitNewRow)="onInitNewRow($event)"
-            (onRowUpdating)="onRowUpdating($event)">
-          
-              <dxo-search-panel [visible]="true"></dxo-search-panel>
-              <dxo-filter-row [visible]="true"></dxo-filter-row>
-              <dxo-group-panel [visible]="false"></dxo-group-panel>
+<div class="p-6">
+  <genesis-data-table
+    [title]="'labels.navigations' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    [loadPath]="loadPath"
+    insertPath="Navigation"
+    updatePath="Navigation"
+    deletePath="Navigation"
+    updateKey="id"
+    [editorTitle]="'labels.navigation-management' | transloco"
+    editorWidth="600px"
+    [pageSize]="20"
+    [columns]="columns"
+    [newRowDefaults]="{ appsId: appId }">
 
-              <dxo-toolbar>
-                <dxi-item location="before">
-                  <div *dxTemplate>
-                    <div class="text-2xl tracking-tight">
-                        {{ 'labels.navigations' | transloco }}
-                    </div>
-                  </div>
-                </dxi-item>
-                <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-                <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-                <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-              </dxo-toolbar>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <input pInputText id="title" [(ngModel)]="row.title" class="w-full" />
+          <label for="title">{{ 'labels.title' | transloco }}</label>
+        </p-floatlabel>
 
-              <dxo-editing 
-              mode="popup"
-              [allowUpdating]="true"
-              [allowAdding]="true"
-              [allowDeleting]="false"
-              [useIcons]="true">
-              <dxo-popup
-                  [title]="'labels.navigation-management' | transloco"
-                  [showTitle]="true"
-                  [width]="600"
-                  [height]="500"
-                  [resizeEnabled]="true"
-                  [position]="{ my: 'center', at: 'center'}">
-              </dxo-popup>
-              <dxo-form [colCount]="1" labelMode="floating">
-                  <dxi-item dataField="title">
-                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                  </dxi-item>
-                  <dxi-item dataField="subtitle"></dxi-item>
+        <p-floatlabel>
+          <input pInputText id="subtitle" [(ngModel)]="row.subtitle" class="w-full" />
+          <label for="subtitle">{{ 'labels.subtitle' | transloco }}</label>
+        </p-floatlabel>
 
-                  <dxi-item itemType="group" [colCount]="2">
-                    <dxi-item dataField="type" editorType="dxSelectBox" [editorOptions]="{
-                      dataSource: navigationTypes,
-                    }">
-                      <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
-                      </dxi-validation-rule>
-                    </dxi-item>
-                    <dxi-item dataField="icon">
-                      <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
-                      </dxi-validation-rule>
-                    </dxi-item>
-                    <dxi-item dataField="active"></dxi-item>
-                    <dxi-item dataField="disabled"></dxi-item>
-                  </dxi-item>
-                  <dxi-item dataField="roles" editorType="dxTagBox" [editorOptions]="{
-                    dataSource: roles,
-                    valueExpr: 'id',
-                    displayExpr: 'name',
-                    showClearButton: true,
-                    showSelectionControls: true,
-                    applyValueMode: 'useButtons'
-                }">
-                  </dxi-item>
-                  <dxi-item dataField="link">
-                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                  </dxi-item>
-                  
-              </dxo-form>
-          </dxo-editing>
+        <div class="grid grid-cols-2 gap-4">
+          <p-floatlabel>
+            <p-select appendTo="body" inputId="type" [(ngModel)]="row.type" [options]="navigationTypes"
+              [filter]="true" class="w-full" />
+            <label for="type">{{ 'labels.type' | transloco }}</label>
+          </p-floatlabel>
+          <p-floatlabel>
+            <input pInputText id="icon" [(ngModel)]="row.icon" class="w-full" />
+            <label for="icon">{{ 'labels.icon' | transloco }}</label>
+          </p-floatlabel>
+        </div>
 
-              
-              <dxi-column dataField="title" dataType="string"></dxi-column>
-              <dxi-column dataField="subtitle" dataType="string"></dxi-column>
-              <dxi-column dataField="type" dataType="string"></dxi-column>
-              <dxi-column dataField="active" dataType="boolean"></dxi-column>
-              <dxi-column dataField="disabled" dataType="boolean"></dxi-column>
-              <dxi-column dataField="tootip" dataType="string"></dxi-column>
-              <dxi-column dataField="link" dataType="string"></dxi-column>
-              <dxi-column dataField="icon" dataType="string"></dxi-column>
-              <dxi-column dataField="isDeleted" dataType="boolean"></dxi-column>
-              <dxi-column dataField="roles" dataType="array" [visible]="false"></dxi-column>
+        <div class="flex gap-4">
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.active" [binary]="true" inputId="active" />
+            <label for="active">{{ 'labels.active' | transloco }}</label>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.disabled" [binary]="true" inputId="disabled" />
+            <label for="disabled">{{ 'labels.disabled' | transloco }}</label>
+          </div>
+        </div>
 
-              <dxo-paging [pageSize]="20"></dxo-paging>
-              <dxo-pager 
-                [showPageSizeSelector]="true" 
-                [showInfo]="true" 
-                [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-          </dx-data-grid>
+        <p-floatlabel>
+          <p-multiselect appendTo="body" inputId="roles" [(ngModel)]="row.roles" [options]="roles"
+            optionLabel="name" optionValue="id" [filter]="true" [showClear]="true" class="w-full" />
+          <label for="roles">{{ 'labels.roles' | transloco }}</label>
+        </p-floatlabel>
+
+        <p-floatlabel>
+          <input pInputText id="link" [(ngModel)]="row.link" class="w-full" />
+          <label for="link">{{ 'labels.link' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

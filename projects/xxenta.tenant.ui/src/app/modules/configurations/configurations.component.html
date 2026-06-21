@@ -1,80 +1,52 @@
 <div class="p-6">
-    <dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource"
-    [remoteOperations]="false"
-    [showColumnLines]="false"
-    [showBorders]="true"
-    [showRowLines]="true"
-    [rowAlternationEnabled]="true"
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="false"
-    [columnHidingEnabled]="false"
-    (onRowUpdating)="onRowUpdating($event)">
-  
-      <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
-      <dxo-filter-row [visible]="true"></dxo-filter-row>
-      <dxo-group-panel [visible]="false"></dxo-group-panel>
-  
-      <dxo-toolbar>
-          <dxi-item location="before">
-            <div *dxTemplate>
-              <div class="text-2xl tracking-tight">
-                {{ 'labels.configurations' | transloco }}
-              </div>
-            </div>
-          </dxi-item>
-          <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-          <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-        </dxo-toolbar>
-        
-      <dxo-editing 
-        mode="popup"
-        [allowUpdating]="true"
-        [allowAdding]="true"
-        [allowDeleting]="true"
-        [useIcons]="true">
-        <dxo-popup
-            [title]="'labels.configurations' | transloco"
-            [showTitle]="true"
-            [width]="640"
-            [height]="400"
-            [resizeEnabled]="true"
-            [position]="{ my: 'center', at: 'center'}">
-        </dxo-popup>
-        <dxo-form [colCount]="1" labelLocation="top" labelMode="floating">
-          <dxi-item itemType="group" colCount="2" colSpan="2">
-            <dxi-item dataField="organizationId" editorType="dxLookup" [editorOptions]="customerLookUpOptions">
-              <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-            </dxi-item>
-            <dxi-item dataField="integrationId" editorType="dxLookup" [editorOptions]="integrationDataSource">
-              <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-            </dxi-item>
-          </dxi-item>
-        
-          <dxi-item dataField="key">
-            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-          </dxi-item>
-           <dxi-item dataField="value">
-            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-          </dxi-item>
+  <genesis-data-table
+    [title]="'labels.configurations' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    loadPath="Configuration"
+    insertPath="Configuration"
+    updatePath="Configuration"
+    deletePath="Configuration"
+    updateKey="id"
+    [editorTitle]="'labels.configurations' | transloco"
+    editorWidth="640px"
+    [pageSize]="20"
+    [pageSizeOptions]="[10, 20, 30]"
+    [columns]="columns">
 
-        
-          <dxi-item dataField="isDefault" dataType="boolean"></dxi-item>
-        </dxo-form>
-    </dxo-editing>
-  
-    <dxi-column dataField="organization.name" dataType="string" [caption]="'labels.organization' | transloco"></dxi-column>
-    <dxi-column dataField="integration.name" dataType="string"></dxi-column>
-    
-    <dxi-column dataField="key" dataType="string"></dxi-column>
-    <dxi-column dataField="value" dataType="string"></dxi-column>
-    
-    <dxi-column dataField="isDefault" dataType="boolean"></dxi-column>
-    <dxi-column dataField="organizationId" dataType="string" [visible]="false" [caption]="'labels.organization' | transloco"></dxi-column>
-    <dxi-column dataField="integrationId" dataType="string" [visible]="false"></dxi-column>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <div class="grid grid-cols-2 gap-4">
+          <p-floatlabel>
+            <p-select appendTo="body" inputId="organizationId" [(ngModel)]="row.organizationId"
+              [options]="organizations" optionLabel="name" optionValue="id" [filter]="true" filterBy="name,code"
+              [showClear]="true" class="w-full" />
+            <label for="organizationId">{{ 'labels.organization' | transloco }}</label>
+          </p-floatlabel>
 
-    <dxo-paging [pageSize]="20"></dxo-paging>
-    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-    </dx-data-grid>
-  </div>
+          <p-floatlabel>
+            <p-select appendTo="body" inputId="integrationId" [(ngModel)]="row.integrationId"
+              [options]="integrations" optionLabel="name" optionValue="id" [filter]="true" filterBy="name,code"
+              [showClear]="true" class="w-full" />
+            <label for="integrationId">{{ 'labels.integration' | transloco }}</label>
+          </p-floatlabel>
+        </div>
+
+        <p-floatlabel>
+          <input pInputText id="key" [(ngModel)]="row.key" class="w-full" />
+          <label for="key">{{ 'labels.key' | transloco }}</label>
+        </p-floatlabel>
+
+        <p-floatlabel>
+          <input pInputText id="value" [(ngModel)]="row.value" class="w-full" />
+          <label for="value">{{ 'labels.value' | transloco }}</label>
+        </p-floatlabel>
+
+        <div class="flex align-items-center gap-2">
+          <p-checkbox [(ngModel)]="row.isDefault" [binary]="true" inputId="isDefault" />
+          <label for="isDefault">{{ 'labels.is-default' | transloco }}</label>
+        </div>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

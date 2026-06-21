@@ -1,63 +1,56 @@
-import { Component, OnInit } from '@angular/core';
-import { DxDataGridModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { CommandResponse } from 'genesis-coreservice';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TranslocoModule } from '@jsverse/transloco';
 import { GenesisAlertComponent } from 'genesis-shell';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from 'genesis-components';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { ApiScopeModel } from '../services/models/tenant.models';
 import { TenantService } from '../services/tenant.service';
-import { TranslocoModule } from '@jsverse/transloco';
-import { DataSourceBuilder } from 'genesis-components';
 
 @Component({
   selector: 'app-api-resources',
   templateUrl: './api-resources.component.html',
   standalone: true,
   imports: [
+    FormsModule,
+    TranslocoModule,
     GenesisAlertComponent,
-    DxDataGridModule,
-    TranslocoModule
+    GenesisDataTableComponent,
+    GenesisCellDirective,
+    CheckboxModule,
+    FloatLabelModule,
+    InputTextModule,
+    MultiSelectModule,
   ],
   providers: [
     TenantService
   ]
 })
 export class ApiResourcesComponent implements OnInit {
-  dataSource: CustomStore;
-  scopesDataSource: ApiScopeModel[] = [];
-  constructor(
-    private tenantService: TenantService
-  ) {
+  private readonly tenantService = inject(TenantService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
+  scopesDataSource: ApiScopeModel[] = [];
+
+  get newRowDefaults() {
+    return { secret: crypto.randomUUID(), enabled: false, nonEditable: false, scopes: [] };
   }
+
+  columns: GenesisColumn[] = [
+    { field: 'name', header: 'Name', filter: true },
+    { field: 'displayName', header: 'Display Name', filter: true },
+    { field: 'description', header: 'Description', filter: true },
+    { field: 'secret', header: 'Secret', hidden: true },
+    { field: 'enabled', header: 'Enabled', type: 'boolean' },
+    { field: 'nonEditable', header: 'Non Editable', type: 'boolean' },
+    { field: 'scopes', header: 'Scopes', sortable: false },
+  ];
+
   async ngOnInit(): Promise<void> {
     this.scopesDataSource = await this.tenantService.GetApiScopes();
-    this.dataSource = new DataSourceBuilder(this.tenantService)
-      .load('ApiResource', { requireTotalCount: true })
-      .insert('ApiResource')
-      .remove('ApiResource')
-      .setKey("name")
-      .build();
-  }
-
-  onInitNewRow = (e: any) => {
-    e.data['secret'] = crypto.randomUUID();
-  }
-
-  validationCallback = (e: any) => {
-    if (e.value) {
-      return this.tenantService.ExistApiResourceName(e.value).then((res: CommandResponse<boolean>) => {
-        return !res.aggregatorId;
-      });
-
-    } else {
-      return false;
-    }
-  }
-
-  scopeCellTemplate = (container: any, options: any) => {
-    const noBreakSpace = '\u00A0';
-    const text = (options.value || []).map((element: any) => element).join(', ');
-    container.textContent = text || noBreakSpace;
-    container.title = text;
+    this.cdr.detectChanges();
   }
 }

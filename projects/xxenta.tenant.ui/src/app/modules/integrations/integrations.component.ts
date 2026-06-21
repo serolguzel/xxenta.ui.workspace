@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { DxDataGridModule } from 'devextreme-angular';
-import { TenantService } from '../services/tenant.service';
-import CustomStore from 'devextreme/data/custom_store';
-import { TranslocoModule } from '@jsverse/transloco';
-import { BadgeTaskStatusComponent, DataSourceBuilder } from 'genesis-components';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { BadgeTaskStatusComponent, GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from 'genesis-components';
+import { TenantService } from '../services/tenant.service';
 
 @Component({
   selector: 'app-integrations',
@@ -12,50 +15,39 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [
     CommonModule,
-    DxDataGridModule,
+    FormsModule,
     TranslocoModule,
-    BadgeTaskStatusComponent
+    FloatLabelModule,
+    InputNumberModule,
+    InputTextModule,
+    MultiSelectModule,
+    BadgeTaskStatusComponent,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
   ],
   providers: [
     TenantService
   ]
 })
 export class IntegrationsComponent implements OnInit {
-  dataSource: CustomStore;
-  appsDataSource: CustomStore;
-  isUpdateCode: boolean = false;
-  constructor(
-    private tenantService: TenantService
-  ) {
+  private readonly translocoService = inject(TranslocoService);
+  private readonly tenantService = inject(TenantService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  }
-  ngOnInit(): void {
-    this.appsDataSource = new DataSourceBuilder(this.tenantService)
-      .load('Apps/GetAppsLookup')
-      .setKey('id')
-      .build();
+  apps: any[] = [];
 
-    this.dataSource = new DataSourceBuilder(this.tenantService)
-      .load('Integration', { requireTotalCount: true })
-      .insert('Integration')
-      .updateFullModel('Integration')
-      .remove('Integration')
-      .setKey("id")
-      .build();
-  }
-  
-  onInitNewRow = (e: any) => {
-    this.isUpdateCode = false;
-  }
-  onEditingStart = (e: any) => {
-    this.isUpdateCode = true;
-  }
+  columns: GenesisColumn[] = [
+    { field: 'code', header: this.translocoService.translate('labels.code'), filter: true },
+    { field: 'name', header: this.translocoService.translate('labels.name'), filter: true },
+    { field: 'price', header: this.translocoService.translate('labels.price') },
+    { field: 'description', header: this.translocoService.translate('labels.description'), filter: true },
+    { field: 'icon', header: this.translocoService.translate('labels.icon') },
+    { field: 'appIds', header: this.translocoService.translate('labels.apps'), sortable: false },
+  ];
 
-  onRowUpdating = (e: any) => {
-    e.newData = { ...e.oldData, ...e.newData };
-  }
-
-  onRowUpdated = (e: any) => {
-    this.isUpdateCode = false;
+  async ngOnInit(): Promise<void> {
+    const apps = await this.tenantService.getCall('Apps/GetAppsLookup');
+    this.apps = Array.isArray(apps) ? apps : (apps?.data ?? []);
+    this.cdr.detectChanges();
   }
 }

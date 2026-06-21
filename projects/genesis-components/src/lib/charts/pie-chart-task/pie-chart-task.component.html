@@ -1,19 +1,15 @@
-<div id="pie-chart-container" [ngClass]="{'h-[220px]': count == 0}">
-  <apx-chart *ngIf="count > 0"
-    [series]="chartOptions.series!"
-    [chart]="chartOptions.chart!"
-    [labels]="chartOptions.labels"
-    [responsive]="chartOptions.responsive!"></apx-chart>
-  <div *ngIf="count < 1 && !loadingVisible" class="p-4 border-2 border-dashed border-gray-300 rounded-md">
-    {{'labels.no-data' | transloco}}
-  </div>
+<div id="pie-chart-container" class="relative" [ngClass]="{'h-[220px]': count == 0}">
+  @if (count > 0) {
+    <p-chart type="pie" [data]="chartData" [options]="chartOptions"></p-chart>
+  }
+  @if (count < 1 && !loadingVisible) {
+    <div class="p-4 border-2 border-dashed border-gray-300 rounded-md">
+      {{ 'labels.no-data' | transloco }}
+    </div>
+  }
+  @if (loadingVisible) {
+    <div class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-md z-10">
+      <p-progressspinner strokeWidth="4" [style]="{ width: '50px', height: '50px' }" />
+    </div>
+  }
 </div>
-<dx-load-panel #loadPanel 
-    shadingColor="rgba(0,0,0,0.4)" 
-    [position]="{ of: '#pie-chart-container' }"
-    [(visible)]="loadingVisible" 
-    [showIndicator]="true" 
-    [showPane]="true" 
-    [shading]="true" 
-    [hideOnOutsideClick]="false">
-</dx-load-panel>

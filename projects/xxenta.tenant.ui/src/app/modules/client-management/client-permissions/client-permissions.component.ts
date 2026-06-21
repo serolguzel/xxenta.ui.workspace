@@ -1,54 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { DxDataGridModule, DxLookupModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { ClaimValuesModel, ClientClaimModel, ClientPermissionModel } from '../../services/models/client.model';
+import { TranslocoModule } from '@jsverse/transloco';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from 'genesis-components';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { ClaimValuesModel } from '../../services/models/client.model';
 import { TenantService } from '../../services/tenant.service';
-import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { DataSourceBuilder } from 'genesis-components';
 
 @Component({
   selector: 'app-client-permissions',
   templateUrl: './client-permissions.component.html',
   standalone: true,
   imports: [
-    DxDataGridModule,
-    DxLookupModule,
-    TranslocoModule
+    FormsModule,
+    TranslocoModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
+    FloatLabelModule,
+    InputTextModule,
+    SelectModule,
   ],
   providers: [
     TenantService
   ]
 })
 export class ClientPermissionsComponent implements OnInit {
-  dataSource: CustomStore;
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly tenantService = inject(TenantService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  loadPath: string = '';
   claimsDataSource: ClaimValuesModel[] = [];
-  client: ClientPermissionModel = <ClientPermissionModel>{};
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private tenantService: TenantService,
-    public translocoService: TranslocoService) {
 
-  }
+  columns: GenesisColumn[] = [
+    { field: 'type', header: 'Type', filter: true },
+    { field: 'value', header: 'Value', filter: true },
+    { field: 'description', header: 'Description', filter: true },
+  ];
+
   async ngOnInit(): Promise<void> {
-    let clientId = this.activatedRoute.snapshot.params.clientId;
+    const clientId = this.activatedRoute.snapshot.params['clientId'];
+    this.loadPath = `Client/${clientId}/permissions`;
     this.claimsDataSource = await this.tenantService.GetClaims();
-
-    this.dataSource = new DataSourceBuilder(this.tenantService)
-      .load(`Client/${clientId}/permissions`, { requireTotalCount: true })
-      .insert(`Client/${clientId}/permissions`)
-      .remove(`Client/${clientId}/permissions`)
-      .setKey("id")
-      .build();
-  }
-
-  onInitNewRow = (e: any) => {
-    e.data = <ClientClaimModel>{
-      type: 'permission'
-    };
-  }
-  onRowUpdating = (e: any) => {
-    var assign = (<any>Object).assign({}, e.oldData, e.newData);
-    e.newData = assign;
+    this.cdr.detectChanges();
   }
 }

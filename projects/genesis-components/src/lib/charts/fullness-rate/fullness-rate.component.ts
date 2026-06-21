@@ -1,167 +1,89 @@
-import {Component, Input, ViewEncapsulation} from '@angular/core';
-import {ApexXAxis, NgApexchartsModule } from "ng-apexcharts";
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChartModule } from 'primeng/chart';
 import colors from "tailwindcss/colors";
-import { ChartOptions, MostSeller } from '../apex-chart-options';
+import { MostSeller } from '../apex-chart-options';
 
 @Component({
   selector: 'fullness-rate',
   templateUrl: './fullness-rate.component.html',
   encapsulation: ViewEncapsulation.None,
   standalone: true,
-  imports:[NgApexchartsModule],
+  imports: [ChartModule],
 })
-export class FullnessRateComponent {
+export class FullnessRateComponent implements OnInit {
     @Input() data: MostSeller[] = [];
     targetPax = 100;
-    public chartOptions: Partial<ChartOptions>;
-    constructor() {
-        const data = [{
-            title: 'Vito',
-            pax: 255,
-            capacity: 6,
-            voyage:58,
-            total: 348
-        },{
-            title: 'Mini',
-            pax: 344,
-            capacity: 12,
-            voyage:45,
-            total: 540
-        },{
-            title: 'Midi',
-            pax: 356,
-            capacity: 24,
-            voyage:19,
-            total: 456,
-        },{
-            title: 'Bus',
-            pax: 678,
-            capacity: 46,
-            voyage:19,
-            total: 874,
-        }]
-        this.chartOptions = {
-            plotOptions: {
-                bar: {
-                    horizontal: true,
-                    barHeight: 32,
-                },
-            },
-            chart: {
-                height: 350,
-                type: "bar",
-                stacked: true, // Yığılmış bar grafiği
-                zoom:{
-                    enabled: false,
-                },
-                toolbar:{
-                    show: false
-                },
-                animations: {
-                    enabled: false,
-                },
 
-            },
-            fill: {
-                colors: [colors.lime['500']]
-            },
-            xaxis: {
-                max: 100,
-                categories: data.map(item => `${item.title} (${item.voyage})`),
-            },
+    chartData: any;
+    chartOptions: any;
 
-            yaxis: {
-                labels:{
-                    style:{
-                        fontSize: '14px',
-                    }
-                }
-            },
-            tooltip:{
-                y:{
-                    formatter: (value, opts: any) => {
-                        const index  = (opts.dataPointIndex);
+    private seedData = [
+        { title: 'Vito', pax: 255, capacity: 6, voyage: 58, total: 348 },
+        { title: 'Mini', pax: 344, capacity: 12, voyage: 45, total: 540 },
+        { title: 'Midi', pax: 356, capacity: 24, voyage: 19, total: 456 },
+        { title: 'Bus', pax: 678, capacity: 46, voyage: 19, total: 874 },
+    ];
 
-                        return `${data[index].pax} / ${data[index].total} pax`;
-                    }
-                }
-            },
-            series: [
-                {
-                    name: 'Doluluk',
-                    data: data.map(item => ((item.pax / item.total) * 100).toFixed(2)) as any,
-                }
-            ],
-            dataLabels:{
-                style:{
-                    colors: [colors.indigo['950']]
-                }
-            }
-        };
+    ngOnInit(): void {
+        this.buildChart();
     }
 
-    public setData(data: MostSeller[]){
+    public setData(data: MostSeller[]) {
         this.data = data;
-        this.mapData();
+        this.buildChart();
     }
-    mapData() {
-        this.chartOptions = {
-            plotOptions: {
-                bar: {
-                    horizontal: true,
-                    barHeight: 32,
-                },
-            },
-            chart: {
-                height: 350,
-                type: "bar",
-                stacked: true, // Yığılmış bar grafiği
-                zoom: {
-                    enabled: false,
-                },
-                toolbar: {
-                    show: false
-                },
-                animations: {
-                    enabled: false,
-                },
 
-            },
-            fill: {
-                colors: [colors.lime['500']]
-            },
-            xaxis: <ApexXAxis>{
-                max: 100,
-                categories: this.data.map(item => item.seller.displayName.substring(0, 3)),
-            },
+    private buildChart(): void {
+        if (this.data && this.data.length) {
+            const labels = this.data.map((item: any) => item.seller.displayName.substring(0, 3));
+            const values = this.data.map((item: any) => +((item.pax / this.targetPax) * 100).toFixed(2));
+            const tooltipData = this.data;
+            this.chartData = {
+                labels,
+                datasets: [
+                    {
+                        label: 'Pax',
+                        data: values,
+                        backgroundColor: colors.lime['500'],
+                    }
+                ]
+            };
+            this.chartOptions = this.makeOptions(tooltipData, (i) => `${tooltipData[i].pax} / ${tooltipData[i].total} pax`);
+        } else {
+            const data = this.seedData;
+            const labels = data.map(item => `${item.title} (${item.voyage})`);
+            const values = data.map(item => +((item.pax / item.total) * 100).toFixed(2));
+            this.chartData = {
+                labels,
+                datasets: [
+                    {
+                        label: 'Doluluk',
+                        data: values,
+                        backgroundColor: colors.lime['500'],
+                    }
+                ]
+            };
+            this.chartOptions = this.makeOptions(data, (i) => `${data[i].pax} / ${data[i].total} pax`);
+        }
+    }
 
-            yaxis: {
-                labels: {
-                    style: {
-                        fontSize: '14px',
+    private makeOptions(rows: any[], tooltipFormatter: (index: number) => string): any {
+        return {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx: any) => tooltipFormatter(ctx.dataIndex),
                     }
                 }
             },
-            tooltip: {
-                y: {
-                    formatter: (value, opts: any) => {
-                        const index = (opts.dataPointIndex);
-                        return `${this.data[index].pax} / ${this.data[index].total} pax`;
-                    }
-                }
-            },
-            series: [
-                {
-                    name: 'Pax',
-                    data: this.data.map((item: any) => ((item.pax / this.targetPax) * 100).toFixed(2)) as any,
-                }
-            ],
-            dataLabels: {
-                style: {
-                    colors: [colors.indigo['950']]
-                }
+            scales: {
+                x: { max: 100 },
+                y: {}
             }
         };
     }
-
 }
