@@ -1,61 +1,29 @@
-<dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource"
-    [remoteOperations]="false"
-    [showColumnLines]="false"
-    [showBorders]="true"
-    [showRowLines]="true"
-    [rowAlternationEnabled]="true"
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="true"
-    [columnHidingEnabled]="true">
+<div class="p-6">
+  <genesis-data-table
+    [title]="pageTitle"
+    [lazy]="false"
+    [editable]="true"
+    [loadPath]="loadPath"
+    [insertPath]="loadPath"
+    updatePath="OrganizationMapping"
+    deletePath="OrganizationMapping"
+    updateKey="id"
+    [editorTitle]="'labels.mapping' | transloco"
+    [pageSize]="20"
+    [columns]="columns">
 
-    <dxo-toolbar>
-        <dxi-item location="before">
-            <div *dxTemplate>
-                <div class="text-2xl tracking-tight">
-                    {{pageTitle}}
-                </div>
-            </div>
-        </dxi-item>
-        <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-    </dxo-toolbar>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <input pInputText id="oprVoucher" [(ngModel)]="row.oprVoucher" class="w-full" />
+          <label for="oprVoucher">{{ 'labels.opr-voucher' | transloco }}</label>
+        </p-floatlabel>
 
-    <dxo-search-panel [visible]="true"></dxo-search-panel>
-    <dxo-filter-row [visible]="true"></dxo-filter-row>
-    <dxo-group-panel [visible]="false"></dxo-group-panel>
-   
-    <dxo-editing 
-        mode="popup"
-        [allowAdding]="true"
-        [allowDeleting]="true"
-        [useIcons]="true">
-        <dxo-popup
-            title="Mapping"
-            [showTitle]="true"
-            [width]="500"
-            [height]="300"
-            [resizeEnabled]="true"
-            [position]="{ my: 'center', at: 'center'}">
-        </dxo-popup>
-        <dxo-form [colCount]="1" labelMode="floating">
-            <dxi-item dataField="oprVoucher">
-                <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
-                </dxi-validation-rule>
-            </dxi-item>
-            <dxi-item dataField="externalProvider">
-                <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
-                </dxi-validation-rule>
-            </dxi-item>
-        </dxo-form>
-    </dxo-editing>
-
-    <dxi-column dataField="oprVoucher" dataType="string"></dxi-column>
-    <dxi-column dataField="externalProvider" dataType="string"></dxi-column>
-
-    <dxo-paging [pageSize]="20"></dxo-paging>
-    <dxo-pager [showPageSizeSelector]="true" 
-        [showInfo]="true"
-        [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-</dx-data-grid>
+        <p-floatlabel>
+          <input pInputText id="externalProvider" [(ngModel)]="row.externalProvider" class="w-full" />
+          <label for="externalProvider">{{ 'labels.external-provider' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

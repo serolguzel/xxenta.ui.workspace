@@ -1,28 +1,24 @@
-import { NgIf } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DxDataGridModule, DxTabPanelModule, DxTemplateModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { Response } from 'genesis-coreservice';
-import { MatIconModule } from '@angular/material/icon';
 import { TranslocoModule } from '@jsverse/transloco';
+import { CodeNamePair, Response } from 'genesis-coreservice';
+import { TableModule } from 'primeng/table';
+import { TabsModule } from 'primeng/tabs';
 import { TransferReservationService } from '../../services/transfer-reservation.service';
 import { FlightGuestListViewComponent } from '../../../flight-reservations/flight-guest-list-view/flight-guest-list-view.component';
 import { ReservationGuestModel, ReservationModel } from '../../models/reservation.models';
-import { DataSourceBuilder } from '../../../../../services/data-source-builder';
 
 @Component({
   selector: 'detail-reservation-view',
   templateUrl: './detail-reservation-view.component.html',
   standalone: true,
   imports: [
-    NgIf,
+    DatePipe,
     RouterLink,
-    MatIconModule,
     TranslocoModule,
-    DxTabPanelModule,
-    DxTemplateModule,
-    DxDataGridModule,
+    TabsModule,
+    TableModule,
     FlightGuestListViewComponent
   ],
   providers: [
@@ -30,21 +26,20 @@ import { DataSourceBuilder } from '../../../../../services/data-source-builder';
   ]
 })
 export class DetailReservationViewComponent implements OnInit {
+  private readonly transferService = inject(TransferReservationService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
   guests: ReservationGuestModel[] = [];
   @Input() key: string;
   @Input() rowData: any = {};
   referenceData: Response<ReservationModel> = <Response<ReservationModel>>{};
   transfers: ReservationModel[] = [];
-  transferRouteTypes: any;
-  vehicleTypesDataSource: CustomStore;
-
-  constructor(private readonly transferService: TransferReservationService) {
-    this.transferRouteTypes = this.transferService.transferRouteTypes;
-   }
+  transferRouteTypes: CodeNamePair[] = this.transferService.transferRouteTypes;
 
   ngOnInit(): void {
     this.transferService.GetReservationGuestsByReservationId(this.key).then((res: ReservationGuestModel[]) => {
       this.guests = res;
+      this.cdr.detectChanges();
     });
 
     this.transferService.GetReservationByReferenceId(this.key).then((res: Response<ReservationModel>) => {
@@ -52,12 +47,11 @@ export class DetailReservationViewComponent implements OnInit {
       if (!res.hasError) {
         this.transfers.push(res.data);
       }
+      this.cdr.detectChanges();
     });
+  }
 
-    this.vehicleTypesDataSource = new DataSourceBuilder(this.transferService)
-      .load('VehicleType/GetVehicleTypesLookup')
-      .byKey('VehicleType/GetVehicleTypesLookup')
-      .setKey('code')
-      .build();
+  routeTypeName(code: any): string {
+    return this.transferRouteTypes.find(t => t.code === code)?.name ?? code;
   }
 }

@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DxDataGridModule, DxTemplateModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { OrganizationService } from '../services/organization.service';
-import { LookupService } from '../../../services/lookup.service';
-import { TranslocoModule } from '@jsverse/transloco';
-import { DataSourceBuilder } from '../../../services/data-source-builder';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { CoreService } from 'genesis-coreservice';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from '../../../components/common';
 
 @Component({
   selector: 'app-organization-partner',
@@ -13,44 +15,43 @@ import { DataSourceBuilder } from '../../../services/data-source-builder';
   standalone: true,
   imports: [
     RouterLink,
-    DxDataGridModule,
-    DxTemplateModule,
-    TranslocoModule
-  ],
-  providers: [
-    LookupService
+    FormsModule,
+    TranslocoModule,
+    CheckboxModule,
+    FloatLabelModule,
+    InputTextModule,
+    SelectModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
   ]
 })
 export class OrganizationPartnerComponent implements OnInit {
-  dataSource: CustomStore;
-  isUpdate: boolean = false;
-  customerLookUpOptions: any;
-  constructor(
-    private organizationService: OrganizationService,
-    private activatedRoute: ActivatedRoute,
-    public lookupService: LookupService
-  ) {
-    this.customerLookUpOptions = this.lookupService.customerLookUpOptions({});
-  }
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly coreService = inject(CoreService);
+  private readonly translocoService = inject(TranslocoService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
+  loadPath: string = '';
+  insertPath: string = '';
+  newRowDefaults: any = {};
+  partnerOptions: any[] = [];
+
+  columns: GenesisColumn[] = [
+    { field: 'fromOrganization.name', header: this.translocoService.translate('labels.from'), filter: true },
+    { field: 'toOrganization.name', header: this.translocoService.translate('labels.to'), filter: true },
+    { field: 'fromConfirm', header: this.translocoService.translate('labels.from-confirm'), type: 'boolean' },
+    { field: 'toConfirm', header: this.translocoService.translate('labels.to-confirm'), type: 'boolean' },
+  ];
+
   ngOnInit(): void {
-    let organizationId = this.activatedRoute.snapshot.params['organizationId'];
+    const organizationId = this.activatedRoute.snapshot.params['organizationId'];
+    this.loadPath = `OrganizationPartner/${organizationId}`;
+    this.insertPath = `OrganizationPartner/AddPartner/${organizationId}`;
+    this.newRowDefaults = { fromOrganizationId: organizationId, fromConfirm: true, toConfirm: true };
 
-    this.dataSource = new DataSourceBuilder(this.organizationService)
-      .load(`OrganizationPartner/${organizationId}`)
-      .insert(`OrganizationPartner/AddPartner/${organizationId}`)
-      .remove('OrganizationPartner')
-      .setKey('id')
-      .build();
-  }
-
-  onRowUpdating = (e: any) => {
-    var assign = (<any>Object).assign({}, e.oldData, e.newData);
-    e.newData = assign;
-  }
-  onInitNewRow = (e: any) => {
-    let organizationId = this.activatedRoute.snapshot.params['organizationId'];
-    e.data['fromOrganizationId'] = organizationId;
-    e.data['fromConfirm'] = true;
-    e.data['toConfirm'] = true;
+    this.coreService.getCall('Organization/GetOrganizationsLookup', { requireTotalCount: false }).then((data: any) => {
+      this.partnerOptions = Array.isArray(data) ? data : (data?.data ?? []);
+      this.cdr.detectChanges();
+    });
   }
 }

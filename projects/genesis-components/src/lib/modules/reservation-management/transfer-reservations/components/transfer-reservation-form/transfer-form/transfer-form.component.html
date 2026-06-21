@@ -7,85 +7,161 @@
   : ('labels.intermediate' | transloco) }}
 </div>
 
-<dx-form [formData]="data" labelMode="static">
-  <dxi-item itemType="group" [colSpan]="3">
-    <dxi-item itemType="group" [colCount]="6">
-      <dxi-item [colSpan]="2" dataField="fromLocation" editorType="dxLookup"
-        [editorOptions]="fromLocationLookupOptions">
-        <dxo-label text="{{ 'labels.from' | transloco }}"></dxo-label>
-        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
-      </dxi-item>
-      <dxi-item [colSpan]="2" dataField="toLocation" editorType="dxLookup" [editorOptions]="toLocationLookupOptions">
-        <dxo-label text="{{ 'labels.to' | transloco }}"></dxo-label>
-        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
-      </dxi-item>
-      <dxi-item [colSpan]="2" dataField="transferTypeId" editorType="dxLookup"
-        [editorOptions]="lookupService.transferTypesLookUpOptions">
-        <dxo-label text="{{ 'labels.transfer-type' | transloco }}"></dxo-label>
-        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
-      </dxi-item>
-      <dxi-item dataField="transferDate" editorType="dxDateBox"
-        [editorOptions]="{ 
-          displayFormat: 'dd.MM.yyyy', 
-          type: 'date',
-          useMaskBehavior: true,
-          onValueChanged: onTransferDateValueChanged
-          }">
-        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
-        <dxo-label text="{{ 'labels.transfer-date' | transloco }}"></dxo-label>
-      </dxi-item>
-      <dxi-item dataField="pickupTime" editorType="dxDateBox"
-        [editorOptions]="{ showClearButton: false, type: 'time', displayFormat: 'HH:mm', useMaskBehavior: true }">
-        <dxo-label text="{{ 'labels.pickup-time' | transloco }}"></dxo-label>
-      </dxi-item>
-      <dxi-item [colSpan]="2" dataField="operatorId" editorType="dxLookup" [editorOptions]="organizationLookUpOptions">
-        <dxo-label [text]="'labels.operator' | transloco"></dxo-label>
-        <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule>
-      </dxi-item>
-      <dxi-item [colSpan]="2" dataField="oprVoucher" editorType="dxTextBox"
-        [editorOptions]="oprVoucherLookUpOptions">
-        <dxo-label text="{{ 'labels.operator-voucher' | transloco }}"></dxo-label>
-        <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
-      </dxi-item>
-      <dxi-item [colSpan]="2" dataField="subVoucher">
-        <dxo-label text="{{ 'labels.sub-voucher' | transloco }}"></dxo-label>
-      </dxi-item>
-    </dxi-item>
-    <dxi-item dataField="reservationExtras" editorType="dxTagBox"
-      [editorOptions]="{ dataSource: extrasDataSource, displayExpr: 'name', valueExpr: 'extraId', itemTemplate: extraTemplate }">
-      <dxo-label text="{{ 'labels.extras' | transloco }}"></dxo-label>
-    </dxi-item>
-    <dxi-item dataField="note" editorType="dxTextBox" *ngIf="!disabledNote">
-      <dxo-label text="{{ 'labels.note' | transloco }}"></dxo-label>
-    </dxi-item>
-  </dxi-item>
-  <dxi-item itemType="group" 
-    [colCount]="3" 
-    caption="{{ 'labels.flight-info' | transloco }}"
-    [visible]="data.transferRouteType !== TransferRouteType.Intermediate">
-    <dxi-item [colSpan]="1" dataField="flightCode" editorType="dxLookup" [editorOptions]="flightLookUpOptions">
-      <dxo-label text="{{ 'labels.flight' | transloco }}"></dxo-label>
-      <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
-    </dxi-item>
+<form [formGroup]="form">
+  <div class="grid">
+    <div class="col-12 md:col-4">
+      <p-floatlabel>
+        <p-select inputId="fromLocation" formControlName="fromLocation"
+          [options]="fromLocationDataSource" optionLabel="name" [filter]="true"
+          [showClear]="true" [editable]="false" emptyFilterMessage=""
+          (onFilter)="onLocationFilter($event, 'from')" (onChange)="onFromLocationChange($event)"
+          class="w-full" />
+        <label for="fromLocation">{{ 'labels.from' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('fromLocation')?.invalid && form.get('fromLocation')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
 
-    <dxi-item dataField="terminalCode" editorType="dxSelectBox"
-      [editorOptions]="{ dataSource: terminalDataSource, displayExpr: 'name', valueExpr: 'code', itemTemplate: codeNameTemplate }">
-      <dxo-label text="{{ 'labels.terminal' | transloco }}"></dxo-label>
-    </dxi-item>
-    <dxi-item dataField="flightDate" editorType="dxDateBox"
-      [editorOptions]="{ displayFormat: 'dd.MM.yyyy', type: 'date', useMaskBehavior: true, onValueChanged: onDepartureDateValueChanged}">
-      <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
-      <dxo-label text="{{ 'labels.flight-date' | transloco }}"></dxo-label>
-    </dxi-item>
-    <dxi-item dataField="departureTime" editorType="dxDateBox"
-      [editorOptions]="{ type: 'time', displayFormat: 'HH:mm', useMaskBehavior: true }">
-      <dxo-label text="{{ 'labels.departure-time' | transloco }}"></dxo-label>
-      <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
-    </dxi-item>
-    <dxi-item dataField="arrivalTime" editorType="dxDateBox"
-      [editorOptions]="{ type: 'time', displayFormat: 'HH:mm', useMaskBehavior: true }">
-      <dxo-label text="{{ 'labels.arrival-time' | transloco }}"></dxo-label>
-      <!-- <dxi-validation-rule type="required" message="{{ 'messages.required' | transloco }}"></dxi-validation-rule> -->
-    </dxi-item>
-  </dxi-item>
-</dx-form>
+    <div class="col-12 md:col-4">
+      <p-floatlabel>
+        <p-select inputId="toLocation" formControlName="toLocation"
+          [options]="toLocationDataSource" optionLabel="name" [filter]="true"
+          [showClear]="true" [editable]="false" emptyFilterMessage=""
+          (onFilter)="onLocationFilter($event, 'to')" (onChange)="onToLocationChange($event)"
+          class="w-full" />
+        <label for="toLocation">{{ 'labels.to' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('toLocation')?.invalid && form.get('toLocation')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
+
+    <div class="col-12 md:col-4">
+      <p-floatlabel>
+        <p-select inputId="transferTypeId" formControlName="transferTypeId"
+          [options]="transferTypeDataSource" optionLabel="name" optionValue="id"
+          [filter]="true" filterBy="name,code" [showClear]="true" class="w-full" />
+        <label for="transferTypeId">{{ 'labels.transfer-type' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('transferTypeId')?.invalid && form.get('transferTypeId')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
+
+    <div class="col-12 md:col-3">
+      <p-floatlabel>
+        <p-datepicker inputId="transferDate" formControlName="transferDate" dateFormat="dd.mm.yy"
+          (onSelect)="onTransferDateChange($event)" class="w-full" />
+        <label for="transferDate">{{ 'labels.transfer-date' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('transferDate')?.invalid && form.get('transferDate')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
+
+    <div class="col-12 md:col-3">
+      <p-floatlabel>
+        <p-datepicker inputId="pickupTime" formControlName="pickupTime" [timeOnly]="true"
+          hourFormat="24" class="w-full" />
+        <label for="pickupTime">{{ 'labels.pickup-time' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <p-select inputId="operatorId" formControlName="operatorId"
+          [options]="operatorDataSource" optionLabel="name" optionValue="id"
+          [filter]="true" filterBy="name" [showClear]="true"
+          (onChange)="onOperatorChange($event)" class="w-full" />
+        <label for="operatorId">{{ 'labels.operator' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('operatorId')?.invalid && form.get('operatorId')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
+
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <input pInputText id="oprVoucher" formControlName="oprVoucher" class="w-full"
+          (input)="onOprVoucherChange($any($event.target).value)" />
+        <label for="oprVoucher">{{ 'labels.operator-voucher' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <input pInputText id="subVoucher" formControlName="subVoucher" class="w-full" />
+        <label for="subVoucher">{{ 'labels.sub-voucher' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12">
+      <p-floatlabel>
+        <p-multiselect inputId="reservationExtras" formControlName="reservationExtras"
+          [options]="extrasDataSource" optionLabel="name" optionValue="extraId"
+          [filter]="true" [showClear]="true" class="w-full" />
+        <label for="reservationExtras">{{ 'labels.extras' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    @if (!disabledNote) {
+      <div class="col-12">
+        <p-floatlabel>
+          <input pInputText id="note" formControlName="note" class="w-full" />
+          <label for="note">{{ 'labels.note' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+    }
+  </div>
+
+  @if (data.transferRouteType !== TransferRouteType.Intermediate) {
+    <div class="text-xl tracking-tight mt-4 mb-2">
+      {{ 'labels.flight-info' | transloco }}
+    </div>
+    <div class="grid">
+      <div class="col-12 md:col-4">
+        <p-floatlabel>
+          <p-select inputId="flightCode" formControlName="flightCode"
+            [options]="flightDataSource" optionLabel="code" optionValue="code"
+            [filter]="true" filterBy="code,airlineCode" [showClear]="true"
+            (onChange)="onFlightChange($event)" class="w-full" />
+          <label for="flightCode">{{ 'labels.flight' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="col-12 md:col-4">
+        <p-floatlabel>
+          <p-select inputId="terminalCode" formControlName="terminalCode"
+            [options]="terminalDataSource" optionLabel="name" optionValue="code"
+            [filter]="true" filterBy="name,code" [showClear]="true" class="w-full" />
+          <label for="terminalCode">{{ 'labels.terminal' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="col-12 md:col-4">
+        <p-floatlabel>
+          <p-datepicker inputId="flightDate" formControlName="flightDate" dateFormat="dd.mm.yy"
+            (onSelect)="onFlightDateChange($event)" class="w-full" />
+          <label for="flightDate">{{ 'labels.flight-date' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="col-12 md:col-4">
+        <p-floatlabel>
+          <p-datepicker inputId="departureTime" formControlName="departureTime" [timeOnly]="true"
+            hourFormat="24" class="w-full" />
+          <label for="departureTime">{{ 'labels.departure-time' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="col-12 md:col-4">
+        <p-floatlabel>
+          <p-datepicker inputId="arrivalTime" formControlName="arrivalTime" [timeOnly]="true"
+            hourFormat="24" class="w-full" />
+          <label for="arrivalTime">{{ 'labels.arrival-time' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+    </div>
+  }
+</form>

@@ -1,85 +1,105 @@
-<dx-toolbar class="mt-4" [visible]="options.hideOptions">
-  <dxi-item location="after" widget="dxDropDownButton" [disabled]="!hasSaveButton" [options]="drpDownMenuOptions"></dxi-item>
-</dx-toolbar>
-<dx-form 
-  #companyForm id="form" 
-  [formData]="data" 
-  labelLocation="top" 
-  labelMode="floating"
-  [disabled]="data.lock">
-  <dxi-item itemType="group" [colCount]="4">
-    <dxi-item itemType="group" [colSpan]="1">
-      <dxi-item dataField="code">
-        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-      </dxi-item>
-    </dxi-item>
+@if (options.hideOptions) {
+  <div class="flex justify-content-end mt-4">
+    <p-button label="Options" icon="pi pi-cog" iconPos="right" severity="secondary"
+      [disabled]="!hasSaveButton" (onClick)="optionsMenu.toggle($event)" />
+    <p-menu #optionsMenu [model]="menuItems" [popup]="true" />
+  </div>
+}
 
-    <dxi-item itemType="group" [colSpan]="3">
-      <dxi-item dataField="name">
-        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-      </dxi-item>
-    </dxi-item>
+<form [formGroup]="form" class="mt-2">
+  <div class="grid">
+    <div class="col-12 md:col-3">
+      <p-floatlabel>
+        <input pInputText id="code" formControlName="code" class="w-full" />
+        <label for="code">{{ 'labels.code' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('code')?.invalid && form.get('code')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
 
-  </dxi-item>
+    <div class="col-12 md:col-9">
+      <p-floatlabel>
+        <input pInputText id="name" formControlName="name" class="w-full" />
+        <label for="name">{{ 'labels.name' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
 
-  <dxi-item dataField="officialName">
-    <dxo-label text="Official Name"></dxo-label>
-  </dxi-item>
+    <div class="col-12">
+      <p-floatlabel>
+        <input pInputText id="officialName" formControlName="officialName" class="w-full" />
+        <label for="officialName">{{ 'labels.official-name' | transloco }}</label>
+      </p-floatlabel>
+    </div>
 
-  <dxi-item dataField="organizationTypes" editorType="dxTagBox" [editorOptions]="{
-            items: organizationTypes,
-            displayExpr: 'name',
-            valueExpr: 'code',
-            placeholder: 'Organization Types',
-            acceptCustomValue: true,
-            showClearButton: true
-          }">
-    <dxo-label text="Organization Types"> </dxo-label>
-    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-  </dxi-item>
+    <div class="col-12">
+      <p-floatlabel>
+        <p-multiselect inputId="organizationTypes" formControlName="organizationTypes"
+          [options]="organizationTypes" optionLabel="name" optionValue="code"
+          [showClear]="true" [filter]="true" class="w-full" />
+        <label for="organizationTypes">Organization Types</label>
+      </p-floatlabel>
+      @if (form.get('organizationTypes')?.invalid && form.get('organizationTypes')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
 
-  <dxi-item itemType="group" [colCount]="options.hideIsTenant == true ? 2 : 3">
-    <dxi-item dataField="countryId" editorType="dxLookup" [editorOptions]="{
-            dataSource: countryDataSource,
-            displayExpr: 'name',
-            valueExpr: 'id',
-            searchExpr: ['name', 'id'],
-            onSelectionChanged: onCountrySelectionChanged,
-            dropDownOptions: {
-              hideOnOutsideClick: true,
-              title: 'Countries'
-            },
-          }">
-      <dxo-label text="Country"> </dxo-label>
-      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-    </dxi-item>
+    <div class="col-12" [class.md:col-6]="options.hideIsTenant" [class.md:col-4]="!options.hideIsTenant">
+      <p-floatlabel>
+        <p-select inputId="countryId" formControlName="countryId"
+          [options]="countryDataSource" optionLabel="name" optionValue="id"
+          [filter]="true" filterBy="name,id" (onChange)="onCountryChange($event)" class="w-full" />
+        <label for="countryId">{{ 'labels.country' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('countryId')?.invalid && form.get('countryId')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
 
-    <dxi-item dataField="cityId" editorType="dxLookup" [editorOptions]="{
-            dataSource: cityDataSource,
-            displayExpr: 'name',
-            valueExpr: 'id',
-            searchExpr: ['name', 'id'],
-            dropDownOptions: {
-              hideOnOutsideClick: true,
-              title: 'Cities'
-            }
-          }">
-      <dxo-label text="City"> </dxo-label>
-      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-    </dxi-item>
-    <dxi-item dataField="isTenant" temType="boolean" editorType="dxCheckBox"
-      [visible]="!options.hideIsTenant"></dxi-item>
-  </dxi-item>
+    <div class="col-12" [class.md:col-6]="options.hideIsTenant" [class.md:col-4]="!options.hideIsTenant">
+      <p-floatlabel>
+        <p-select inputId="cityId" formControlName="cityId"
+          [options]="cityDataSource" optionLabel="name" optionValue="id"
+          [filter]="true" filterBy="name,id" class="w-full" />
+        <label for="cityId">{{ 'labels.city' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('cityId')?.invalid && form.get('cityId')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
 
-  <dxi-item dataField="address"></dxi-item>
+    @if (!options.hideIsTenant) {
+      <div class="col-12 md:col-4 flex align-items-center gap-2 pt-3">
+        <p-checkbox formControlName="isTenant" [binary]="true" inputId="isTenant" />
+        <label for="isTenant">Is Tenant</label>
+      </div>
+    }
 
-  <dxi-item dataField="webSite">
-    <dxi-validation-rule type="pattern"
-      pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
-      [message]="'validation.invalidUrl' | transloco"></dxi-validation-rule>
-  </dxi-item>
-</dx-form>
-<dx-toolbar class="mt-4">
-  <dxi-item location="after" widget="dxButton" [disabled]="!hasSaveButton || data.lock" [options]="btnSave"></dxi-item>
-  <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
-</dx-toolbar>
+    <div class="col-12">
+      <p-floatlabel>
+        <input pInputText id="address" formControlName="address" class="w-full" />
+        <label for="address">{{ 'labels.address' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12">
+      <p-floatlabel>
+        <input pInputText id="webSite" formControlName="webSite" class="w-full" />
+        <label for="webSite">Web Site</label>
+      </p-floatlabel>
+      @if (form.get('webSite')?.hasError('pattern') && form.get('webSite')?.touched) {
+        <small class="p-error">{{ 'validation.invalidUrl' | transloco }}</small>
+      }
+    </div>
+  </div>
+</form>
+
+<div class="flex justify-content-between mt-4">
+  <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="cancel()" />
+  <p-button label="Save" icon="pi pi-save" [disabled]="!hasSaveButton || data.lock" (onClick)="save()" />
+</div>
+
+<p-confirmdialog />

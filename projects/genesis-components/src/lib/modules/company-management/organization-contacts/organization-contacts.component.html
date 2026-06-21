@@ -1,71 +1,42 @@
-    <dx-data-grid id="gridContainer" 
-            [dataSource]="dataSource"
-            [remoteOperations]="false"
-            [showColumnLines]="false"
-            [showBorders]="true"
-            [showRowLines]="true"
-            [rowAlternationEnabled]="true"
-            [hoverStateEnabled]="true"
-            [allowColumnResizing]="true"
-            [columnHidingEnabled]="true"
-            (onRowUpdating)="onRowUpdating($event)">
-          
-            <dxo-toolbar>
-              <dxi-item location="before">
-                  <div *dxTemplate>
-                      <div class="text-2xl tracking-tight">
-                          Contacts
-                      </div>
-                  </div>
-              </dxi-item>
-              <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-              <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-              <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-              <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-          </dxo-toolbar>
+<div class="p-6">
+  <genesis-data-table
+    title="Contacts"
+    [lazy]="false"
+    [editable]="true"
+    [loadPath]="loadPath"
+    [insertPath]="loadPath"
+    updatePath="OrganizationContact"
+    deletePath="OrganizationContact/Delete"
+    updateKey="id"
+    editorTitle="Contact"
+    [pageSize]="20"
+    [columns]="columns"
+    [newRowDefaults]="{ confirm: false, isDefault: false }">
 
-              <dxo-search-panel [visible]="true"></dxo-search-panel>
-              <dxo-filter-row [visible]="true"></dxo-filter-row>
-              <dxo-group-panel [visible]="false"></dxo-group-panel>
-          
-              <dxo-editing 
-                mode="popup"
-                [allowUpdating]="true"
-                [allowAdding]="true"
-                [allowDeleting]="true"
-                [useIcons]="true">
-                  <dxo-popup
-                      title="Contact"
-                      [showTitle]="true"
-                      [width]="500"
-                      [height]="320"
-                      [resizeEnabled]="true"
-                      [position]="{ my: 'center', at: 'center'}">
-                  </dxo-popup>
-                <dxo-form [colCount]="1" labelMode="floating">
-                    <dxi-item dataField="contactType">
-                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
-                        </dxi-validation-rule>
-                    </dxi-item>
-                    <dxi-item dataField="text">
-                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
-                        </dxi-validation-rule>
-                    </dxi-item>
-                    <dxi-item itemType="group" [colCount]="2">
-                        <dxi-item dataField="confirm"></dxi-item>
-                        <dxi-item dataField="isDefault"></dxi-item>
-                    </dxi-item>
-                </dxo-form>
-              </dxo-editing>
-          
-              <dxi-column dataField="text" dataType="string"></dxi-column>
-              <dxi-column dataField="contactType" dataType="string">
-                <dxo-lookup [dataSource]="contactTypes" valueExpr="id" displayExpr="name"></dxo-lookup>
-              </dxi-column>
-              <dxi-column dataField="confirm" dataType="boolean"></dxi-column>
-              <dxi-column dataField="isDefault" dataType="boolean"></dxi-column>
-              <dxi-column dataField="isDeleted" dataType="boolean"></dxi-column>
-      
-              <dxo-paging [pageSize]="20"></dxo-paging>
-              <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-          </dx-data-grid>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="contactType" [(ngModel)]="row.contactType" [options]="contactTypes"
+            optionLabel="name" optionValue="id" class="w-full" />
+          <label for="contactType">Contact Type</label>
+        </p-floatlabel>
+
+        <p-floatlabel>
+          <input pInputText id="text" [(ngModel)]="row.text" class="w-full" />
+          <label for="text">Text</label>
+        </p-floatlabel>
+
+        <div class="flex gap-4">
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.confirm" [binary]="true" inputId="confirm" />
+            <label for="confirm">Confirm</label>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.isDefault" [binary]="true" inputId="isDefault" />
+            <label for="isDefault">Is Default</label>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

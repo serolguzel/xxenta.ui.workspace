@@ -1,61 +1,59 @@
-import { NgClass, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DxDataGridModule, DxTemplateModule, DxButtonModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { UsersComOptions } from '../users-com-options.model';
-import { CoreService } from 'genesis-coreservice';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { DataSourceBuilder } from '../../../services/data-source-builder';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from '../../../components/common';
+import { UsersComOptions } from '../users-com-options.model';
 
 @Component({
   selector: 'app-users',
   templateUrl: './users.component.html',
   standalone: true,
   imports: [
-    NgIf,
     NgClass,
     RouterLink,
-    DxDataGridModule,
-    DxTemplateModule,
-    DxButtonModule,
-    TranslocoModule
-]
+    TranslocoModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
+  ]
 })
 export class UsersComponent implements OnInit {
-  dataSource: CustomStore;
-  pageTitle: string = '';
-  options: UsersComOptions = <UsersComOptions>{};
-  constructor(
-    private coreService: CoreService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private readonly translocoService: TranslocoService
-  ) {
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly translocoService = inject(TranslocoService);
 
-  }
+  options: UsersComOptions = {} as UsersComOptions;
+  extraParams: any = {};
+
+  columns: GenesisColumn[] = [
+    { field: 'id', header: '', width: '60px' },
+    { field: 'firstName', header: this.translocoService.translate('labels.first-name'), sortable: true, filter: true },
+    { field: 'lastName', header: this.translocoService.translate('labels.last-name'), sortable: true, filter: true },
+    { field: 'userName', header: this.translocoService.translate('labels.username'), sortable: true, filter: true },
+    { field: 'email', header: this.translocoService.translate('labels.email'), sortable: true, filter: true },
+    { field: 'gender', header: this.translocoService.translate('labels.gender'), sortable: true, filter: true },
+    { field: 'company.name', header: this.translocoService.translate('labels.company-name') },
+  ];
+
   ngOnInit(): void {
-    const pageTitleKey = this.activatedRoute.snapshot.data['pageTitle'];
-    console.log('pageTitleKey', pageTitleKey);
-    this.pageTitle = this.translocoService.translate(pageTitleKey);
     this.options = this.activatedRoute.snapshot.data as UsersComOptions;
-    let organizationId = this.activatedRoute.snapshot.params['organizationId'];
+    const pageTitleKey = this.activatedRoute.snapshot.data['pageTitle'];
+    this.options.pageTitle = this.translocoService.translate(pageTitleKey);
+
+    this.extraParams = { ...this.options.extraParams };
+    const organizationId = this.activatedRoute.snapshot.params['organizationId'];
     if (organizationId) {
-      this.options.extraParams['ownerId'] = organizationId;
+      this.extraParams.ownerId = organizationId;
     }
-    this.dataSource = new DataSourceBuilder(this.coreService)
-      .load(this.options.loadPath!, this.options.extraParams)
-      .setKey("id")
-      .build();
   }
 
-  onRowUpdating = (e: any) => {
-    var assign = (<any>Object).assign({}, e.oldData, e.newData);
-    e.newData = assign;
+  detailRoute(id: string): string {
+    return this.options.detailBaseRoute
+      ? `${this.options.detailBaseRoute}/detail/${id}`
+      : `detail/${id}`;
   }
 
-  createUser = (e: any) => {
+  createUser(): void {
     this.router.navigate([this.options.createRoute]);
   }
-
 }

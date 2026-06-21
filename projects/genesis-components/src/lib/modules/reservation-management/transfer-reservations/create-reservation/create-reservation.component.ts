@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DxLoadPanelModule } from 'devextreme-angular';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ActivatedRoute } from '@angular/router';
 import moment from 'moment';
 import { ReservationEventService } from '../../services/reservation-event.service';
@@ -16,7 +16,7 @@ import { TranslocoService } from '@jsverse/transloco';
     styleUrls: ['./create-reservation.component.scss'],
     standalone: true,
     imports: [
-    DxLoadPanelModule,
+    ProgressSpinnerModule,
     TransferReservationFormComponent
 ],
     providers: [TransferReservationService, LookupService],

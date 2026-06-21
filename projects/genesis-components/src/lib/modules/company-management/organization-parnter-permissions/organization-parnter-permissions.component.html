@@ -1,83 +1,53 @@
-<dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource" 
-    [remoteOperations]="false" 
-    [showColumnLines]="false"
-    [showBorders]="true" 
-    [showRowLines]="true"
-    [rowAlternationEnabled]="true" 
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="true" 
-    [columnHidingEnabled]="true"
-    (onInitNewRow)="onInitNewRow($event)"
-    (onRowUpdating)="onRowUpdating($event)">
+<div class="p-6">
+  <genesis-data-table
+    [title]="'labels.permissions' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    [loadPath]="loadPath"
+    [extraParams]="extraParams"
+    insertPath="DataSharing"
+    deletePath="DataSharing"
+    updateKey="id"
+    [editorTitle]="'labels.permission' | transloco"
+    [pageSize]="20"
+    [columns]="columns"
+    [newRowDefaults]="newRowDefaults">
 
-    <dxo-search-panel [visible]="true"></dxo-search-panel>
-    <dxo-filter-row [visible]="true"></dxo-filter-row>
-    <dxo-group-panel [visible]="false"></dxo-group-panel>
+    <ng-template gdtCell="stateTypes" let-row>
+      {{ row.stateTypes?.join(', ') }}
+    </ng-template>
 
-    <dxo-editing mode="popup" 
-        [allowUpdating]="false" 
-        [allowAdding]="true" 
-        [allowDeleting]="true" 
-        [useIcons]="true">
-            <dxo-popup title="Permission" 
-                [showTitle]="true" 
-                [width]="500" 
-                [height]="380" 
-                [resizeEnabled]="true"
-                [position]="{ my: 'center', at: 'center'}">
-            </dxo-popup>
-            
-            <dxo-form [colCount]="1" labelMode="floating">
-              <dxi-item dataField="partnerId" editorType="dxLookup" [editorOptions]="partnerLookUpOptions">
-                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                <dxo-label text="Partner"></dxo-label>
-              </dxi-item>
-            
-              <dxi-item dataField="operatorId" editorType="dxLookup" [editorOptions]="customerLookUpOptions">
-                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-              </dxi-item>
-              <dxi-item dataField="stateTypes" editorType="dxTagBox" [editorOptions]="{
-                                                items: stateTypes,
-                                                displayExpr: 'name',
-                                                valueExpr: 'code',
-                                                placeholder: 'State Types',
-                                                acceptCustomValue: true,
-                                                showClearButton: true
-                                            }">
-                <dxo-label text="State Types"> </dxo-label>
-                <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-              </dxi-item>
-              <dxi-item itemType="group" [colCount]="2">
-                <dxi-item dataField="read"></dxi-item>
-                <dxi-item dataField="write"></dxi-item>
-              </dxi-item>
-            </dxo-form>
-    
-    </dxo-editing>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="partnerId" [(ngModel)]="row.partnerId" [options]="partners" optionLabel="name"
+            optionValue="id" [filter]="true" class="w-full" />
+          <label for="partnerId">{{ 'labels.partner' | transloco }}</label>
+        </p-floatlabel>
 
-    <dxi-column dataField="ownerName" dataType="string" caption="Onwer" cellTemplate="nameTemp"></dxi-column>
-    <dxi-column dataField="partnerName" dataType="string" caption="Partner"></dxi-column>
-    <dxi-column dataField="operatorName" dataType="string" caption="Operator"></dxi-column>
-    <dxi-column dataField="stateTypes" dataType="array"></dxi-column>
-    <dxi-column dataField="read" dataType="boolean"></dxi-column>
-    <dxi-column dataField="write" dataType="boolean"></dxi-column>
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="operatorId" [(ngModel)]="row.operatorId" [options]="operators" optionLabel="name"
+            optionValue="id" [filter]="true" class="w-full" />
+          <label for="operatorId">{{ 'labels.operator' | transloco }}</label>
+        </p-floatlabel>
 
-    <dxi-column dataField="ownerId" dataType="string" [visible]="false"></dxi-column>
-    <dxi-column dataField="partnerId" dataType="string" caption="Partner" [visible]="false"></dxi-column>
-    <dxi-column dataField="operatorId" dataType="string" caption="Operator" [visible]="false"></dxi-column>
+        <p-floatlabel>
+          <p-multiselect appendTo="body" inputId="stateTypes" [(ngModel)]="row.stateTypes" [options]="stateTypes" optionLabel="name"
+            optionValue="code" [filter]="true" class="w-full" />
+          <label for="stateTypes">{{ 'labels.state-types' | transloco }}</label>
+        </p-floatlabel>
 
-    <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
-      <a [routerLink]="[d.data.id]">
-        <span class="flex font-bold">
-          {{ d.value }}
-        </span>
-      </a>
-    </div>
-
-    <dxo-paging [pageSize]="20"></dxo-paging>
-    <dxo-pager 
-      [showPageSizeSelector]="true" 
-      [showInfo]="true" 
-      [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-</dx-data-grid>
+        <div class="flex gap-4">
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.read" [binary]="true" inputId="read" />
+            <label for="read">{{ 'labels.read' | transloco }}</label>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.write" [binary]="true" inputId="write" />
+            <label for="write">{{ 'labels.write' | transloco }}</label>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

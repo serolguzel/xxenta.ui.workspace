@@ -1,79 +1,126 @@
-<dx-form #hotelForm id="form" [formData]="model" labelLocation="top" labelMode="floating">
-  <dxi-item itemType="group" [colCount]="2">
-    <dxi-item dataField="userName" editorType="dxTextBox" [editorOptions]="{
-                disabled: model.id != undefined
-                }">
-      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-      <dxo-label [text]="'labels.username' | transloco"></dxo-label>
-    </dxi-item>
+<form [formGroup]="form">
+  <div class="grid mb-3">
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <input pInputText id="userName" formControlName="userName" class="w-full" />
+        <label for="userName">{{ 'labels.username' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('userName')?.invalid && form.get('userName')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
 
-    <dxi-item itemType="group" [colCount]="visibleUserType ? 2 : 1" [visible]="false">
-      <dxi-item dataField="userType" editorType="dxSelectBox" [visible]="visibleUserType" [editorOptions]="{
-                    dataSource: userTypes,
-                    displayExpr: 'name',
-                    valueExpr: 'code',
-                  }">
-        <dxo-label [text]="'labels.user-type' | transloco"></dxo-label>
-      </dxi-item>
+    @if (visibleUserType) {
+      <div class="col-12 md:col-3">
+        <p-floatlabel>
+          <p-select inputId="userType" formControlName="userType" [options]="userTypes" optionLabel="name" optionValue="code" class="w-full" />
+          <label for="userType">{{ 'labels.user-type' | transloco }}</label>
+        </p-floatlabel>
+      </div>
+      <div class="col-12 md:col-3">
+        <p-floatlabel>
+          <p-select inputId="gender" formControlName="gender" [options]="genders" optionLabel="name" optionValue="code" class="w-full" />
+          <label for="gender">{{ 'labels.gender' | transloco }}</label>
+        </p-floatlabel>
+        @if (form.get('gender')?.invalid && form.get('gender')?.touched) {
+          <small class="p-error">{{ 'messages.required' | transloco }}</small>
+        }
+      </div>
+    }
+  </div>
 
-      <dxi-item dataField="gender" editorType="dxSelectBox" [editorOptions]="{
-              dataSource: genders,
-              valueExpr: 'code',
-              displayExpr: 'name'
-            }">
-        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-        <dxo-label [text]="'labels.gender' | transloco"></dxo-label>
-      </dxi-item>
-    </dxi-item>
-  </dxi-item>
+  <div class="grid mb-3">
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <input pInputText id="firstName" formControlName="firstName" class="w-full" />
+        <label for="firstName">{{ 'labels.first-name' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
 
-  <dxi-item itemType="group" [colCount]="2">
-    <dxi-item dataField="firstName">
-      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-      <dxo-label [text]="'labels.first-name' | transloco"></dxo-label>
-    </dxi-item>
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <input pInputText id="lastName" formControlName="lastName" class="w-full" />
+        <label for="lastName">{{ 'labels.last-name' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
+  </div>
 
-    <dxi-item dataField="lastName">
-      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-      <dxo-label [text]="'labels.last-name' | transloco"></dxo-label>
-    </dxi-item>
-  </dxi-item>
+  <div class="grid mb-3">
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <input pInputText id="email" formControlName="email" type="email" class="w-full" />
+        <label for="email">{{ 'labels.email' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+        <small class="p-error">{{ 'messages.invalid-emails' | transloco }}</small>
+      }
+    </div>
 
-  <dxi-item itemType="group" [colCount]="2">
-    <dxi-item dataField="email" editorType="dxTextBox">
-      <dxi-validation-rule type="email" [message]="'messages.invalid-emails' | transloco"></dxi-validation-rule>
-      <dxo-label [text]="'labels.email' | transloco"></dxo-label>
-    </dxi-item>
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <input pInputText id="identityNumber" formControlName="identityNumber" class="w-full" />
+        <label for="identityNumber">{{ 'labels.identity-number' | transloco }}</label>
+      </p-floatlabel>
+    </div>
 
-    <dxi-item dataField="identityNumber">
-      <dxo-label [text]="'labels.identity-number' | transloco"></dxo-label>
-    </dxi-item>
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <p-select inputId="phoneAreaCode" formControlName="phoneAreaCode" [options]="phoneCodes"
+          optionLabel="displayName" optionValue="phoneCode" [filter]="true" filterBy="name,phoneCode"
+          class="w-full" />
+        <label for="phoneAreaCode">{{ 'labels.phone-country-code' | transloco }}</label>
+      </p-floatlabel>
+    </div>
 
-    <dxi-item dataField="phoneAreaCode" editorType="dxLookup" [editorOptions]="countryPhoneCodes">
-      <dxo-label [text]="'labels.phone-country-code' | transloco"></dxo-label>
-    </dxi-item>
+    <div class="col-12 md:col-6">
+      <p-floatlabel>
+        <p-inputmask inputId="phoneNumber" formControlName="phoneNumber" mask="(999) 999-9999" class="w-full" />
+        <label for="phoneNumber">{{ 'labels.phone-number' | transloco }}</label>
+      </p-floatlabel>
+    </div>
 
-    <dxi-item dataField="phoneNumber" editorType="dxTextBox" [editorOptions]="txtPhoneOptions">
-      <dxo-label [text]="'labels.phone-number' | transloco"></dxo-label>
-    </dxi-item>
+    @if (visibleCustomerLookup) {
+      <div class="col-12 md:col-6">
+        <p-floatlabel>
+          <p-select inputId="ownerId" formControlName="ownerId" [options]="customers" optionLabel="name"
+            optionValue="id" [filter]="true" filterBy="name" class="w-full" />
+          <label for="ownerId">Customer</label>
+        </p-floatlabel>
+        @if (form.get('ownerId')?.invalid && form.get('ownerId')?.touched) {
+          <small class="p-error">{{ 'messages.required' | transloco }}</small>
+        }
+      </div>
+    }
 
-    <dxi-item dataField="ownerId" editorType="dxLookup" [editorOptions]="customerLookUpOptions"
-      [visible]="visibleCustomerLookup">
-      <dxo-label text="Customer"> </dxo-label>
-      <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-    </dxi-item>
-    <dxi-item itemType="group" [colCount]="2">
-      <dxi-item dataField="isActive" editorType="dxCheckBox">
-        <dxo-label [text]="'labels.active-user' | transloco"></dxo-label>
-      </dxi-item>
-      <dxi-item dataField="emailConfirmed" editorType="dxCheckBox" [visible]="visibleCustomerLookup">
-        <dxo-label [text]="'labels.email-confirm' | transloco"></dxo-label>
-      </dxi-item>
-    </dxi-item>
-  </dxi-item>
-</dx-form>
-<dx-toolbar class="mt-4">
-  <dxi-item location="after" widget="dxButton" [disabled]="disableSaveButton" [options]="btnSave"></dxi-item>
-  <dxi-item location="before" widget="dxButton" [disabled]="disableDeleteButton" [options]="btnDelete"></dxi-item>
-  <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
-</dx-toolbar>
+    <div class="col-12 md:col-6">
+      <div class="flex gap-4 align-items-center pt-2">
+        <div class="flex align-items-center gap-2">
+          <p-checkbox formControlName="isActive" [binary]="true" inputId="isActive" />
+          <label for="isActive">{{ 'labels.active-user' | transloco }}</label>
+        </div>
+        @if (visibleCustomerLookup) {
+          <div class="flex align-items-center gap-2">
+            <p-checkbox formControlName="emailConfirmed" [binary]="true" inputId="emailConfirmed" />
+            <label for="emailConfirmed">{{ 'labels.email-confirm' | transloco }}</label>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="flex justify-content-between mt-4">
+  <div class="flex gap-2">
+    <p-button label="Delete" severity="danger" icon="pi pi-trash" [disabled]="disableDeleteButton" (onClick)="delete()" />
+    <p-button label="Cancel" severity="secondary" icon="pi pi-times" (onClick)="cancel()" />
+  </div>
+  <p-button label="Save" icon="pi pi-check" [disabled]="disableSaveButton" (onClick)="save()" />
+</div>
+
+<p-confirmdialog />

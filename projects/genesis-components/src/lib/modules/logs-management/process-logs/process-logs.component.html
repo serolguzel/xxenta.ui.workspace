@@ -1,37 +1,18 @@
 <div class="p-6 grow">
-  <dx-data-grid id="gridContainer" 
-    #logsGrid 
-    [dataSource]="dataSource"
-    [remoteOperations]="true"
-    [columnResizingMode]="'nextColumn'"
-    [columnAutoWidth]="true" 
-    [rowAlternationEnabled]="true" 
-    [allowColumnReordering]="true"
-    [showColumnLines]="false"
-    [showBorders]="true" 
-    [showRowLines]="true">
+  <genesis-data-table
+    loadPath="Progress/GetSejourTransferProcess"
+    [columns]="columns"
+    [pageSize]="20"
+    [columnChooser]="true">
 
-    <dxo-toolbar>
-      <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-      <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-      <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-    </dxo-toolbar>
-
-    <dxi-column dataField="externalId" dataType="string" cellTemplate="linkTemp"></dxi-column>
-    <dxi-column dataField="voucher" dataType="string" cellTemplate="linkTemp"></dxi-column>
-    <dxi-column dataField="message" dataType="string" cellTemplate="linkTemp"></dxi-column>
-    <dxi-column dataField="createDate" dataType="date" format="dd.MM.yyyy HH:mm"></dxi-column>
-
-    <div class="flex-auto" *dxTemplate="let d of 'linkTemp'">
-      <a [routerLink]="d.data.id">
-        <span class="flex font-bold">
-          {{ d.value }}
-        </span>
-      </a>
-    </div>
-
-    <dxo-paging [pageSize]="20"></dxo-paging>
-    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-    <dxo-export [enabled]="true" [allowExportSelectedData]="true"></dxo-export>
-  </dx-data-grid>
+    <ng-template gdtCell="externalId" let-row>
+      <a [routerLink]="row.id" class="font-bold">{{ row.externalId }}</a>
+    </ng-template>
+    <ng-template gdtCell="voucher" let-row>
+      <a [routerLink]="row.id" class="font-bold">{{ row.voucher }}</a>
+    </ng-template>
+    <ng-template gdtCell="message" let-row>
+      <a [routerLink]="row.id" class="font-bold">{{ row.message }}</a>
+    </ng-template>
+  </genesis-data-table>
 </div>

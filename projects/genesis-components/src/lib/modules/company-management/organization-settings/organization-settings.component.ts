@@ -1,72 +1,69 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { TranslocoModule } from '@jsverse/transloco';
+import { CommandResponse } from 'genesis-coreservice';
+import { ButtonModule } from 'primeng/button';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { OrganizationSettingsModel, SaveSettings } from '../company.models';
 import { OrganizationSettingsExcelImportComponent } from '../components/organization-settings-excel-import/organization-settings-excel-import.component';
 import { OrganizationService } from '../services/organization.service';
-import { OrganizationSettingsModel, SaveSettings } from '../company.models';
-import { ActivatedRoute } from '@angular/router';
-import { DxFormComponent, DxFormModule, DxToolbarModule } from 'devextreme-angular';
-import { NgFor } from '@angular/common';
-import { CommandResponse } from 'genesis-coreservice';
-import { TranslocoModule } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-organization-settings',
   templateUrl: './organization-settings.component.html',
   standalone: true,
   imports: [
-    NgFor,
-    DxFormModule,
-    DxToolbarModule,
+    ReactiveFormsModule,
+    TranslocoModule,
+    ButtonModule,
+    FloatLabelModule,
+    InputTextModule,
     OrganizationSettingsExcelImportComponent,
-    TranslocoModule
   ],
-  providers: [
-    OrganizationService
-  ]
+  providers: [OrganizationService]
 })
 export class OrganizationSettingsComponent implements OnInit {
-  @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
-  settings: OrganizationSettingsModel[] = [];
-  model: SaveSettings = <SaveSettings>{};
-  btnSave = {
-    icon: 'save',
-    text: 'Save',
-    type: "default",
-    onClick: this.onSave.bind(this)
-  };
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private organizationService: OrganizationService
-  ) {
+  private readonly fb = inject(FormBuilder);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly organizationService = inject(OrganizationService);
 
-  }
+  settings: OrganizationSettingsModel[] = [];
+  form: FormGroup = this.fb.group({
+    key: [null, Validators.required],
+    value: [null, Validators.required],
+  });
+
   ngOnInit(): void {
-    let organizationId = this.activatedRoute.snapshot.params['organizationId'];
+    const organizationId = this.activatedRoute.snapshot.params['organizationId'];
     this.organizationService.GetSettings(organizationId).then((res: OrganizationSettingsModel[]) => {
       this.settings = res;
-    })
+    });
   }
 
-  onSave() {
-    var valid = this.form.instance.validate().isValid;
-    if (valid) {
-      let organizationId = this.activatedRoute.snapshot.params['organizationId'];
-      this.organizationService.SaveSettings(organizationId, this.model).then((res: CommandResponse<number>) => {
-        let map = <OrganizationSettingsModel>{
-          id: res.aggregatorId,
-          organizationId: organizationId,
-          key: this.model.key,
-          value: this.model.value
-        };
-        this.settings.push(map);
-      });
+  onSave(): void {
+    this.form.markAllAsTouched();
+    if (!this.form.valid) {
+      return;
     }
+    const organizationId = this.activatedRoute.snapshot.params['organizationId'];
+    const model = this.form.getRawValue() as SaveSettings;
+    this.organizationService.SaveSettings(organizationId, model).then((res: CommandResponse<number>) => {
+      this.settings.push({
+        id: res.aggregatorId,
+        organizationId,
+        key: model.key,
+        value: model.value,
+      } as OrganizationSettingsModel);
+    });
   }
 
-  deleteItem(item: OrganizationSettingsModel) {
-    let organizationId = this.activatedRoute.snapshot.params['organizationId'];
+  deleteItem(item: OrganizationSettingsModel): void {
+    const organizationId = this.activatedRoute.snapshot.params['organizationId'];
     this.organizationService.DeleteSettings(organizationId, item.key).then((res: CommandResponse<boolean>) => {
       if (res.aggregatorId) {
-        const index = this.settings.findIndex(x => x.id == item.id);
+        const index = this.settings.findIndex(x => x.id === item.id);
         this.settings.splice(index, 1);
       }
     });

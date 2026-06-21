@@ -1,71 +1,30 @@
-<div class="w-full max-w-3xl">
-    <dx-data-grid id="gridContainer" 
-      [dataSource]="dataSource"
-      [remoteOperations]="false"
-      [showColumnLines]="false"
-      [showBorders]="true"
-      [showRowLines]="true"
-      [rowAlternationEnabled]="true"
-      [hoverStateEnabled]="true"
-      [allowColumnResizing]="true"
-      [columnHidingEnabled]="true"
-      (onRowInserted)="onRowInserted($event)">
-  
-      <dxo-toolbar>
-        <dxi-item location="before">
-          <div *dxTemplate>
-            <div class="text-2xl tracking-tight">
-              {{'labels.currencies' | transloco }}
-            </div>
-          </div>
-        </dxi-item>
-        <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-      </dxo-toolbar>
-  
-      <dxo-editing mode="popup" 
-        [allowUpdating]="false" 
-        [allowAdding]="true" 
-        [allowDeleting]="true"
-        [useIcons]="true">
-          <dxo-popup title="Döviz" 
-            [showTitle]="true"
-            [width]="500" 
-            [height]="300" 
-            [resizeEnabled]="true"
-            [position]="{ my: 'center', at: 'center'}">
-          </dxo-popup>
-        <dxo-form [colCount]="1">
-          <dxi-item dataField="currencyCode" editorType="dxLookup" [editorOptions]="{
-                              dataSource: currenciesDataSource,
-                              displayExpr: 'name',
-                              valueExpr: 'code',
-                              searchExpr: ['name', 'code'],
-                              itemTemplate: codeNameTemplate,
-                              dropDownOptions: {
-                                hideOnOutsideClick: true,
-                                title: 'Kurlar'
-                              },
-                            }">
-                <dxi-validation-rule type="required" [message]="'messages.required' | transloco">
-                </dxi-validation-rule>
-          </dxi-item>
-          <dxi-item dataField="isDefault"></dxi-item>
-        </dxo-form>
-      </dxo-editing>
-  
-      <dxi-column dataField="organizationId" dataType="string" [visible]="false"></dxi-column>
-      <dxi-column dataField="currencyCode" dataType="string" [caption]="'labels.currency' | transloco"></dxi-column>
-      <dxi-column dataField="isDefault" dataType="boolean" [caption]="'labels.isdefault' | transloco"></dxi-column>
-  
-      <dxi-column type="buttons" [width]="100">
-        <dxi-button icon="trash" [onClick]="deleteItem"></dxi-button>
-      </dxi-column>
-  
-      <dxo-paging [pageSize]="20"></dxo-paging>
-      <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-    </dx-data-grid>
-  
-  </div>
+<div class="p-6 w-full max-w-3xl">
+  <genesis-data-table
+    [title]="'labels.currencies' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    [loadPath]="basePath"
+    [insertPath]="basePath"
+    [deletePath]="basePath"
+    updateKey="currencyCode"
+    [editorTitle]="'labels.currency' | transloco"
+    [pageSize]="20"
+    [columns]="columns"
+    [newRowDefaults]="{ isDefault: false }">
+
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="currencyCode" [(ngModel)]="row.currencyCode" [options]="currencies" optionLabel="name"
+            optionValue="code" [filter]="true" class="w-full" />
+          <label for="currencyCode">{{ 'labels.currency' | transloco }}</label>
+        </p-floatlabel>
+
+        <div class="flex align-items-center gap-2">
+          <p-checkbox [(ngModel)]="row.isDefault" [binary]="true" inputId="isDefault" />
+          <label for="isDefault">{{ 'labels.is-default' | transloco }}</label>
+        </div>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

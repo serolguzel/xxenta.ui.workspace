@@ -1,0 +1,197 @@
+<p-table
+  #dt
+  [value]="rows"
+  [lazy]="lazy"
+  (onLazyLoad)="lazy && load($event)"
+  [paginator]="true"
+  [rows]="pageSize"
+  [rowsPerPageOptions]="pageSizeOptions"
+  [totalRecords]="totalRecords"
+  [loading]="loading"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="{first} - {last} / {totalRecords}"
+  [dataKey]="dataKey"
+  [globalFilterFields]="globalFilterFields"
+  [rowHover]="true"
+  [resizableColumns]="true"
+  filterDisplay="row"
+  class="p-datatable-striped p-datatable-gridlines">
+
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between gap-3 flex-wrap">
+      <div class="flex align-items-center gap-2 flex-wrap">
+        @if (title) {
+          <span class="text-2xl tracking-tight">{{ title }}</span>
+        }
+        @if (toolbarStartTemplate) {
+          <ng-container *ngTemplateOutlet="toolbarStartTemplate"></ng-container>
+        }
+      </div>
+      <div class="flex gap-2 align-items-center flex-wrap">
+        @if (toolbarEndTemplate) {
+          <ng-container *ngTemplateOutlet="toolbarEndTemplate"></ng-container>
+        }
+        @if (showSearch) {
+          <p-iconfield>
+            <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+            <input
+              pInputText
+              type="text"
+              #globalFilterInput
+              (input)="dt.filterGlobal(globalFilterInput.value, 'contains')"
+              [placeholder]="'labels.search' | transloco" />
+          </p-iconfield>
+        }
+        @if (columnChooser) {
+          <p-multiselect
+            [options]="columns"
+            optionLabel="header"
+            optionValue="field"
+            [(ngModel)]="visibleFields"
+            [showHeader]="false"
+            [showClear]="false"
+            appendTo="body"
+            dropdownIcon="pi pi-table"
+            [placeholder]="'labels.column-chooser' | transloco" />
+        }
+        @if (showAddButton) {
+          <p-button icon="pi pi-plus" (onClick)="addRow()" />
+        }
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      @if (hasExpansion) {
+        <th style="width: 3rem"></th>
+      }
+      @for (col of displayColumns; track col.field) {
+        <th [pSortableColumn]="col.sortable ? col.field : ''" [style.width]="col.width">
+          {{ col.header }}
+          @if (col.sortable) {
+            <p-sortIcon [field]="col.field" />
+          }
+        </th>
+      }
+      @if (hasActionsColumn) {
+        <th [style.width]="actionsWidth"></th>
+      }
+    </tr>
+    <tr>
+      @if (hasExpansion) {
+        <th></th>
+      }
+      @for (col of displayColumns; track col.field) {
+        <th>
+          @if (col.filter) {
+            <p-columnFilter type="text" [field]="col.field" matchMode="contains" [showMenu]="false" />
+          }
+        </th>
+      }
+      @if (hasActionsColumn) {
+        <th></th>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row let-expanded="expanded">
+    <tr>
+      @if (hasExpansion) {
+        <td>
+          <p-button
+            type="button"
+            [text]="true"
+            [rounded]="true"
+            [pRowToggler]="row"
+            [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+        </td>
+      }
+      @for (col of displayColumns; track col.field) {
+        <td>
+          @if (cellTemplate(col.field); as tpl) {
+            <ng-container *ngTemplateOutlet="tpl; context: { $implicit: row, col: col }"></ng-container>
+          } @else if (col.type === 'boolean') {
+            <i class="pi" [ngClass]="resolveValue(row, col.field) ? 'pi-check text-green-500' : 'pi-times text-red-500'"></i>
+          } @else if (col.type === 'date') {
+            {{ resolveValue(row, col.field) | date:'dd.MM.yyyy' }}
+          } @else if (col.type === 'datetime') {
+            {{ resolveValue(row, col.field) | date:'dd.MM.yyyy HH:mm' }}
+          } @else {
+            {{ resolveValue(row, col.field) }}
+          }
+        </td>
+      }
+      @if (hasActionsColumn) {
+        <td>
+          @if (hasActions) {
+            <ng-container *ngTemplateOutlet="actionsTemplate!; context: { $implicit: row }"></ng-container>
+          } @else {
+            <div class="flex gap-1">
+              <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" (onClick)="editRow(row)" />
+              @if (deletePath) {
+                <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" (onClick)="deleteRow(row)" />
+              }
+            </div>
+          }
+        </td>
+      }
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="rowexpansion" let-row>
+    <tr>
+      <td [attr.colspan]="colspan">
+        <ng-container *ngTemplateOutlet="expansionTemplate!; context: { $implicit: row }"></ng-container>
+      </td>
+    </tr>
+  </ng-template>
+
+  @if (hasSummary) {
+    <ng-template pTemplate="footer">
+      <tr>
+        @if (hasExpansion) {
+          <td></td>
+        }
+        @for (col of displayColumns; track col.field) {
+          <td class="font-bold">
+            @if (summaryFor(col.field); as s) {
+              {{ s.label }} {{ s.value }}
+            }
+          </td>
+        }
+        @if (hasActionsColumn) {
+          <td></td>
+        }
+      </tr>
+    </ng-template>
+  }
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="colspan" class="text-center p-4">
+        {{ 'messages.no-records-found' | transloco }}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+@if (hasEditor) {
+  <p-dialog
+    [(visible)]="editVisible"
+    [header]="editorTitle"
+    [modal]="true"
+    [style]="{ width: editorWidth }"
+    [draggable]="false"
+    [resizable]="false">
+    <ng-container *ngTemplateOutlet="editorTemplate!; context: { $implicit: editingRow }"></ng-container>
+    <ng-template pTemplate="footer">
+      <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="cancelEdit()" />
+      <p-button label="Save" icon="pi pi-check" (onClick)="saveRow()" />
+    </ng-template>
+  </p-dialog>
+}
+
+@if (editable) {
+  <p-confirmdialog />
+}

@@ -1,11 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DxButtonModule, DxDataGridComponent, DxDataGridModule, DxTemplateModule } from 'devextreme-angular';
-import { PositionConfig } from 'devextreme/animation/position';
-import CustomStore from 'devextreme/data/custom_store';
-import { CoreService } from 'genesis-coreservice';
+import { TranslocoService } from '@jsverse/transloco';
+import { TagModule } from 'primeng/tag';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from '../../../components/common';
 import { OrganizationsDetailComponent } from '../components/organizations-detail/organizations-detail.component';
-import { DataSourceBuilder } from '../../../services/data-source-builder';
 
 @Component({
   selector: 'app-organizations',
@@ -13,51 +11,34 @@ import { DataSourceBuilder } from '../../../services/data-source-builder';
   standalone: true,
   imports: [
     RouterLink,
-    DxDataGridModule,
-    DxTemplateModule,
-    DxButtonModule,
-
-    OrganizationsDetailComponent
+    TagModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
+    OrganizationsDetailComponent,
   ]
 })
 export class OrganizationsComponent implements OnInit {
-  @ViewChild(DxDataGridComponent, { static: false }) dataGrid: DxDataGridComponent;
-  dataSource: CustomStore = new CustomStore();
-  options: any = {};
-  
-  popupPosition: PositionConfig = {
-    of: window, at: 'top', my: 'top', offset: { y: 10 },
-  };
-  constructor(
-    private coreService: CoreService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router
-  ) {
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly translocoService = inject(TranslocoService);
 
-  }
+  options: any = {};
+
+  columns: GenesisColumn[] = [
+    { field: 'name', header: this.translocoService.translate('labels.name'), sortable: true, filter: true },
+    { field: 'officialName', header: this.translocoService.translate('labels.official-name'), sortable: true, filter: true },
+    { field: 'code', header: this.translocoService.translate('labels.code'), sortable: true, filter: true },
+    { field: 'countryId', header: this.translocoService.translate('labels.country') },
+    { field: 'organizationTypes', header: this.translocoService.translate('labels.organization-types') },
+    { field: 'isDeleted', header: this.translocoService.translate('labels.is-deleted'), type: 'boolean' },
+    { field: 'isTenant', header: this.translocoService.translate('labels.is-tenant'), type: 'boolean' },
+  ];
 
   ngOnInit() {
     this.options = this.activatedRoute.snapshot.data;
-    this.dataSource = new DataSourceBuilder(this.coreService)
-      .load('Organization/GetOrganizations', { requireTotalCount: true, ...this.options.params })
-      .insert('Organization')
-      .updateFullModel('Organization', "id")
-      .remove('Organization')
-      .setKey("id")
-      .build();
   }
 
-  createOrganization = (e: any) => {
+  createOrganization(): void {
     this.router.navigate([this.options.createRoute]);
-  }
-
-  loadData() {
-    this.dataSource = new DataSourceBuilder(this.coreService)
-      .load('Organization/GetOrganizations', { requireTotalCount: true })
-      .insert('Organization')
-      .updateFullModel('Organization', "id")
-      .remove('Organization')
-      .setKey("id")
-      .build();
   }
 }

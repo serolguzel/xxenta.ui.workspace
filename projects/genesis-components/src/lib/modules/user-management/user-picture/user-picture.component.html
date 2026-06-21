@@ -1,35 +1,41 @@
 <div class="w-full max-w-3xl">
-    <div class="w-full flex p-5 justify-center" *ngIf="!croppedImage">
-        <button mat-flat-button [color]="'primary'" (click)="uploader.click()">
-            Add Your Profile Photo
-        </button>
+  @if (!croppedImage) {
+    <div class="w-full flex p-5 justify-center">
+      <p-button label="Add Your Profile Photo" (onClick)="uploader.click()" />
     </div>
-    <form class="flex flex-col flex-auto p-6">
-        <input #uploader type="file" (change)="fileChangeEvent($event)" class="hidden" />
-        <div>
-            <div class="flex flex-auto items-end -mt-16" *ngIf="croppedImage">
-                <div
-                    class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card">
-                    <img class="object-cover w-full h-full" [src]="croppedImage">
-                </div>
-            </div>
+  }
 
-            <image-cropper 
-                [imageChangedEvent]="imageChangedEvent" 
-                [maintainAspectRatio]="true"
-                [aspectRatio]="4 / 4"
-                [resizeToWidth]="128"
-                format="jpeg"
-                (imageCropped)="imageCropped($event)"
-                (imageLoaded)="imageLoaded()"
-                (loadImageFailed)="loadImageFailed()" 
-                [style.display]="cropperReady ? null : 'none'">
-            </image-cropper>
+  <form class="flex flex-col flex-auto p-6">
+    <input #uploader type="file" (change)="fileChangeEvent($event)" class="hidden" />
+    <div>
+      @if (croppedImage) {
+        <div class="flex flex-auto items-end -mt-16">
+          <div class="relative flex items-center justify-center w-32 h-32 rounded-full overflow-hidden ring-4 ring-bg-card">
+            <img class="object-cover w-full h-full" [src]="croppedImage" />
+          </div>
         </div>
-    </form>
+      }
 
-    <dx-toolbar class="mt-2">
-        <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
-        <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
-    </dx-toolbar>
+      <image-cropper
+        [imageChangedEvent]="imageChangedEvent"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="4 / 4"
+        [resizeToWidth]="128"
+        format="jpeg"
+        (imageCropped)="imageCropped($event)"
+        (imageLoaded)="imageLoaded()"
+        (loadImageFailed)="loadImageFailed()"
+        [style.display]="cropperReady ? null : 'none'">
+      </image-cropper>
+    </div>
+  </form>
+
+  <div class="flex justify-content-between mt-2">
+    <p-button label="Cancel" severity="secondary" (onClick)="cancel()">
+      <ng-template #icon><span data-p-icon="times"></span></ng-template>
+    </p-button>
+    <p-button label="Save" (onClick)="save()">
+      <ng-template #icon><span data-p-icon="check"></span></ng-template>
+    </p-button>
+  </div>
 </div>

@@ -7,33 +7,26 @@ import {
   OnInit,
   Output,
   SimpleChanges,
-  ViewChild,
   ViewChildren,
   ViewEncapsulation,
+  QueryList,
+  inject,
 } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDividerModule } from '@angular/material/divider';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import {
-  DxCheckBoxModule,
-  DxDataGridModule,
-  DxFormComponent,
-  DxFormModule,
-  DxListModule,
-  DxRadioGroupModule,
-  DxSelectBoxModule,
-  DxTemplateModule,
-  DxToolbarModule,
-} from 'devextreme-angular';
-import { confirm } from 'devextreme/ui/dialog';
-
 import { GuestTitle, GuestType, SnackbarService, Static, TransferRouteType, Utility } from 'genesis-coreservice';
-import { TransferFormComponent } from './transfer-form/transfer-form.component';
-import { TransferReservationService } from '../../services/transfer-reservation.service';
-import { GuestListDataGridComponent } from '../../../../../components/transfer/guest-list-data-grid/guest-list-data-grid.component';
-import { CreateReservation, CreateReservationModel, ReservationGuestBaseModel, TransferExtraModel } from '../../models/reservation.models';
+import { ConfirmationService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import moment from 'moment';
+import { GuestListDataGridComponent } from '../../../../../components/transfer/guest-list-data-grid/guest-list-data-grid.component';
 import { ReservationMapper } from '../../models/reservation.mappings';
-
+import { CreateReservation, CreateReservationModel, ReservationGuestBaseModel, TransferExtraModel } from '../../models/reservation.models';
+import { TransferReservationService } from '../../services/transfer-reservation.service';
+import { TransferFormComponent } from './transfer-form/transfer-form.component';
 
 @Component({
   selector: 'transfer-reservation-form',
@@ -44,24 +37,28 @@ import { ReservationMapper } from '../../models/reservation.mappings';
   encapsulation: ViewEncapsulation.None,
   imports: [
     CommonModule,
-    DxFormModule,
-    DxDataGridModule,
-    DxToolbarModule,
-    DxTemplateModule,
-    DxRadioGroupModule,
-    DxCheckBoxModule,
-    DxListModule,
-    GuestListDataGridComponent,
-    DxSelectBoxModule,
+    ReactiveFormsModule,
+    FormsModule,
     TranslocoModule,
     MatDividerModule,
+    ButtonModule,
+    ConfirmDialogModule,
+    InputNumberModule,
+    SelectButtonModule,
+    GuestListDataGridComponent,
     TransferFormComponent,
   ],
-  providers: [TransferReservationService],
+  providers: [TransferReservationService, ConfirmationService],
 })
 export class TransferReservationFormComponent implements OnInit, OnChanges {
-  @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
-  @ViewChildren(TransferFormComponent) transferForms: TransferFormComponent[];
+  private readonly fb = inject(FormBuilder);
+  protected readonly transferService = inject(TransferReservationService);
+  private readonly snackbarService = inject(SnackbarService);
+  private readonly translocoService = inject(TranslocoService);
+  private readonly confirmationService = inject(ConfirmationService);
+
+  @ViewChildren(TransferFormComponent) transferForms!: QueryList<TransferFormComponent>;
+
   @Input() disabledNote: boolean;
   @Input() extrasDataSource: TransferExtraModel[] = [];
   @Input() data: CreateReservation = <CreateReservation><unknown>{
@@ -78,70 +75,44 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
   @Input() hasDeleteButton: boolean = false;
   @Input() formDisabled: boolean = false;
 
-  @Output() onSaveClick: EventEmitter<CreateReservation>;
-  @Output() onDeleteClick: EventEmitter<CreateReservation>;
-  @Output() onCancelClick: EventEmitter<boolean>;
+  @Output() onSaveClick = new EventEmitter<CreateReservation>();
+  @Output() onDeleteClick = new EventEmitter<CreateReservation>();
+  @Output() onCancelClick = new EventEmitter<boolean>();
 
   guestTitles = Static.guestTitles;
-
   transferRouteType: TransferRouteType = TransferRouteType.Arrival;
   ifGuestsFormHasError: boolean = false;
 
-  btnSave: any;
-  btnTransferCancel: any;
-  btnDelete: any;
-  transferRouteTypeOptions: any;
+  paxForm!: FormGroup;
+  routeTypeOptions: { code: TransferRouteType; name: string }[] = [];
 
-  constructor(
-    protected transferService: TransferReservationService,
-    private readonly snackbarService: SnackbarService,
-    private readonly translocoService: TranslocoService,
-  ) {
-    this.onSaveClick = new EventEmitter();
-    this.onDeleteClick = new EventEmitter();
-    this.onCancelClick = new EventEmitter();
-    this.btnSave = {
-      icon: 'save',
-      text: this.translocoService.translate('labels.save'),
-      type: 'default',
-      onClick: this.saveClick.bind(this),
-    };
-    this.btnTransferCancel = {
-      icon: 'clear',
-      text: this.translocoService.translate('labels.cancel'),
-      onClick: this.cancelClick.bind(this),
-    };
-    this.btnDelete = {
-      icon: 'trash',
-      text: this.translocoService.translate('labels.delete'),
-      type: 'danger',
-      onClick: this.deleteClick.bind(this),
-    };
-    this.transferRouteTypeOptions = {
-      dataSource: [
-        { code: TransferRouteType.Arrival, name: this.translocoService.translate('labels.arrival') },
-        { code: TransferRouteType.Departure, name: this.translocoService.translate('labels.departure') },
-        { code: TransferRouteType.TwoWay, name: this.translocoService.translate('labels.twoway') },
-        { code: TransferRouteType.Intermediate, name: this.translocoService.translate('labels.intermediate') },
-      ],
-      valueExpr: 'code',
-      layout: 'horizontal',
-    };
-  }
+  ngOnInit(): void {
+    this.routeTypeOptions = [
+      { code: TransferRouteType.Arrival, name: this.translocoService.translate('labels.arrival') },
+      { code: TransferRouteType.Departure, name: this.translocoService.translate('labels.departure') },
+      { code: TransferRouteType.TwoWay, name: this.translocoService.translate('labels.twoway') },
+      { code: TransferRouteType.Intermediate, name: this.translocoService.translate('labels.intermediate') },
+    ];
 
-  async ngOnInit() {
+    this.paxForm = this.fb.group({
+      adult: [this.data.adult ?? 1, [Validators.required, Validators.min(1)]],
+      child: [this.data.child ?? 0, Validators.min(0)],
+      infant: [this.data.infant ?? 0, Validators.min(0)],
+    });
 
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['data']?.currentValue.bookings.length) {
-      this.transferRouteType =
-        changes['data'].currentValue.bookings[0].transferRouteType;
+    if (this.formDisabled) {
+      this.paxForm.disable();
     }
   }
 
-  checkIfValidate() {
-    var now = moment(new Date(), Utility.DefaultDateOnlyFormat).year()
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data']?.currentValue?.bookings?.length) {
+      this.transferRouteType = changes['data'].currentValue.bookings[0].transferRouteType;
+    }
+  }
+
+  checkIfValidate(): boolean {
+    const now = moment(new Date(), Utility.DefaultDateOnlyFormat).year();
     const ageCheck = this.data.guests.find((x) => x.guestType != GuestType.Adult && now - moment(x.birthDate, Utility.DefaultDateOnlyFormat).year() >= 18);
     const exist = this.data.guests.find((x) => x.guestType == GuestType.Adult);
     const snackbarMessage = this.translocoService.translate('reservations.message.guests-required');
@@ -171,20 +142,16 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
     return this.transferForms.reduce((state, form) => state && (form?.isValidated() ?? true), true);
   }
 
-  getTransferRouteTypeLabel(code: TransferRouteType) {
-    return this.translocoService.translate(`labels.${code.toLowerCase()}`);
-  }
-
-  onRouteTypeChanged(e: any) {
+  onRouteTypeChanged(value: TransferRouteType): void {
     if (this.data.bookings.length === 2) {
-      if (e.value === TransferRouteType.Arrival || e.value === TransferRouteType.Intermediate) {
+      if (value === TransferRouteType.Arrival || value === TransferRouteType.Intermediate) {
         this.data.bookings.splice(1, 1);
       } else {
         this.data.bookings.splice(0, 1);
       }
-      this.data.bookings[0].transferRouteType = e.value;
-    } else if (e.value === TransferRouteType.TwoWay) {
-      var start = this.transferRouteType === TransferRouteType.Arrival ? 1 : 0;
+      this.data.bookings[0].transferRouteType = value;
+    } else if (value === TransferRouteType.TwoWay) {
+      const start = this.transferRouteType === TransferRouteType.Arrival ? 1 : 0;
       this.data.bookings.splice(start, 0, <CreateReservationModel>{
         transferRouteType: this.transferRouteType === TransferRouteType.Arrival ? TransferRouteType.Departure : TransferRouteType.Arrival,
         fromLocation: this.data.bookings[0].toLocation,
@@ -193,18 +160,18 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
         operatorId: this.data.bookings[0].operatorId,
         oprVoucher: this.data.bookings[0].oprVoucher,
         transferDate: this.data.bookings[0].transferDate,
-        reservationExtras: this.data.bookings[0].reservationExtras
+        reservationExtras: this.data.bookings[0].reservationExtras,
       });
       if (this.transferRouteType === TransferRouteType.Intermediate) {
         this.data.bookings[1].transferRouteType = TransferRouteType.Departure;
       }
     } else {
-      this.data.bookings[0].transferRouteType = e.value;
+      this.data.bookings[0].transferRouteType = value;
     }
-    this.transferRouteType = e.value;
+    this.transferRouteType = value;
   }
 
-  onLocationChanged(newLocation: any, field: 'from' | 'to', index: number) {
+  onLocationChanged(newLocation: any, field: 'from' | 'to', index: number): void {
     if (this.transferRouteType === TransferRouteType.TwoWay && this.data.bookings.length === 2) {
       const otherIndex = 1 - index;
       const otherBooking = this.data.bookings[otherIndex];
@@ -216,27 +183,27 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
     }
   }
 
-  onOperatorChanged(newOperatorId: any, index: number) {
+  onOperatorChanged(newOperatorId: any, index: number): void {
     if (this.transferRouteType === TransferRouteType.TwoWay && this.data.bookings.length === 2) {
       const otherIndex = 1 - index;
       this.data.bookings[otherIndex].operatorId = newOperatorId;
     }
   }
 
-  onoprVoucherChanged(newOprVoucher: string, index: number) {
+  onoprVoucherChanged(newOprVoucher: string, index: number): void {
     if (this.transferRouteType === TransferRouteType.TwoWay && this.data.bookings.length === 2) {
       const otherIndex = 1 - index;
       this.data.bookings[otherIndex].oprVoucher = newOprVoucher;
     }
   }
 
-  onAdultValueChanged = (e: any) => {
-    var count = this.data.guests.filter(x => x.guestType == GuestType.Adult);
-    if (count.length == 0)
-      return;
-    if (count.length != e.value) {
-      var leadAdult = this.data.guests.find(x => x.guestType == GuestType.Adult && x.isLead);
-      for (let i = 0; i < e.value - count.length; i++) {
+  onAdultValueChanged(value: number): void {
+    this.data.adult = value;
+    const count = this.data.guests.filter((x) => x.guestType == GuestType.Adult);
+    if (count.length == 0) return;
+    if (count.length != value) {
+      const leadAdult = this.data.guests.find((x) => x.guestType == GuestType.Adult && x.isLead);
+      for (let i = 0; i < value - count.length; i++) {
         const element = ReservationMapper.GuestBaseModelMap(leadAdult);
         element.id = crypto.randomUUID();
         this.data.guests.push(element);
@@ -244,11 +211,12 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
     }
   }
 
-  onChildValueChanged = (e: any) => {
-    var count = this.data.guests.filter(x => x.guestType == GuestType.Child);
-    if (count.length != e.value) {
-      var leadAdult = this.data.guests.find(x => x.guestType == GuestType.Adult && x.isLead);
-      for (let i = 0; i < e.value; i++) {
+  onChildValueChanged(value: number): void {
+    this.data.child = value;
+    const count = this.data.guests.filter((x) => x.guestType == GuestType.Child);
+    if (count.length != value) {
+      const leadAdult = this.data.guests.find((x) => x.guestType == GuestType.Adult && x.isLead);
+      for (let i = 0; i < value; i++) {
         const element = ReservationMapper.GuestBaseModelMap(leadAdult);
         element.guestType = GuestType.Child;
         element.title = GuestTitle.Chd;
@@ -258,11 +226,12 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
     }
   }
 
-  onInfantValueChanged = (e: any) => {
-    var count = this.data.guests.filter(x => x.guestType == GuestType.Infant);
-    if (count.length != e.value) {
-      var leadAdult = this.data.guests.find(x => x.guestType == GuestType.Adult && x.isLead);
-      for (let i = 0; i < e.value; i++) {
+  onInfantValueChanged(value: number): void {
+    this.data.infant = value;
+    const count = this.data.guests.filter((x) => x.guestType == GuestType.Infant);
+    if (count.length != value) {
+      const leadAdult = this.data.guests.find((x) => x.guestType == GuestType.Adult && x.isLead);
+      for (let i = 0; i < value; i++) {
         const element = ReservationMapper.GuestBaseModelMap(leadAdult);
         element.guestType = GuestType.Infant;
         element.title = GuestTitle.Inf;
@@ -272,42 +241,33 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
     }
   }
 
-  saveClick() {
+  saveClick(): void {
     if (this.checkIfValidate()) {
       this.onSaveClick.emit(this.data);
     }
   }
 
-  deleteClick() {
-    const confirmPopup = confirm(this.translocoService.translate('labels.delete-confirm'), this.translocoService.translate('generic.message.confirmation'));
-    confirmPopup.then((dialogResult) => {
-      if (dialogResult) {
-        this.onDeleteClick.emit(this.data);
-      }
+  deleteClick(): void {
+    this.confirmationService.confirm({
+      header: this.translocoService.translate('generic.message.confirmation'),
+      message: this.translocoService.translate('labels.delete-confirm'),
+      accept: () => this.onDeleteClick.emit(this.data),
     });
   }
 
-  cancelClick() {
-    const confirmPopup = confirm(
-      this.translocoService.translate('labels.cancel-confirm'),
-      this.translocoService.translate('generic.message.confirmation'),
-    );
-    confirmPopup.then((dialogResult) => {
-      if (dialogResult) {
-        this.onCancelClick.emit(true);
-      }
+  cancelClick(): void {
+    this.confirmationService.confirm({
+      header: this.translocoService.translate('generic.message.confirmation'),
+      message: this.translocoService.translate('labels.cancel-confirm'),
+      accept: () => this.onCancelClick.emit(true),
     });
   }
 
   onRowInserted = (e: any) => {
-    const confirmPopup = confirm(
-      this.translocoService.translate('reservations.message.update-pax'),
-      this.translocoService.translate('generic.message.confirmation'),
-    );
-    confirmPopup.then((dialogResult) => {
-      if (dialogResult) {
-        this.sumPax();
-      }
+    this.confirmationService.confirm({
+      header: this.translocoService.translate('generic.message.confirmation'),
+      message: this.translocoService.translate('reservations.message.update-pax'),
+      accept: () => this.sumPax(),
     });
     this.makeIsLead(e.data);
   };
@@ -316,15 +276,13 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
     this.manipulatingData(e.data);
   };
 
-  onRowRemoving = (e: any) => {
-  };
+  onRowRemoving = (_e: any) => {};
 
   onRowRemoved = (e: any) => {
-    const confirmPopup = confirm(this.translocoService.translate('reservations.message.update-pax'), this.translocoService.translate('generic.message.confirmation'));
-    confirmPopup.then((dialogResult) => {
-      if (dialogResult) {
-        this.sumPax();
-      }
+    this.confirmationService.confirm({
+      header: this.translocoService.translate('generic.message.confirmation'),
+      message: this.translocoService.translate('reservations.message.update-pax'),
+      accept: () => this.sumPax(),
     });
     this.makeIsLead(e);
   };
@@ -336,36 +294,39 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
   };
 
   onRowUpdated = (e: any) => {
-    const confirmPopup = confirm(this.translocoService.translate('reservations.message.update-pax'), this.translocoService.translate('generic.message.confirmation'));
-    confirmPopup.then((dialogResult) => {
-      if (dialogResult) {
-        this.sumPax();
-      }
+    this.confirmationService.confirm({
+      header: this.translocoService.translate('generic.message.confirmation'),
+      message: this.translocoService.translate('reservations.message.update-pax'),
+      accept: () => this.sumPax(),
     });
     this.makeIsLead(e.data);
   };
 
-  sumPax() {
+  sumPax(): void {
     const adult = this.data.guests.filter((x) => x.guestType == GuestType.Adult);
     const child = this.data.guests.filter((x) => x.guestType == GuestType.Child);
     const infant = this.data.guests.filter((x) => x.guestType == GuestType.Infant);
     this.data.adult = adult.length;
     this.data.child = child.length;
     this.data.infant = infant.length;
+    this.paxForm.patchValue(
+      { adult: adult.length, child: child.length, infant: infant.length },
+      { emitEvent: false },
+    );
   }
 
-  makeIsLead(e: ReservationGuestBaseModel) {
+  makeIsLead(e: ReservationGuestBaseModel): void {
     if (e.isLead && e.guestType == GuestType.Adult) {
-      var others = this.data.guests.filter(x => x.id != e.id);
-      others.forEach(x => x.isLead = false);
+      const others = this.data.guests.filter((x) => x.id != e.id);
+      others.forEach((x) => (x.isLead = false));
     } else {
-      var adults = this.data.guests.filter((x) => x.guestType == GuestType.Adult);
+      const adults = this.data.guests.filter((x) => x.guestType == GuestType.Adult);
       if (adults.length > 0) {
-        var lead = adults.filter(x => x.isLead);
+        const lead = adults.filter((x) => x.isLead);
         if (lead.length == 0) {
           for (let i = 0; i < this.data.guests.length; i++) {
             const element = this.data.guests[i];
-            var isLead = this.data.guests.filter(x => x.isLead);
+            const isLead = this.data.guests.filter((x) => x.isLead);
             if (element.guestType == GuestType.Adult && isLead.length == 0) {
               element.isLead = true;
             }
@@ -374,7 +335,8 @@ export class TransferReservationFormComponent implements OnInit, OnChanges {
       }
     }
   }
-  manipulatingData(data: any) {
+
+  manipulatingData(data: any): void {
     data.firstName = data.firstName.toUpperCase();
     data.lastName = data.lastName.toUpperCase();
     if (data.title == 'Mr' || data.title == 'Mrs' || data.title == 'Grp') {

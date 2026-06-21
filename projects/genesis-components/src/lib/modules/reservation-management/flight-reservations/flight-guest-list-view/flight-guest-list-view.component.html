@@ -1,30 +1,56 @@
+<p-table
+  [value]="guests"
+  [paginator]="true"
+  [rows]="10"
+  [rowsPerPageOptions]="[5, 10, 15]"
+  [showCurrentPageReport]="true"
+  styleClass="p-datatable-sm">
 
-    <dx-data-grid id="guestGrid" 
-        [dataSource]="guests" 
-        keyExpr="id" 
-        [remoteOperations]="false"
-        [showColumnLines]="false" 
-        [showBorders]="true">
+  <ng-template pTemplate="caption">
+    <div class="text-2xl tracking-tight">
+      {{ 'labels.passengers' | transloco }}
+    </div>
+  </ng-template>
 
-        <dxo-toolbar>
-            <dxi-item location="before">
-                <div *dxTemplate>
-                    <div class="ml-4 text-2xl tracking-tight">
-                        {{'labels.passengers' | transloco}}
-                    </div>
-                </div>
-            </dxi-item>
-            <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-        </dxo-toolbar>
-        <dxi-column dataField="title" dataType="string" [caption]="'labels.title' | transloco"></dxi-column>
-        <dxi-column dataField="firstName" dataType="string" [caption]="'labels.first-name' | transloco"></dxi-column>
-        <dxi-column dataField="lastName" dataType="string" [caption]="'labels.last-name' | transloco"></dxi-column>
-        <dxi-column dataField="age" dataType="number" [caption]="'labels.age' | transloco"></dxi-column>
-        <dxi-column dataField="guestType" dataType="string" [caption]="'labels.guest-type' | transloco"></dxi-column>
-        <dxi-column dataField="noShow" dataType="boolean" [caption]="'labels.no-show' | transloco"></dxi-column>
-        <dxi-column dataField="selfTransfer" dataType="boolean" [caption]="'labels.self-transfer' | transloco"></dxi-column>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>{{ 'labels.title' | transloco }}</th>
+      <th>{{ 'labels.first-name' | transloco }}</th>
+      <th>{{ 'labels.last-name' | transloco }}</th>
+      <th>{{ 'labels.age' | transloco }}</th>
+      <th>{{ 'labels.guest-type' | transloco }}</th>
+      <th>{{ 'labels.no-show' | transloco }}</th>
+      <th>{{ 'labels.self-transfer' | transloco }}</th>
+    </tr>
+  </ng-template>
 
+  <ng-template pTemplate="body" let-guest>
+    <tr>
+      <td>{{ guest.title }}</td>
+      <td>{{ guest.firstName }}</td>
+      <td>{{ guest.lastName }}</td>
+      <td>{{ guest.age }}</td>
+      <td>{{ guest.guestType }}</td>
+      <td>
+        @if (guest.noShow) {
+          <i class="pi pi-check text-green-500"></i>
+        } @else {
+          <i class="pi pi-times text-red-500"></i>
+        }
+      </td>
+      <td>
+        @if (guest.selfTransfer) {
+          <i class="pi pi-check text-green-500"></i>
+        } @else {
+          <i class="pi pi-times text-red-500"></i>
+        }
+      </td>
+    </tr>
+  </ng-template>
 
-        <dxo-paging [pageSize]="10"></dxo-paging>
-        <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[5, 10, 15]"></dxo-pager>
-    </dx-data-grid>
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7" class="text-center">{{ 'labels.no-data' | transloco }}</td>
+    </tr>
+  </ng-template>
+</p-table>

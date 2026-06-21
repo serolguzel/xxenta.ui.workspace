@@ -1,12 +1,17 @@
 import { NgIf } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { confirm } from 'devextreme/ui/dialog';
 import { filter, Subject, takeUntil } from 'rxjs';
 import { ReservationEventService } from '../../services/reservation-event.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { DxFormModule, DxLoadPanelModule, DxPopupModule, DxTemplateModule, DxToolbarModule } from 'devextreme-angular';
+import { ConfirmationService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TextareaModule } from 'primeng/textarea';
 import { AuthService, CommandResponse, ConstantRoles, UserLookupModel, UserModel } from 'genesis-coreservice';
 import { TransferResAuditTrailComponent } from '../../../../components/transfer/transfer-res-audit-trail/transfer-res-audit-trail.component';
 import { ReservationNotesComponent } from '../../../../components/transfer/reservation-notes/reservation-notes.component';
@@ -27,12 +32,13 @@ import { MatDividerModule } from '@angular/material/divider';
   standalone: true,
   imports: [
     NgIf,
+    ReactiveFormsModule,
     TransferResAuditTrailComponent,
-    DxLoadPanelModule,
-    DxPopupModule,
-    DxTemplateModule,
-    DxFormModule,
-    DxToolbarModule,
+    ButtonModule,
+    ConfirmDialogModule,
+    DialogModule,
+    ProgressSpinnerModule,
+    TextareaModule,
     MatTabsModule,
     MatDividerModule,
     ReservationNotesComponent,
@@ -41,7 +47,7 @@ import { MatDividerModule } from '@angular/material/divider';
     TransferReservationFormComponent,
     RouterLink
 ],
-  providers: [TransferReservationService],
+  providers: [TransferReservationService, ConfirmationService],
 })
 export class DetailReservationComponent implements OnInit, OnDestroy {
   formData: CreateReservation = <CreateReservation><unknown>{
@@ -67,7 +73,12 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 
   private readonly unsubscribeAll: Subject<any> = new Subject<any>();
 
-  btnTransferCancelOption: any;
+  private readonly fb = inject(FormBuilder);
+  private readonly confirmationService = inject(ConfirmationService);
+
+  cancelForm: FormGroup = this.fb.group({
+    cancelNote: ['', Validators.required],
+  });
 
   reservationDetailLink: string;
   options: any = {};
@@ -82,14 +93,6 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.options = this.activatedRoute.snapshot.data;
-    this.btnTransferCancelOption = {
-      text: this.translocoService.translate('labels.save'),
-      icon: 'save',
-      type: 'default',
-      locateInMenu: 'always',
-      useSubmitBehavior: true,
-      onClick: this.saveTransferCancelClick.bind(this),
-    };
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
       takeUntil(this.unsubscribeAll),
@@ -165,11 +168,10 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
   }
 
   onDeleteClick(item: CreateReservation) {
-    const deleteConfirm = this.translocoService.translate('messages.are-you-sure-delete');
-    const deleteConfirmTitle = this.translocoService.translate('messages.are-you-sure');
-    let confirmPopup = confirm(deleteConfirm, deleteConfirmTitle);
-    confirmPopup.then((dialogResult) => {
-      if (dialogResult) {
+    this.confirmationService.confirm({
+      header: this.translocoService.translate('messages.are-you-sure'),
+      message: this.translocoService.translate('messages.are-you-sure-delete'),
+      accept: () => {
         this.transferService.TrashReservation(this.item.id).then((res: CommandResponse<string>) => {
           if (res) {
             this.router.navigate([
@@ -182,7 +184,15 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
   }
 
   saveTransferCancelClick() {
-    this.transferCancelModel.cancel = true;
+    this.cancelForm.markAllAsTouched();
+    if (!this.cancelForm.valid) {
+      return;
+    }
+    this.transferCancelModel = {
+      ...this.transferCancelModel,
+      ...this.cancelForm.getRawValue(),
+      cancel: true,
+    };
     this.transferService.CancelReservation(this.item.id, this.transferCancelModel)
       .then((res: CancelReservationResponse) => {
         if (res?.cancel) {
@@ -197,10 +207,11 @@ export class DetailReservationComponent implements OnInit, OnDestroy {
   }
 
   onCancelClick() {
+    this.cancelForm.reset({ cancelNote: '' });
     this.isPopupVisible = true;
   }
 
-  onHidden(e: any) {
+  onHidden() {
     this.isPopupVisible = false;
   }
 }

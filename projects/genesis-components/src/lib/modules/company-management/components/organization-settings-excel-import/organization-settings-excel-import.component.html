@@ -2,16 +2,17 @@
     <div class="flex items-center space-x-4 rtl:space-x-reverse">
         <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                {{data.value}}
+                {{ data.value }}
             </p>
             <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                {{data.key}}
+                {{ data.key }}
             </p>
         </div>
         <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-            <button (click)="onDelete(data)">
-                <i class="dx-trash dx-icon-trash"></i>
-            </button>
+            <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
+                (onClick)="onDelete(data)" />
         </div>
     </div>
 </li>
+
+<p-confirmdialog />

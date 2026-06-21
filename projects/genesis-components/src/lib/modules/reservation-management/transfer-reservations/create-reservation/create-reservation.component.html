@@ -6,13 +6,8 @@
   </transfer-reservation-form>
 </div>
 
-<dx-load-panel
-  #loadPanel
-  shadingColor="rgba(0,0,0,0.4)"
-  [position]="{ of: '#transfer_reservation' }"
-  [(visible)]="loadingVisible"
-  [showIndicator]="true"
-  [showPane]="true"
-  [shading]="true"
-  [hideOnOutsideClick]="false">
-</dx-load-panel>
+@if (loadingVisible) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <p-progressspinner strokeWidth="4" />
+  </div>
+}

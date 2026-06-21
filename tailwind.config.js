@@ -291,7 +291,8 @@ const config = {
         require(resolve(__dirname, ('tailwind/plugins/theming')))({themes}),
 
         // Other third party and/or custom plugins
-        require('@tailwindcss/typography')({modifiers: ['sm', 'lg']})
+        require('@tailwindcss/typography')({modifiers: ['sm', 'lg']}),
+        require('tailwindcss-primeui')
     ]
 };
 

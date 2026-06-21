@@ -1,53 +1,31 @@
 <div class="p-4 bg-white">
-  <dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource" 
-    [remoteOperations]="true" 
-    [showColumnLines]="false"
-    [showBorders]="true" 
-    [showRowLines]="true" 
-    [rowAlternationEnabled]="true" 
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="true"
-    [columnHidingEnabled]="false">
+  <genesis-data-table
+    [lazy]="true"
+    loadPath="Organization/GetOrganizations"
+    [extraParams]="extraParams"
+    [columns]="columns"
+    [pageSize]="20">
 
-    <dxo-search-panel [visible]="true"></dxo-search-panel>
-    <dxo-filter-row [visible]="true"></dxo-filter-row>
-    <dxo-group-panel [visible]="false"></dxo-group-panel>
-    <dxo-master-detail [enabled]="true" template="masterDetail"></dxo-master-detail>
+    <ng-template gdtCell="name" let-row>
+      <a [routerLink]="row.isTenant ? '/tenant/tenants/detail/' + row.id : '/tenant/companies/detail/' + row.id"
+        class="font-bold">{{ row.name }}</a>
+    </ng-template>
 
-    <dxo-toolbar>
-      <dxi-item location="before">
-        <div *dxTemplate>
-          <div class="text-2xl tracking-tight">
-            {{options.pageTitle}}
-          </div>
-        </div>
-      </dxi-item>
-      <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-      <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-    </dxo-toolbar>
+    <ng-template gdtCell="officialName" let-row>
+      <a [routerLink]="row.isTenant ? '/tenant/tenants/detail/' + row.id : '/tenant/companies/detail/' + row.id"
+        class="font-bold">{{ row.officialName }}</a>
+    </ng-template>
 
-    <dxi-column dataField="name" dataType="string" cellTemplate="nameTemp"></dxi-column>
-    <dxi-column dataField="officialName" dataType="string" cellTemplate="nameTemp"></dxi-column>
-    <dxi-column dataField="code" dataType="string"></dxi-column>
-    <dxi-column dataField="countryId" dataType="string" caption="Country"></dxi-column>
-    <dxi-column dataField="organizationTypes" dataType="array" [allowFiltering]="false"></dxi-column>
-    <dxi-column dataField="isDeleted" dataType="boolean"></dxi-column>
-    <dxi-column dataField="isTenant" dataType="boolean"></dxi-column>
+    <ng-template gdtCell="organizationTypes" let-row>
+      <div class="flex flex-wrap gap-1">
+        @for (type of row.organizationTypes; track type) {
+          <p-tag [value]="type" severity="info" />
+        }
+      </div>
+    </ng-template>
 
-    <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
-      <a [routerLink]="d.data.isTenant ? '/tenant/tenants/detail/'+d.data.id : '/tenant/companies/detail/'+d.data.id">
-        <span class="flex font-bold">
-          {{d.value}}
-        </span>
-      </a>
-    </div>
-
-    <div *dxTemplate="let detail of 'masterDetail'">
-      <organizations-detail [isTenant]="true" [parentId]="detail.data.id"></organizations-detail>
-    </div>
-
-    <dxo-paging [pageSize]="20"></dxo-paging>
-    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-  </dx-data-grid>
+    <ng-template gdtCell="$expansion" let-row>
+      <organizations-detail [isTenant]="isTenant" [parentId]="row.id" />
+    </ng-template>
+  </genesis-data-table>
 </div>

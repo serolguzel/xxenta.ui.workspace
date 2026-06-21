@@ -2,25 +2,40 @@
     <div class="mx-auto flex w-full max-w-xs flex-auto flex-col sm:max-w-5xl">
         <nav class="flex min-w-[240px] flex-col gap-1">
             <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                <organization-settings-excel-import *ngFor="let item of settings"
-                    [data]="item" (onDeleteClick)="deleteItem(item)"></organization-settings-excel-import>
+                @for (item of settings; track item.id) {
+                    <organization-settings-excel-import [data]="item"
+                        (onDeleteClick)="deleteItem(item)"></organization-settings-excel-import>
+                }
             </ul>
 
             <div class="flex-auto">
-                <dx-form #settingsForm id="form" [colCount]="2" [formData]="model" labelLocation="top"
-                    labelMode="floating">
+                <form [formGroup]="form" class="mt-2">
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <p-floatlabel>
+                                <input pInputText id="key" formControlName="key" class="w-full" />
+                                <label for="key">{{ 'labels.key' | transloco }}</label>
+                            </p-floatlabel>
+                            @if (form.get('key')?.invalid && form.get('key')?.touched) {
+                                <small class="p-error">{{ 'messages.required' | transloco }}</small>
+                            }
+                        </div>
 
-                    <dxi-item dataField="key" editorType="dxTextBox">
-                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                    </dxi-item>
+                        <div class="col-12 md:col-6">
+                            <p-floatlabel>
+                                <input pInputText id="value" formControlName="value" class="w-full" />
+                                <label for="value">{{ 'labels.value' | transloco }}</label>
+                            </p-floatlabel>
+                            @if (form.get('value')?.invalid && form.get('value')?.touched) {
+                                <small class="p-error">{{ 'messages.required' | transloco }}</small>
+                            }
+                        </div>
+                    </div>
+                </form>
 
-                    <dxi-item dataField="value" editorType="dxTextBox">
-                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                    </dxi-item>
-                </dx-form>
-                <dx-toolbar class="mt-4">
-                    <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
-                </dx-toolbar>
+                <div class="flex justify-content-end mt-4">
+                    <p-button [label]="'labels.save' | transloco" icon="pi pi-save" (onClick)="onSave()" />
+                </div>
             </div>
         </nav>
     </div>

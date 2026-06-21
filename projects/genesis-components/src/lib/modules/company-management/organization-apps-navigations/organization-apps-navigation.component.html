@@ -1,76 +1,39 @@
-<dx-data-grid id="gridContainer"
-  [dataSource]="dataSource" 
-  [remoteOperations]="false" 
-  [showColumnLines]="false"
-  [showBorders]="true" 
-  [showRowLines]="true"
-  [rowAlternationEnabled]="true"
-  [hoverStateEnabled]="true"
-  [allowColumnResizing]="true"
-  [columnHidingEnabled]="true"
-  (onRowUpdating)="onRowUpdating($event)"
-  (onRowInserting)="onRowInserting($event)"
-  (onInitNewRow)="onInitNewRow($event)">
+<div class="p-6">
+  <genesis-data-table
+    [title]="'labels.application-navigations' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    [loadPath]="loadPath"
+    [extraParams]="extraParams"
+    [insertPath]="basePath"
+    [updatePath]="basePath"
+    [deletePath]="basePath"
+    updateKey="id"
+    [editorTitle]="'labels.navigation' | transloco"
+    [pageSize]="20"
+    [columns]="columns"
+    [newRowDefaults]="newRowDefaults">
 
-  <dxo-search-panel [visible]="true"></dxo-search-panel>
-  <dxo-filter-row [visible]="true"></dxo-filter-row>
-  <dxo-group-panel [visible]="false"></dxo-group-panel>
+    <ng-template gdtCell="navigation.title" let-row>
+      <span class="flex font-bold justify-start items-center">
+        <mat-icon [svgIcon]="row.navigation?.icon"></mat-icon>
+        <div class="ml-2">{{ row.navigation?.title }}</div>
+      </span>
+    </ng-template>
 
-  <dxo-toolbar>
-    <dxi-item location="before">
-      <div *dxTemplate>
-        <div class="text-2xl tracking-tight">
-          Aplication Navigations
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="navigationId" [(ngModel)]="row.navigationId" [options]="navigations" optionLabel="name"
+            optionValue="id" [filter]="true" class="w-full" />
+          <label for="navigationId">{{ 'labels.navigation' | transloco }}</label>
+        </p-floatlabel>
+
+        <div class="flex align-items-center gap-2">
+          <p-checkbox [(ngModel)]="row.active" [binary]="true" inputId="active" />
+          <label for="active">{{ 'labels.active' | transloco }}</label>
         </div>
       </div>
-    </dxi-item>
-
-    <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-    <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-    <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-  </dxo-toolbar>
-
-  <dxo-editing mode="popup" 
-    [allowUpdating]="true" 
-    [allowAdding]="true" 
-    [allowDeleting]="true" 
-    [useIcons]="true">
-    <dxo-popup title="Navigation" 
-      [showTitle]="true" 
-      [width]="400" 
-      [height]="300" 
-      [resizeEnabled]="true"
-      [position]="{ my: 'center', at: 'center'}">
-    </dxo-popup>
-    <dxo-form [colCount]="1" labelMode="floating">
-      <dxi-item dataField="navigationId" editorType="dxLookup" [editorOptions]="{
-                                                            dataSource: navigations,
-                                                            valueExpr: 'id',
-                                                            displayExpr: 'name',
-                                                            dropDownOptions: {
-                                                              hideOnOutsideClick: true,
-                                                              title:'Navigations'
-                                                            }
-                                                        }">
-        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-      </dxi-item>
-      <dxi-item dataField="active"></dxi-item>
-    </dxo-form>
-  </dxo-editing>
-
-
-  <dxi-column dataField="navigation.title" dataType="string" caption="App" cellTemplate="navTemp"></dxi-column>
-  <dxi-column dataField="organization.name" dataType="string"></dxi-column>
-  <dxi-column dataField="active" dataType="boolean" [visible]="false"></dxi-column>
-  <dxi-column dataField="navigationId" dataType="string" [visible]="false" caption="Navigation"></dxi-column>
-
-  <div class="flex-auto" *dxTemplate="let d of 'navTemp'">
-    <span class="flex font-bold justify-start items-center">
-      <mat-icon [svgIcon]="d.data.navigation?.icon"></mat-icon>
-      <div class="ml-2">{{d.value}}</div>
-    </span>
-  </div>
-
-  <dxo-paging [pageSize]="20"></dxo-paging>
-  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-</dx-data-grid>
+    </ng-template>
+  </genesis-data-table>
+</div>

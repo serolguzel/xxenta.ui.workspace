@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import CustomStore from 'devextreme/data/custom_store';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DxButtonModule, DxDataGridModule, DxTemplateModule } from 'devextreme-angular';
-import { Permission } from '../company.models';
-import { CoreService } from 'genesis-coreservice';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { DataSourceBuilder } from '../../../services/data-source-builder';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from '../../../components/common';
+import { Permission } from '../company.models';
 
 @Component({
   selector: 'app-companies',
@@ -13,45 +12,39 @@ import { DataSourceBuilder } from '../../../services/data-source-builder';
   standalone: true,
   imports: [
     RouterLink,
-    DxDataGridModule,
-    DxTemplateModule,
-    DxButtonModule,
-    TranslocoModule
+    TranslocoModule,
+    ButtonModule,
+    TagModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
   ]
 })
-export class CompaniesComponent implements OnInit{
-  dataSource: CustomStore;
-  countryDataSoruce: CustomStore;
-  permission: Permission = <Permission>{}
-  pageTitle: string = '';
-  constructor(
-    private coreService: CoreService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private readonly translocoService: TranslocoService
-  ) {
+export class CompaniesComponent implements OnInit {
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly translocoService = inject(TranslocoService);
 
-  }
+  permission: Permission = {} as Permission;
+  pageTitle: string = '';
+
+  columns: GenesisColumn[] = [
+    { field: 'name', header: this.translocoService.translate('labels.name'), sortable: true, filter: true },
+    { field: 'officialName', header: this.translocoService.translate('labels.official-name'), sortable: true, filter: true },
+    { field: 'code', header: this.translocoService.translate('labels.code'), sortable: true, filter: true },
+    { field: 'countryId', header: this.translocoService.translate('labels.country') },
+    { field: 'organizationTypes', header: this.translocoService.translate('labels.organization-types') },
+  ];
 
   ngOnInit() {
     const pageTitleKey = this.activatedRoute.snapshot.data['pageTitle'];
     this.pageTitle = this.translocoService.translate(pageTitleKey);
-    
-    this.dataSource = new DataSourceBuilder(this.coreService)
-      .load('Organization', { requireTotalCount: true, isTenant: true})
-      .setKey("id")
-      .build();
   }
 
-  createAgency = (e: any) => {
-    this.router.navigate(['create'], {relativeTo: this.activatedRoute});
+  createAgency(): void {
+    this.router.navigate(['create'], { relativeTo: this.activatedRoute });
   }
 
-  editAgency = (e: any) => {
-    this.router.navigate([`detail/${e.row.key}`], {relativeTo: this.activatedRoute});
-  }
-
-  deleteAgency = (e: any) => {
-
+  editAgency(company: any): void {
+    this.router.navigate([`detail/${company.id}`], { relativeTo: this.activatedRoute });
   }
 }

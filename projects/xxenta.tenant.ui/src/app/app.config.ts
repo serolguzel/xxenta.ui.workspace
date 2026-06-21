@@ -11,6 +11,8 @@ import { API_CONFIG_GEN, APP_CONFIG_GEN, AUTH_CONFIG_GEN, AuthInterceptor } from
 import { environment } from '../environments/environment';
 import { provideIcons, provideTranslocoShell } from 'genesis-shell';
 import { mockApiServices } from './mock-api';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeuix/themes/aura';
 
 
 export const appConfig: ApplicationConfig = {
@@ -64,6 +66,16 @@ export const appConfig: ApplicationConfig = {
     },
     // Transloco Config
     provideTranslocoShell(),
+
+    // PrimeNG
+    providePrimeNG({
+      theme: {
+        preset: Aura,
+        options: {
+          darkModeSelector: '.dark'
+        }
+      }
+    }),
 
     // Genesis
     provideIcons(),

@@ -1,159 +1,76 @@
-<dx-tab-panel>
-    <dxi-item [title]="'labels.departure' | transloco" template="returnTransfer" *ngIf="!referenceData.hasError"></dxi-item>
-    <dxi-item [title]="'labels.arrival' | transloco" template="guests"></dxi-item>
-
-    <div *dxTemplate="let item of 'returnTransfer'">
-        <dx-data-grid id="transferGrid" 
-            [dataSource]="transfers" 
-            keyExpr="id" 
-            [remoteOperations]="false"
-            [columnAutoWidth]="true"
-            [rowAlternationEnabled]="true"
-            [allowColumnReordering]="true"
-            [showColumnLines]="false"
-            [showBorders]="true"
-            [showRowLines]="true"
-            [allowColumnResizing]="true"
-            [columnHidingEnabled]="false">
-
-            <dxo-toolbar>
-                <dxi-item location="before">
-                    <div *dxTemplate>
-                        <div class="ml-4 text-2xl tracking-tight">
-                            {{'labels.passengers' | transloco}}
-                        </div>
-                    </div>
-                </dxi-item>
-            </dxo-toolbar>
-
-            <dxi-column dataField="voucher" dataType="string" [caption]="'labels.voucher' | transloco"
-                cellTemplate="linkTemplate"></dxi-column>
-
-            <dxi-column dataField="oprVoucher" dataType="string" 
-                [caption]="'labels.opr-voucher' | transloco"
-                cellTemplate="linkTemplate" 
-                [visible]="false"></dxi-column>
-
-            <dxi-column dataField="flight.code" dataType="string" [caption]="'labels.flight-code' | transloco" 
-                cellTemplate="codeTemplate"
-                [allowFiltering]="false" 
-                [allowSearch]="false" 
-                [allowSorting]="false"></dxi-column>
-
-            <dxi-column dataField="arrivalTime" dataType="date" format="HH:mm" [caption]="'labels.flight-time' | transloco"
-                cellTemplate="flightTimeTemplate"></dxi-column>
-                
-            <dxi-column dataField="transferDate" dataType="date" format="dd.MM.yyyy"
-                [caption]="'labels.transfer-date' | transloco"></dxi-column>
-            <dxi-column dataField="saleDate" dataType="date"
-                format="dd.MM.yyyy"
-                [caption]="'labels.sale-date' | transloco"
-                [visible]="false"></dxi-column>
-
-            <dxi-column dataField="transferRouteType" dataType="date" [caption]="'labels.direction' | transloco"
-                [allowFiltering]="false"
-                [allowSearch]="false"
-                [allowSorting]="false">
-                <dxo-lookup [dataSource]="transferRouteTypes" displayExpr="name" valueExpr="code"></dxo-lookup>
-              </dxi-column>
-
-              <dxi-column dataField="fromLocation.id" dataType="string" [caption]="'labels.from' | transloco" cellTemplate="fromTemp"></dxi-column>
-              <dxi-column dataField="toLocation.id" dataType="string" [caption]="'labels.to' | transloco"cellTemplate="toTemp"></dxi-column>
-
-            <dxi-column dataField="adult" dataType="number" [caption]="'labels.adult' | transloco"></dxi-column>
-            <dxi-column dataField="child" dataType="number" [caption]="'labels.child' | transloco"></dxi-column>
-            <dxi-column dataField="infant" dataType="number" [caption]="'labels.infant' | transloco"></dxi-column>
-
-            <dxi-column dataField="vehicleTypeId" 
-                dataType="string" 
-                [visible]="false" 
-                caption="Araç Türü"
-                [allowFiltering]="false" 
-                [allowSearch]="false" 
-                [allowSorting]="false">
-                <dxo-lookup [dataSource]="vehicleTypesDataSource" displayExpr="name" valueExpr="code"></dxo-lookup>
-            </dxi-column>
-
-            <dxi-column dataField="transferTypeId" 
-                dataType="string" 
-                [caption]="'labels.transfer-type' | transloco" 
-                [allowFiltering]="false"
-                [allowSearch]="false" 
-                [allowSorting]="false" 
-                cellTemplate="transferTypeTemplate">
-            </dxi-column>
-
-            <dxi-column dataField="operator.name"
-                dataType="string" 
-                [caption]="'labels.operator' | transloco"
-                [allowFiltering]="false"
-                [allowSearch]="false"
-                [allowSorting]="false">
-            </dxi-column>
-
-            <dxi-column dataField="terminal.code" dataType="string" 
-                [caption]="'labels.terminal' | transloco"
-                [allowFiltering]="false"
-                [allowSearch]="false" 
-                [allowSorting]="false">
-            </dxi-column>
-
-            <dxi-column dataField="createDate" dataType="date" format="dd.MM.yyyy" [caption]="'labels.create-date' | transloco"
-                [visible]="false"></dxi-column>
-
-            <div class="flex-auto" *dxTemplate="let d of 'linkTemplate'">
-                <a [routerLink]="'detail/'+d.data.id">
-                    <span class="flex font-bold">
-                        {{d.value}}
-                    </span>
-                </a>
-            </div>
-
-            <div class="flex-auto" *dxTemplate="let d of 'codeTemplate'">
-                <a [routerLink]="'detail/'+d.data.id">
-                    <span class="flex font-bold">
-                        {{d.value}}
-                    </span>
-                </a>
-            </div>
-
-            <div class="flex-auto" *dxTemplate="let d of 'transferTypeTemplate'">
-                <span class="flex font-bold">
-                    {{d.data.transferType?.name}}
-                </span>
-                <span class="flex text-sm">
-                    {{d.value}}
-                </span>
-            </div>
-            
-            <div class="flex-auto" *dxTemplate="let d of 'flightTimeTemplate'">
-                <span class="flex font-bold">
-                  {{d.data.flight?.departureTime}}
-                </span>
-              </div>
-            
-            <div class="flex-auto" *dxTemplate="let d of 'fromTemp'">
-                <div class="flex font-bold">
-                  {{d.data.fromLocation?.name}}
+<p-tabs [value]="0">
+    <p-tablist>
+        @if (!referenceData.hasError) {
+            <p-tab [value]="0">{{ 'labels.departure' | transloco }}</p-tab>
+        }
+        <p-tab [value]="1">{{ 'labels.arrival' | transloco }}</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+        @if (!referenceData.hasError) {
+            <p-tabpanel [value]="0">
+                <div class="ml-4 mb-4 text-2xl tracking-tight">
+                    {{ 'labels.passengers' | transloco }}
                 </div>
-              </div>
-            
-              <div class="flex-auto" *dxTemplate="let d of 'toTemp'">
-                <div class="flex font-bold">
-                    <mat-icon svgIcon="heroicons_solid:check" class="text-emerald-600" *ngIf="d.data.isMappedHotel"></mat-icon>
-                    {{ d.data.toLocation?.name }}
-                </div>
-            </div>
-
-            <dxo-paging [pageSize]="5"></dxo-paging>
-            <dxo-pager 
-                [showPageSizeSelector]="true" 
-                [showInfo]="true"
-                [allowedPageSizes]="[5, 10, 15]"></dxo-pager>
-        </dx-data-grid>
-    </div>
-
-    <div *dxTemplate="let item of 'guests'">
-        <flight-guest-list-view [guests]="guests"></flight-guest-list-view>
-    </div>
-</dx-tab-panel>
+                <p-table [value]="transfers" dataKey="id" [paginator]="true" [rows]="5"
+                    [rowsPerPageOptions]="[5, 10, 15]" [showCurrentPageReport]="true"
+                    [rowHover]="true" styleClass="p-datatable-striped p-datatable-gridlines">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>{{ 'labels.voucher' | transloco }}</th>
+                            <th>{{ 'labels.flight-code' | transloco }}</th>
+                            <th>{{ 'labels.flight-time' | transloco }}</th>
+                            <th>{{ 'labels.transfer-date' | transloco }}</th>
+                            <th>{{ 'labels.direction' | transloco }}</th>
+                            <th>{{ 'labels.from' | transloco }}</th>
+                            <th>{{ 'labels.to' | transloco }}</th>
+                            <th>{{ 'labels.adult' | transloco }}</th>
+                            <th>{{ 'labels.child' | transloco }}</th>
+                            <th>{{ 'labels.infant' | transloco }}</th>
+                            <th>{{ 'labels.transfer-type' | transloco }}</th>
+                            <th>{{ 'labels.operator' | transloco }}</th>
+                            <th>{{ 'labels.terminal' | transloco }}</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-row>
+                        <tr>
+                            <td>
+                                <a [routerLink]="'detail/' + row.id" class="flex font-bold">
+                                    {{ row.voucher }}
+                                </a>
+                            </td>
+                            <td>
+                                <a [routerLink]="'detail/' + row.id" class="flex font-bold">
+                                    {{ row.flight?.code }}
+                                </a>
+                            </td>
+                            <td><span class="font-bold">{{ row.flight?.departureTime }}</span></td>
+                            <td>{{ row.transferDate | date: 'dd.MM.yyyy' }}</td>
+                            <td>{{ routeTypeName(row.transferRouteType) }}</td>
+                            <td><span class="font-bold">{{ row.fromLocation?.name }}</span></td>
+                            <td>
+                                <div class="flex items-center font-bold">
+                                    @if (row.isMappedHotel) {
+                                        <i class="pi pi-check text-emerald-600 mr-1"></i>
+                                    }
+                                    {{ row.toLocation?.name }}
+                                </div>
+                            </td>
+                            <td>{{ row.adult }}</td>
+                            <td>{{ row.child }}</td>
+                            <td>{{ row.infant }}</td>
+                            <td>
+                                <span class="flex font-bold">{{ row.transferType?.name }}</span>
+                                <span class="flex text-sm">{{ row.transferTypeId }}</span>
+                            </td>
+                            <td>{{ row.operator?.name }}</td>
+                            <td>{{ row.terminal?.code }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </p-tabpanel>
+        }
+        <p-tabpanel [value]="1">
+            <flight-guest-list-view [guests]="guests"></flight-guest-list-view>
+        </p-tabpanel>
+    </p-tabpanels>
+</p-tabs>

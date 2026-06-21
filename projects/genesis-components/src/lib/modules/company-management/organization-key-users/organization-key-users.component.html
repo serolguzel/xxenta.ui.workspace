@@ -1,62 +1,30 @@
-<dx-data-grid id="gridContainer" 
-  [dataSource]="dataSource"
-  [remoteOperations]="false"
-  [showColumnLines]="false"
-  [showBorders]="true"
-  [showRowLines]="true"
-  [rowAlternationEnabled]="true"
-  [hoverStateEnabled]="true"
-  [allowColumnResizing]="true"
-  [columnHidingEnabled]="true"
-  (onRowUpdating)="onRowUpdating($event)">
+<div class="p-6">
+  <genesis-data-table
+    [title]="pageTitle"
+    [lazy]="false"
+    [editable]="true"
+    [loadPath]="basePath"
+    [insertPath]="basePath"
+    [deletePath]="basePath"
+    updateKey="id"
+    [editorTitle]="'labels.key-user' | transloco"
+    [pageSize]="20"
+    [columns]="columns"
+    [newRowDefaults]="{ isDefault: false }">
 
-  <dxo-toolbar>
-    <dxi-item location="before">
-      <div *dxTemplate>
-        <div class="text-2xl tracking-tight">
-          {{pageTitle}}
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="userId" [(ngModel)]="row.userId" [options]="users" optionLabel="displayName"
+            optionValue="id" [filter]="true" class="w-full" />
+          <label for="userId">{{ 'labels.user' | transloco }}</label>
+        </p-floatlabel>
+
+        <div class="flex align-items-center gap-2">
+          <p-checkbox [(ngModel)]="row.isDefault" [binary]="true" inputId="isDefault" />
+          <label for="isDefault">{{ 'labels.is-default' | transloco }}</label>
         </div>
       </div>
-    </dxi-item>
-    <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-    <dxi-item name="exportButton" locateInMenu="auto"></dxi-item>
-    <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-    <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-  </dxo-toolbar>
-
-  <dxo-search-panel [visible]="true"></dxo-search-panel>
-  <dxo-filter-row [visible]="true"></dxo-filter-row>
-  <dxo-group-panel [visible]="false"></dxo-group-panel>
-
-  <dxo-editing mode="popup"
-    [allowAdding]="true"
-    [allowDeleting]="true" 
-    [useIcons]="true">
-    <dxo-popup title="Key User" 
-      [showTitle]="true" 
-      [width]="500" 
-      [height]="320" 
-      [resizeEnabled]="true"
-      [position]="{ my: 'center', at: 'center'}">
-    </dxo-popup>
-    <dxo-form [colCount]="1" labelMode="floating">
-    
-      <dxi-item dataField="userId" editorType="dxLookup" [editorOptions]="userOptions">
-        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-        <dxo-label text="User"> </dxo-label>
-      </dxi-item>
-      <dxi-item itemType="group" [colCount]="2">
-        <dxi-item dataField="isDefault"></dxi-item>
-      </dxi-item>
-    </dxo-form>
-  </dxo-editing>
-
-  <dxi-column dataField="user.displayName" dataType="string" caption="User"></dxi-column>
-  <dxi-column dataField="isDefault" dataType="boolean"></dxi-column>
-  <dxi-column dataField="isDeleted" dataType="boolean"></dxi-column>
-
-  <dxi-column dataField="userId" dataType="string" [visible]="false"></dxi-column>
-
-  <dxo-paging [pageSize]="20"></dxo-paging>
-  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-</dx-data-grid>
+    </ng-template>
+  </genesis-data-table>
+</div>

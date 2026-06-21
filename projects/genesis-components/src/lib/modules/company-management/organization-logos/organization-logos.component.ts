@@ -1,13 +1,12 @@
-import { NgClass, NgIf } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-import { DxDataGridModule, DxFileUploaderModule, DxProgressBarModule, DxTemplateModule, DxToolbarModule } from 'devextreme-angular';
 import { API_CONFIG_GEN, ApiClientConfig, AuthService, CommandResponse, FileResponse } from 'genesis-coreservice';
-import { OrganizationService } from '../services/organization.service';
+import { FileUpload, FileUploadModule } from 'primeng/fileupload';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from '../../../components/common';
 import { CreateOrganizationLogo } from '../company.models';
-import CustomStore from 'devextreme/data/custom_store';
-import { DataSourceBuilder } from '../../../services/data-source-builder';
+import { OrganizationService } from '../services/organization.service';
 
 @Component({
   selector: 'app-organization-logos',
@@ -15,24 +14,27 @@ import { DataSourceBuilder } from '../../../services/data-source-builder';
   styleUrls: ['./organization-logos.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
-    NgClass,
     TranslocoModule,
-    DxFileUploaderModule,
-    DxProgressBarModule,
-    DxToolbarModule,
-    DxTemplateModule,
-    DxDataGridModule
+    FileUploadModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
   ]
 })
 export class OrganizationLogosComponent implements OnInit {
-  isUploaded = false;
-  textVisible = true;
-  progressVisible = false;
-  progressValue = 0;
+  @ViewChild('grid') grid!: GenesisDataTableComponent;
+  @ViewChild('fileUpload') fileUpload!: FileUpload;
+
   uploadUrl: string = '';
-  uploadHeaders: any = {};
-  dataSource: CustomStore;
+  loadPath: string = '';
+  private token: string = '';
+  private organizationId: string = '';
+
+  columns: GenesisColumn[] = [
+    { field: 'path', header: 'Preview' },
+    { field: 'name', header: 'Name', filter: true },
+    { field: 'logo', header: 'Logo' },
+  ];
+
   constructor(
     @Inject(API_CONFIG_GEN) public config: ApiClientConfig,
     private organizationService: OrganizationService,
@@ -40,48 +42,31 @@ export class OrganizationLogosComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute,
   ) { }
 
-  async ngOnInit() {
-    let token = await this.authService.getAccessToken();
-    const organizationId = this.activatedRoute.snapshot.params['organizationId'];
-    var organization = await this.organizationService.GetOrganizationsLookup(organizationId);
-    var filename = organization.code;
+  async ngOnInit(): Promise<void> {
+    this.token = await this.authService.getAccessToken();
+    this.organizationId = this.activatedRoute.snapshot.params['organizationId'];
+    this.loadPath = `OrganizationLogo/${this.organizationId}`;
+
+    const organization = await this.organizationService.GetOrganizationsLookup(this.organizationId);
+    const filename = organization.code;
     this.uploadUrl = `${this.config.apiHost}/FileUploader/Single/LOGOS/${organization.code}?fileName=${filename}`;
-    this.uploadHeaders = {
-      Authorization: `Bearer ${token}`,
-    };
-    this.loadData(organizationId);
   }
 
-  onUploaded(e: any) {
-    this.textVisible = true;
-    this.progressValue = 0;
-    this.isUploaded = true;
-    if (e.message == 'Uploaded') {
-      const organizationId = this.activatedRoute.snapshot.params['organizationId'];
-      var response = JSON.parse(e.request.response) as FileResponse;
-      if (!response.hasError) {
-        this.organizationService.CreateOrganizationLogo(organizationId, <CreateOrganizationLogo>{
-          name: response.filename,
-          logo: response.filename
-        }).then((res: CommandResponse<boolean>) => {
-          this.loadData(organizationId);
-        });
+  onBeforeSend(event: any): void {
+    event.xhr.setRequestHeader('Authorization', `Bearer ${this.token}`);
+  }
 
-      }
+  onUploaded(event: { originalEvent: any }): void {
+    const body = (event.originalEvent as HttpResponse<any>)?.body;
+    const response = (typeof body === 'string' ? JSON.parse(body) : body) as FileResponse;
+    if (response && !response.hasError) {
+      this.organizationService.CreateOrganizationLogo(this.organizationId, <CreateOrganizationLogo>{
+        name: response.filename,
+        logo: response.filename
+      }).then((_: CommandResponse<boolean>) => {
+        this.fileUpload?.clear();
+        this.grid?.reload();
+      });
     }
-  }
-  onUploadStarted(e: any) {
-    this.isUploaded = false;
-  }
-  onProgress(e: any) {
-    this.progressValue = (e.bytesLoaded / e.bytesTotal) * 100;
-  }
-
-  loadData(organizationId: string) {
-    this.dataSource = new DataSourceBuilder(this.organizationService)
-      .load(`OrganizationLogo/${organizationId}`)
-      .insert(`OrganizationLogo/${organizationId}`)
-      .setKey('id')
-      .build();
   }
 }

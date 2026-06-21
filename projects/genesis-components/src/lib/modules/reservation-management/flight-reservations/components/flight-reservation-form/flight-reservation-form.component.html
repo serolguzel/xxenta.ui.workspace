@@ -1,50 +1,45 @@
-<div class="text-right mb-4" *ngIf="data.flights.length">
+@if (data.flights.length) {
+  <div class="text-right mb-4">
     <h1 class="font-bold text-xl text-right">{{ data.flights[0].voucher }}</h1>
     <span>{{ 'labels.voucher' | transloco }}</span>
-</div>
-<ng-container *ngFor="let flight of data.flights; let i = index">
-    <app-flight-form
-        [flight]="flight"
-        [title]="flight.routeType === RouteType.Arrival ? 'labels.arrival' : 'labels.departure' | transloco"
-        [currenciesLookUpOptions]="currenciesLookUpOptions"
-        [onClickRemoveButton]="i == 1 ? deleteFlight.bind(this) : undefined"
-        (onDepartureDateValueChanged)="departureValueChanged($event)"
-    />
-</ng-container>
+  </div>
+}
+
+@for (flight of data.flights; track $index) {
+  <app-flight-form
+    [flight]="flight"
+    [title]="(flight.routeType === RouteType.Arrival ? 'labels.arrival' : 'labels.departure') | transloco"
+    [hasTotalAmountInput]="hasTotalAmountInput"
+    [currencies]="currencies"
+    [onClickRemoveButton]="$index === 1 ? deleteFlight.bind(this) : undefined"
+    (onDepartureDateValueChanged)="departureValueChanged($event)" />
+}
 
 <app-flight-guests [guests]="data.guests" [hasError]="ifGuestsFormHasError" />
 
-<dx-toolbar class="mt-4">
-    <dxi-item
-        location="after"
-        widget="dxButton"
-        [options]="addArrivalFlightButton"
-        [disabled]="data.flights.length == 2"
-        *ngIf="canAddDepartureFlight"
-    ></dxi-item>
-    <dxi-item
-        location="after"
-        widget="dxButton"
-        [options]="btnSave"
-        [disabled]="hasSaveButton"
-    ></dxi-item>
-    <dxi-item
-        location="before"
-        locateInMenu="auto"
-        widget="dxButton"
-        [options]="btnDelete"
-        [visible]="hasDeleteButton"
-    ></dxi-item>
-</dx-toolbar>
+<div class="flex justify-content-between align-items-center gap-2 mt-4">
+  <div>
+    @if (hasDeleteButton) {
+      <p-button [label]="'labels.delete' | transloco" icon="pi pi-trash"
+        severity="danger" (onClick)="deleteClick()" />
+    }
+  </div>
 
-<dx-load-panel
-    #loadPanel
-    shadingColor="rgba(0,0,0,0.4)"
-    [position]="{ of: '#transfer_reservation' }"
-    [(visible)]="loadingVisible"
-    [showIndicator]="true"
-    [showPane]="true"
-    [shading]="true"
-    [hideOnOutsideClick]="false"
->
-</dx-load-panel>
+  <div class="flex gap-2">
+    @if (canAddDepartureFlight) {
+      <p-button [label]="'labels.add-return-flight' | transloco" icon="pi pi-plus"
+        severity="warn" [disabled]="data.flights.length === 2" (onClick)="addArrivalFlight()" />
+    }
+    <p-button [label]="'labels.save' | transloco" icon="pi pi-save"
+      severity="primary" [disabled]="hasSaveButton" (onClick)="saveClick()" />
+  </div>
+</div>
+
+@if (loadingVisible) {
+  <div class="flex align-items-center justify-content-center fixed top-0 left-0 w-full h-full"
+    style="background: rgba(0,0,0,0.4); z-index: 1000;">
+    <p-progressspinner />
+  </div>
+}
+
+<p-confirmdialog />

@@ -1,45 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { DxDataGridModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { CoreService } from 'genesis-coreservice';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
-import { DataSourceBuilder } from '../../../services/data-source-builder';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from '../../../components/common';
 
 @Component({
   selector: 'app-organization-mappings',
   templateUrl: './organization-mappings.component.html',
   standalone: true,
   imports: [
-    DxDataGridModule,
-    TranslocoModule
+    FormsModule,
+    TranslocoModule,
+    FloatLabelModule,
+    InputTextModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective
   ]
 })
 export class OrganizationMappingsComponent implements OnInit {
-  dataSource: CustomStore;
-  pageTitle: string = 'Mappings';
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private coreService: CoreService,
-    private readonly translocoService: TranslocoService
-  ) { }
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly translocoService = inject(TranslocoService);
+
+  loadPath: string = '';
+  pageTitle: string = '';
+
+  columns: GenesisColumn[] = [
+    { field: 'oprVoucher', header: this.translocoService.translate('labels.opr-voucher'), filter: true },
+    { field: 'externalProvider', header: this.translocoService.translate('labels.external-provider'), filter: true },
+  ];
 
   ngOnInit(): void {
     const pageTitleKey = this.activatedRoute.snapshot.data['pageTitle'];
     this.pageTitle = this.translocoService.translate(pageTitleKey);
-    let organizationId = this.activatedRoute.snapshot.params['organizationId'];
-
-    this.dataSource = new DataSourceBuilder(this.coreService)
-      .load(`OrganizationMapping/${organizationId}`)
-      .insert(`OrganizationMapping/${organizationId}`)
-      .updateFullModel('OrganizationMapping', "id")
-      .remove('OrganizationMapping')
-      .setKey("id")
-      .build();
-  }
-
-  onRowUpdating = (e: any) => {
-    var assign = (<any>Object).assign({}, e.oldData, e.newData);
-    e.newData = assign;
+    const organizationId = this.activatedRoute.snapshot.params['organizationId'];
+    this.loadPath = `OrganizationMapping/${organizationId}`;
   }
 }

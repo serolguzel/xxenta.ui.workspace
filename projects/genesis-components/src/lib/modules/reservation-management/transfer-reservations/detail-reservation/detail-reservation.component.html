@@ -87,30 +87,25 @@
             </div>
     </div>
 </div>
-<dx-load-panel #loadPanel 
-    shadingColor="rgba(0,0,0,0.4)" 
-    [position]="{ of: '#transfer_reservation' }"
-    [(visible)]="loadingVisible" 
-    [showIndicator]="true" 
-    [showPane]="true" 
-    [shading]="true" 
-    [hideOnOutsideClick]="false">
-</dx-load-panel>
-<dx-popup 
-    [width]="600" 
-    [height]="240" 
-    [(visible)]="isPopupVisible" 
-    [position]="{ my: 'center', at: 'center' }"
-    [showCloseButton]="true" 
-    [resizeEnabled]="true" 
-    (onHidden)="onHidden($event)">
-    <dxi-toolbar-item text="{{ 'labels.cancel-reservation' | transloco }}" location="before"></dxi-toolbar-item>
-    <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="after" [options]="btnTransferCancelOption"></dxi-toolbar-item>
+@if (loadingVisible) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <p-progressspinner strokeWidth="4" />
+    </div>
+}
 
-    <dx-form #cancelReservationForm labelMode="floating" [colCount]="1" [formData]="transferCancelModel">
-        <dxi-item dataField="cancelNote" editorType="dxTextArea" [editorOptions]="{ height: 60 }">
-            <dxo-label text="{{ 'labels.cancellation-note' | transloco }}"></dxo-label>
-            <dxi-validation-rule type="required" message="{{ 'generic.message.required' | transloco }}"></dxi-validation-rule>
-        </dxi-item>
-    </dx-form>
-</dx-popup>
+<p-dialog [header]="'labels.cancel-reservation' | transloco" [(visible)]="isPopupVisible"
+    [modal]="true" [style]="{ width: '600px' }" [draggable]="false" (onHide)="onHidden()">
+    <form [formGroup]="cancelForm" class="pt-2">
+        <span class="block mb-2">{{ 'labels.cancellation-note' | transloco }}</span>
+        <textarea pTextarea formControlName="cancelNote" rows="3" class="w-full"></textarea>
+        @if (cancelForm.get('cancelNote')?.invalid && cancelForm.get('cancelNote')?.touched) {
+            <small class="p-error">{{ 'generic.message.required' | transloco }}</small>
+        }
+    </form>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'labels.save' | transloco" icon="pi pi-save"
+            (onClick)="saveTransferCancelClick()" />
+    </ng-template>
+</p-dialog>
+
+<p-confirmdialog />

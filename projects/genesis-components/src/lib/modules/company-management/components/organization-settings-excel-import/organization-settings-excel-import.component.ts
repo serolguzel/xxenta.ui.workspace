@@ -1,30 +1,29 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
+import { ConfirmationService } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { OrganizationSettingsModel } from '../../company.models';
-import { confirm } from 'devextreme/ui/dialog';
 
 @Component({
   selector: 'organization-settings-excel-import',
   standalone: true,
-  imports: [],
-  templateUrl: './organization-settings-excel-import.component.html'
+  imports: [ButtonModule, ConfirmDialogModule],
+  templateUrl: './organization-settings-excel-import.component.html',
+  providers: [ConfirmationService]
 })
-export class OrganizationSettingsExcelImportComponent implements OnInit {
-  @Input() data: OrganizationSettingsModel = <OrganizationSettingsModel>{};
-  @Output() onDeleteClick: EventEmitter<OrganizationSettingsModel>;
-  
-  constructor() {
-    this.onDeleteClick = new EventEmitter();
-  }
-  ngOnInit(): void {
+export class OrganizationSettingsExcelImportComponent {
+  private readonly confirmationService = inject(ConfirmationService);
+  private readonly translocoService = inject(TranslocoService);
 
-  }
+  @Input() data: OrganizationSettingsModel = {} as OrganizationSettingsModel;
+  @Output() onDeleteClick = new EventEmitter<OrganizationSettingsModel>();
 
-  onDelete(item: OrganizationSettingsModel) {
-    let confirmPopup = confirm('Are tou sure to delete the item?', "Are you sure?");
-    confirmPopup.then((dialogResult) => {
-      if (dialogResult) {
-        this.onDeleteClick.emit(item);
-      }
+  onDelete(item: OrganizationSettingsModel): void {
+    this.confirmationService.confirm({
+      header: this.translocoService.translate('messages.are-you-sure'),
+      message: this.translocoService.translate('messages.delete-confirmation-description'),
+      accept: () => this.onDeleteClick.emit(item)
     });
   }
 }

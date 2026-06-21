@@ -1,67 +1,109 @@
 <div class="w-full max-w-4xl">
-    <dx-form labelMode="floating" [formData]="model" [colCount]="1">
-        <dxi-item dataField="appId" editorType="dxLookup" [editorOptions]="{
-                                                            dataSource: apps,
-                                                            valueExpr: 'id',
-                                                            displayExpr: 'name',
-                                                            searchExpr : 'name',
-                                                            dropDownOptions: {
-                                                              hideOnOutsideClick: true,
-                                                              title:'Aplications'
-                                                            },
-                                                            onValueChanged: onAppValueChanged
-                                                        }">
-            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-            <dxo-label text="App"></dxo-label>
-        </dxi-item>
-        <dxi-item dataField="url"></dxi-item>
-
-        <dxi-item itemType="group" [colCount]="2">
-            <dxi-item dataField="price" editorType="dxNumberBox" [editorOptions]="{ min: 0, showSpinButtons: true, showClearButton: true }">
-            </dxi-item>
-            <dxi-item dataField="currency" editorType="dxSelectBox" [editorOptions]="{
-                                                              dataSource: currenciesDataSoruce
-                                                              }">
-            </dxi-item>
-            <dxi-item dataField="paymentType" editorType="dxSelectBox" [editorOptions]="{
-                                            dataSource: pamentTypes
-                                            }">
-            </dxi-item>
-            <dxi-item dataField="priceCalculatorType" editorType="dxSelectBox" [editorOptions]="{
-                                            dataSource: priceCalculatorTypes
-                                            }">
-            </dxi-item>
-        </dxi-item>
-
-        <dxi-item dataField="subApps">
-            <div *dxTemplate="let f of 'subApps'">
-                <dx-data-grid id="subGridContainer" 
-                    [dataSource]="subApps"
-                    keyExpr="appId"
-                    [selectedRowKeys]="selectedItems"
-                    [showBorders]="true">
-                    <dxo-selection [selectAllMode]="'allPages'" [showCheckBoxesMode]="'always'" mode="multiple">
-                    </dxo-selection>
-                    <dxo-editing mode="batch" [allowUpdating]="true">
-                    </dxo-editing>
-                    <dxi-column dataField="app.name" dataType="string" caption="App" [allowEditing]="false"></dxi-column>
-                    <dxi-column dataField="price" dataType="number"></dxi-column>
-                    <dxi-column dataField="currency" dataType="string">
-                        <dxo-lookup [dataSource]="currenciesDataSoruce"></dxo-lookup>
-                    </dxi-column>
-                    <dxi-column dataField="appType" dataType="string"></dxi-column>
-                    <dxi-column dataField="priceCalculatorType" dataType="string">
-                        <dxo-lookup [dataSource]="priceCalculatorTypes"></dxo-lookup>
-                    </dxi-column>
-                    <dxi-column dataField="presentationType" dataType="string" [allowEditing]="false">
-                        <dxo-lookup [dataSource]="presentationTypes" valueExpr="id" displayExpr="name"></dxo-lookup>
-                    </dxi-column>
-                </dx-data-grid>
+    <form [formGroup]="form" class="mt-2">
+        <div class="grid">
+            <div class="col-12">
+                <p-floatlabel>
+                    <p-select inputId="appId" formControlName="appId" [options]="apps"
+                        optionLabel="name" optionValue="id" [filter]="true" filterBy="name"
+                        [showClear]="true" (onChange)="onAppValueChanged($event)" class="w-full" />
+                    <label for="appId">{{ 'labels.app' | transloco }}</label>
+                </p-floatlabel>
+                @if (form.get('appId')?.invalid && form.get('appId')?.touched) {
+                    <small class="p-error">{{ 'messages.required' | transloco }}</small>
+                }
             </div>
-        </dxi-item>
-    </dx-form>
-    <dx-toolbar class="mt-4">
-        <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
-        <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
-    </dx-toolbar>
+
+            <div class="col-12">
+                <p-floatlabel>
+                    <input pInputText id="url" formControlName="url" class="w-full" />
+                    <label for="url">{{ 'labels.url' | transloco }}</label>
+                </p-floatlabel>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <p-floatlabel>
+                    <p-inputnumber inputId="price" formControlName="price" [min]="0"
+                        [showButtons]="true" class="w-full" />
+                    <label for="price">{{ 'labels.price' | transloco }}</label>
+                </p-floatlabel>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <p-floatlabel>
+                    <p-select inputId="currency" formControlName="currency"
+                        [options]="currenciesDataSoruce" [showClear]="true" class="w-full" />
+                    <label for="currency">{{ 'labels.currency' | transloco }}</label>
+                </p-floatlabel>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <p-floatlabel>
+                    <p-select inputId="paymentType" formControlName="paymentType"
+                        [options]="pamentTypes" [showClear]="true" class="w-full" />
+                    <label for="paymentType">{{ 'labels.payment-type' | transloco }}</label>
+                </p-floatlabel>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <p-floatlabel>
+                    <p-select inputId="priceCalculatorType" formControlName="priceCalculatorType"
+                        [options]="priceCalculatorTypes" [showClear]="true" class="w-full" />
+                    <label for="priceCalculatorType">{{ 'labels.price-calculator-type' | transloco }}</label>
+                </p-floatlabel>
+            </div>
+        </div>
+    </form>
+
+    <div class="mt-4">
+        <p-table [value]="subApps" dataKey="appId" [(selection)]="selectedRows"
+            [showGridlines]="true" class="p-datatable-striped">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 3rem">
+                        <p-tableHeaderCheckbox />
+                    </th>
+                    <th>{{ 'labels.app' | transloco }}</th>
+                    <th>{{ 'labels.price' | transloco }}</th>
+                    <th>{{ 'labels.currency' | transloco }}</th>
+                    <th>{{ 'labels.app-type' | transloco }}</th>
+                    <th>{{ 'labels.price-calculator-type' | transloco }}</th>
+                    <th>{{ 'labels.presentation-type' | transloco }}</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr>
+                    <td>
+                        <p-tableCheckbox [value]="row" />
+                    </td>
+                    <td>{{ row.app?.name }}</td>
+                    <td>
+                        <p-inputnumber [(ngModel)]="row.price" [min]="0" class="w-full" />
+                    </td>
+                    <td>
+                        <p-select [(ngModel)]="row.currency" [options]="currenciesDataSoruce"
+                            [showClear]="true" class="w-full" appendTo="body" />
+                    </td>
+                    <td>{{ row.appType }}</td>
+                    <td>
+                        <p-select [(ngModel)]="row.priceCalculatorType" [options]="priceCalculatorTypes"
+                            [showClear]="true" class="w-full" appendTo="body" />
+                    </td>
+                    <td>{{ presentationTypeName(row.presentationType) }}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="7" class="text-center p-4">
+                        {{ 'messages.no-records-found' | transloco }}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <div class="flex justify-content-between mt-4">
+        <p-button [label]="'labels.cancel' | transloco" icon="pi pi-times" severity="secondary"
+            (onClick)="cancel()" />
+        <p-button [label]="'labels.save' | transloco" icon="pi pi-save" (onClick)="save()" />
+    </div>
 </div>

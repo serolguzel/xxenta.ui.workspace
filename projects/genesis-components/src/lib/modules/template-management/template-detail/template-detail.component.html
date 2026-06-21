@@ -9,46 +9,58 @@
 
   <div class="flex-auto flex flex-col p-4 sm:p-6 bg-white dark:bg-gray-800">
     <!-- Toolbar with Form -->
-    <dx-toolbar class="mb-4">
-      <dxi-item location="before" locateInMenu="auto">
-        <div *dxTemplate class="flex w-full">
-          <dx-form #templateForm id="form" [formData]="data" [colCount]="4" labelLocation="top" labelMode="floating"
-            class="w-full">
-            <dxi-item dataField="title" [colSpan]="1">
-              <dxo-label [text]="'labels.title' | transloco"></dxo-label>
-              <dxi-validation-rule type="required" [message]="'message.required' | transloco"></dxi-validation-rule>
-            </dxi-item>
-            <dxi-item dataField="code" [colSpan]="1">
-              <dxo-label [text]="'labels.code' | transloco"></dxo-label>
-              <dxi-validation-rule type="required" [message]="'message.required' | transloco"></dxi-validation-rule>
-            </dxi-item>
-            <dxi-item dataField="language" editorType="dxSelectBox" [colSpan]="1" [editorOptions]="{
-                          dataSource: languageDataSource,
-                          displayExpr: 'name',
-                          valueExpr: 'code',
-                          showClearButton: true,
-                          placeholder: 'labels.languages' | transloco,
-                          showSelectionControls: true
-                        }">
-              <dxo-label [text]="'labels.language' | transloco"></dxo-label>
-              <dxi-validation-rule type="required" [message]="'message.required' | transloco"></dxi-validation-rule>
-            </dxi-item>
-            <dxi-item dataField="templateStatus" editorType="dxTagBox" [colSpan]="1" [editorOptions]="{
-              dataSource: sotificationChannels, 
-              acceptCustomValue: true,
-              onValueChanged: onStatusValueChanged}">
-              <dxo-label [text]="'labels.template-types' | transloco"></dxo-label>
-              <dxi-validation-rule type="required" [message]="'message.required' | transloco"></dxi-validation-rule>
-            </dxi-item>
-          </dx-form>
+    <div class="flex flex-col lg:flex-row gap-4 mb-4 items-start lg:items-end">
+      <form [formGroup]="form" class="grid flex-auto w-full">
+        <div class="col-12 md:col-3">
+          <p-floatlabel>
+            <input pInputText id="title" formControlName="title" class="w-full" />
+            <label for="title">{{ 'labels.title' | transloco }}</label>
+          </p-floatlabel>
+          @if (form.get('title')?.invalid && form.get('title')?.touched) {
+            <small class="p-error">{{ 'messages.required' | transloco }}</small>
+          }
         </div>
-      </dxi-item>
+        <div class="col-12 md:col-3">
+          <p-floatlabel>
+            <input pInputText id="code" formControlName="code" class="w-full" />
+            <label for="code">{{ 'labels.code' | transloco }}</label>
+          </p-floatlabel>
+          @if (form.get('code')?.invalid && form.get('code')?.touched) {
+            <small class="p-error">{{ 'messages.required' | transloco }}</small>
+          }
+        </div>
+        <div class="col-12 md:col-3">
+          <p-floatlabel>
+            <p-select inputId="language" formControlName="language" [options]="languageDataSource"
+              optionLabel="name" optionValue="code" [showClear]="true" class="w-full" />
+            <label for="language">{{ 'labels.language' | transloco }}</label>
+          </p-floatlabel>
+          @if (form.get('language')?.invalid && form.get('language')?.touched) {
+            <small class="p-error">{{ 'messages.required' | transloco }}</small>
+          }
+        </div>
+        <div class="col-12 md:col-3">
+          <p-floatlabel>
+            <p-multiselect inputId="templateStatus" formControlName="templateStatus" [options]="sotificationChannels"
+              (onChange)="onStatusValueChanged($event)" class="w-full" />
+            <label for="templateStatus">{{ 'labels.template-types' | transloco }}</label>
+          </p-floatlabel>
+          @if (form.get('templateStatus')?.invalid && form.get('templateStatus')?.touched) {
+            <small class="p-error">{{ 'messages.required' | transloco }}</small>
+          }
+        </div>
+      </form>
 
-      <dxi-item location="after" locateInMenu="auto" widget="dxButton" [options]="btnCopyPopupOpt" [visible]="isCopy"></dxi-item>
-      <dxi-item location="after" locateInMenu="auto" widget="dxButton" [options]="btnSendTestOpt" [visible]="isMailTemplate"></dxi-item>
-      <dxi-item location="after" locateInMenu="auto" widget="dxButton" [options]="btnSaveOpt"></dxi-item>
-      
-    </dx-toolbar>
+      <div class="flex gap-2 shrink-0">
+        @if (isCopy) {
+          <p-button icon="pi pi-copy" [label]="'labels.copy' | transloco" severity="secondary" (onClick)="openCopyPopup()" />
+        }
+        @if (isMailTemplate) {
+          <p-button icon="pi pi-envelope" [label]="'labels.send_test_email' | transloco" severity="secondary" (onClick)="openSendEmailPopup()" />
+        }
+        <p-button icon="pi pi-save" [label]="'labels.save' | transloco" (onClick)="onSave()" />
+      </div>
+    </div>
 
     <as-split direction="horizontal">
       <as-split-area [size]="70">
@@ -66,16 +78,16 @@
           <!-- Tab Content -->
           <div class="flex-auto">
             <!-- HTML Editor -->
-            <div class="w-full h-full" *ngIf="activeTab === 'html'">
-              <dx-text-area 
-                [(value)]="data.body" 
-                [autoResizeEnabled]="false" 
-                [height]="'100%'"
+            @if (activeTab === 'html') {
+              <textarea
+                pTextarea
+                [(ngModel)]="data.body"
+                (ngModelChange)="onHtmlContentChange()"
                 [placeholder]="'labels.html-template' | transloco"
-                [inputAttr]="{ 'aria-label': 'HTML Template', class: 'font-mono text-sm' }"
-                (onValueChanged)="onHtmlContentChange($event)">
-              </dx-text-area>
-            </div>
+                class="w-full h-full font-mono text-sm border-0"
+                style="resize: none;">
+              </textarea>
+            }
           </div>
         </div>
       </as-split-area>
@@ -94,9 +106,9 @@
             <!-- Preview Content -->
             <div class="flex-auto h-full justify-center items-start p-4 bg-gray-100 dark:bg-gray-900 overflow-auto">
               <div class="bg-white h-full shadow-lg rounded-lg overflow-hidden transition-all duration-200">
-                <iframe 
-                  [srcdoc]="previewHtml" 
-                  class="w-full h-full border-0 bg-white" 
+                <iframe
+                  [srcdoc]="previewHtml"
+                  class="w-full h-full border-0 bg-white"
                   title="Template Preview">
                 </iframe>
               </div>
@@ -108,84 +120,64 @@
   </div>
 </div>
 
-<dx-popup 
-  [animation]="{ show: { type: 'fade' } }" 
-  [resizeEnabled]="true"
-  [position]="{ my: 'center', at: 'center', of: 'window' }" 
-  [width]="940" 
-  [height]="700" 
-  [visible]="showSendEmailPopup"
-  (onHiding)="closeSendEmilPopup()">
-  <dxi-toolbar-item [text]="'labels.send_test_email' | transloco" location="before"></dxi-toolbar-item>
-  <div *dxTemplate="let data of 'content'">
-    <dx-form #testEmailForm [formData]="sendEmailData" [colCount]="1" labelMode="floating">
-      <dxi-item itemType="group" [colCount]="2">
-        <dxi-item dataField="title">
-          <dxo-label [text]="'labels.title' | transloco"></dxo-label>
-          <dxi-validation-rule type="required" [message]="'message.required' | transloco"></dxi-validation-rule>
-        </dxi-item>
-        <dxi-item dataField="displayName">
-          <dxo-label [text]="'labels.display-name' | transloco"></dxo-label>
-          <dxi-validation-rule type="required" [message]="'message.required' | transloco"></dxi-validation-rule>
-        </dxi-item>
-      </dxi-item>
-    
-      <dxi-item dataField="emails" editorType="dxTagBox" [editorOptions]="{acceptCustomValue: true}">
-        <dxo-label [text]="'labels.emails' | transloco"></dxo-label>
-        <dxi-validation-rule type="required" [message]="'message.required' | transloco"></dxi-validation-rule>
-        <dxi-validation-rule type="custom" [message]="'message.invalid-email' | transloco"
-          [validationCallback]="validateEmailArray"></dxi-validation-rule>
-      </dxi-item>
-    </dx-form>
-    <div class="flex h-full">
-      <iframe 
-                  [srcdoc]="previewHtml" 
-                  class="w-full h-full border-0 bg-white" 
-                  title="Template Preview">
-                </iframe>
+<!-- Send Test Email Dialog -->
+<p-dialog
+  [header]="'labels.send_test_email' | transloco"
+  [(visible)]="showSendEmailPopup"
+  [modal]="true"
+  [style]="{ width: '940px', height: '700px' }"
+  [resizable]="true"
+  [draggable]="false"
+  (onHide)="closeSendEmilPopup()">
+  <form [formGroup]="sendEmailForm" class="flex flex-col gap-4 pt-2">
+    <div class="flex gap-4">
+      <p-floatlabel class="flex-1">
+        <input pInputText id="sendTitle" formControlName="title" class="w-full" />
+        <label for="sendTitle">{{ 'labels.title' | transloco }}</label>
+      </p-floatlabel>
+      <p-floatlabel class="flex-1">
+        <input pInputText id="displayName" formControlName="displayName" class="w-full" />
+        <label for="displayName">{{ 'labels.display-name' | transloco }}</label>
+      </p-floatlabel>
     </div>
+
+    <p-floatlabel>
+      <p-autocomplete inputId="emails" formControlName="emails" [multiple]="true" [typeahead]="false"
+        [suggestions]="[]" class="w-full" />
+      <label for="emails">{{ 'labels.emails' | transloco }}</label>
+    </p-floatlabel>
+  </form>
+
+  <div class="flex h-80 mt-4">
+    <iframe
+      [srcdoc]="previewHtml"
+      class="w-full h-full border-0 bg-white"
+      title="Template Preview">
+    </iframe>
   </div>
 
-  <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="after" [options]="{
-      text: 'labels.send_test_email' | transloco,
-      type: 'default',
-      locateInMenu: 'always',
-      useSubmitBehavior: true,
-      onClick: sendTestEmail}">
-  </dxi-toolbar-item>
-</dx-popup>
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-send" [label]="'labels.send_test_email' | transloco" (onClick)="sendTestEmail()" />
+  </ng-template>
+</p-dialog>
 
-<dx-popup 
-  [animation]="{ show: { type: 'fade' } }" 
-  [resizeEnabled]="true"
-  [position]="{ my: 'center', at: 'center', of: 'window' }" 
-  [width]="440" 
-  [height]="240" 
-  [visible]="showCopyPopup"
-  (onHiding)="closeCopyPopup()">
-  <dxi-toolbar-item [text]="'labels.copy' | transloco" location="before"></dxi-toolbar-item>
-  <div *dxTemplate="let data of 'content'">
-    <dx-form #copyForm [formData]="copyData" [colCount]="1" labelMode="floating">
-      <dxi-item dataField="language" editorType="dxSelectBox" [colSpan]="1" [editorOptions]="{
-                          dataSource: languageDataSource,
-                          displayExpr: 'name',
-                          valueExpr: 'code',
-                          showClearButton: true,
-                          placeholder: 'labels.languages' | transloco,
-                          showSelectionControls: true
-                        }">
-              <dxo-label [text]="'labels.language' | transloco"></dxo-label>
-              <dxi-validation-rule type="required" [message]="'message.required' | transloco"></dxi-validation-rule>
-            </dxi-item>
-    </dx-form>
-  </div>
+<!-- Copy Dialog -->
+<p-dialog
+  [header]="'labels.copy' | transloco"
+  [(visible)]="showCopyPopup"
+  [modal]="true"
+  [style]="{ width: '440px' }"
+  [draggable]="false"
+  (onHide)="closeCopyPopup()">
+  <form [formGroup]="copyForm" class="flex flex-col gap-4 pt-2">
+    <p-floatlabel>
+      <p-select inputId="copyLanguage" formControlName="language" [options]="languageDataSource"
+        optionLabel="name" optionValue="code" [showClear]="true" appendTo="body" class="w-full" />
+      <label for="copyLanguage">{{ 'labels.language' | transloco }}</label>
+    </p-floatlabel>
+  </form>
 
-  <dxi-toolbar-item toolbar="bottom" widget="dxButton" location="after" [options]="{
-      icon: 'copy',
-      text: 'labels.copy' | transloco,
-      type: 'default',
-      locateInMenu: 'always',
-      useSubmitBehavior: true,
-      onClick: onCopy}">
-  </dxi-toolbar-item>
-</dx-popup>
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-copy" [label]="'labels.copy' | transloco" (onClick)="onCopy()" />
+  </ng-template>
+</p-dialog>

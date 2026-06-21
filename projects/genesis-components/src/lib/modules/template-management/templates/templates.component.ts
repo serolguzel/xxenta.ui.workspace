@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DxButtonModule, DxDataGridModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
-import { CoreService } from 'genesis-coreservice';
-import { DataSourceBuilder } from '../../../services/data-source-builder';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { TagModule } from 'primeng/tag';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from '../../../components/common';
 
 @Component({
   selector: 'lib-templates',
@@ -11,32 +10,32 @@ import { DataSourceBuilder } from '../../../services/data-source-builder';
   templateUrl: './templates.component.html',
   imports: [
     RouterLink,
-    DxButtonModule,
-    DxDataGridModule
+    TranslocoModule,
+    TagModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective,
   ]
 })
 export class TemplatesComponent implements OnInit {
-  dataSource: CustomStore = new CustomStore();
-  options: any = {};
-  constructor(
-    private coreService: CoreService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router
-  ) {
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly translocoService = inject(TranslocoService);
 
-  }
+  options: any = {};
+
+  columns: GenesisColumn[] = [
+    { field: 'code', header: this.translocoService.translate('labels.code'), sortable: true, filter: true },
+    { field: 'title', header: this.translocoService.translate('labels.title'), sortable: true, filter: true },
+    { field: 'language', header: this.translocoService.translate('labels.language'), filter: true },
+    { field: 'templateStatus', header: this.translocoService.translate('labels.template-types') },
+    { field: 'itemType', header: this.translocoService.translate('labels.type') },
+  ];
+
   ngOnInit(): void {
     this.options = this.activatedRoute.snapshot.data;
-    this.dataSource = new DataSourceBuilder(this.coreService)
-      .load('Template', { requireTotalCount: true })
-      .insert('Template')
-      .updateFullModel('Template', "id")
-      .remove('Template')
-      .setKey("id")
-      .build();
   }
 
-  createTemplate = (e: any) => {
+  createTemplate(): void {
     this.router.navigate([this.options.createRoute]);
   }
 }

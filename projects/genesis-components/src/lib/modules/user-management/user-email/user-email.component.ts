@@ -1,56 +1,56 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { DxFormComponent, DxFormModule, DxToolbarModule } from 'devextreme-angular';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { UpdateUserEmail } from '../components/user-form/user-form.models';
-import { CoreService } from 'genesis-coreservice';
 import { TranslocoModule } from '@jsverse/transloco';
+import { CoreService } from 'genesis-coreservice';
+import { ButtonModule } from 'primeng/button';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { CheckIcon } from 'primeng/icons/check';
+import { TimesIcon } from 'primeng/icons/times';
+import { UpdateUserEmail } from '../components/user-form/user-form.models';
 
 @Component({
   selector: 'user-email-form',
   templateUrl: './user-email.component.html',
   standalone: true,
   imports: [
-    DxFormModule,
-    DxToolbarModule,
-    TranslocoModule
+    ReactiveFormsModule,
+    TranslocoModule,
+    ButtonModule,
+    FloatLabelModule,
+    InputTextModule,
+    CheckIcon,
+    TimesIcon,
   ]
 })
 export class UserEmailComponent implements OnInit {
-  @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
-  @Output() onCancelClick: EventEmitter<UpdateUserEmail>;
-  @Input() data: UpdateUserEmail = <UpdateUserEmail>{};
+  private readonly fb = inject(FormBuilder);
+  private readonly coreService = inject(CoreService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
-  btnSave = {
-    icon: 'save',
-    text: 'Save',
-    type: "default",
-    onClick: this.save.bind(this)
-  };
-  btnCancel = {
-    icon: 'close',
-    text: 'Cancel',
-    onClick: this.cancel.bind(this)
-  };
+  @Input() data: UpdateUserEmail = {} as UpdateUserEmail;
+  @Output() onCancelClick = new EventEmitter<UpdateUserEmail>();
 
-  constructor(
-    private changeDetectorRef: ChangeDetectorRef,
-    private coreService: CoreService,
-    private activatedRoute: ActivatedRoute
-  ) {
-      this.onCancelClick = new EventEmitter();
-  }
+  form!: FormGroup;
+
   async ngOnInit(): Promise<void> {
+    this.form = this.fb.group({
+      email: [null, [Validators.required, Validators.email]]
+    });
+
     this.data.userId = this.activatedRoute.snapshot.params['userId'];
-    let res = await this.coreService.getCall(`User/GetUserLookUpById/${this.data.userId}`);
+    const res = await this.coreService.getCall(`User/GetUserLookUpById/${this.data.userId}`);
     if (res) {
       this.data.email = res.email;
-      this.changeDetectorRef.markForCheck();
+      this.form.patchValue({ email: res.email });
     }
   }
 
   save() {
-    var valid = this.form.instance.validate().isValid;
-    if (valid) {
+    this.form.markAllAsTouched();
+    if (this.form.valid) {
+      this.data.email = this.form.get('email')!.value;
       this.coreService.putCall(`User/UpdateUserEmail/${this.data.userId}`, this.data);
     }
   }

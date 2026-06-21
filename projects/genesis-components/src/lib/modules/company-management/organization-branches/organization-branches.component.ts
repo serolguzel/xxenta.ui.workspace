@@ -1,69 +1,46 @@
-import { Component, OnInit } from '@angular/core';
-import CustomStore from 'devextreme/data/custom_store';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DxButtonModule, DxDataGridModule, DxTemplateModule } from 'devextreme-angular';
-import { CommandResponse } from 'genesis-coreservice';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from '../../../components/common';
 import { OrganizationService } from '../services/organization.service';
-import { DataSourceBuilder } from '../../../services/data-source-builder';
+
 @Component({
   selector: 'app-organization-branches',
   templateUrl: './organization-branches.component.html',
   standalone: true,
   imports: [
     RouterLink,
-    DxButtonModule,
-    DxDataGridModule,
-    DxTemplateModule
+    TranslocoModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective
   ],
   providers: [OrganizationService]
 })
 export class OrganizationBranchesComponent implements OnInit {
-  dataSource: CustomStore;
-  countryDataSource: CustomStore;
-  isUpdate: boolean = false;
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly translocoService = inject(TranslocoService);
+
+  loadPath: string = '';
   options: any = {};
-  constructor(
-    private organizationService: OrganizationService,
-    private activatedRoute: ActivatedRoute,
-    private router: Router
-  ) {
 
-  }
+  columns: GenesisColumn[] = [
+    { field: 'name', header: this.translocoService.translate('labels.name'), filter: true },
+    { field: 'officialName', header: this.translocoService.translate('labels.official-name'), filter: true },
+    { field: 'code', header: this.translocoService.translate('labels.code'), filter: true },
+    { field: 'countryId', header: this.translocoService.translate('labels.country'), filter: true },
+    { field: 'organizationTypes', header: this.translocoService.translate('labels.organization-types') },
+    { field: 'isDeleted', header: this.translocoService.translate('labels.is-deleted'), type: 'boolean' },
+  ];
+
   ngOnInit(): void {
-    let organizationId = this.activatedRoute.snapshot.params['organizationId'];
+    const organizationId = this.activatedRoute.snapshot.params['organizationId'];
     this.options = this.activatedRoute.snapshot.data;
-    this.countryDataSource = new DataSourceBuilder(this.organizationService)
-      .load('Country/GetCountriesLookup', { requireTotalCount: true })
-      .byKey('Country/GetCountriesLookup')
-      .setKey("id")
-      .build();
-
-    this.dataSource = new DataSourceBuilder(this.organizationService)
-      .load(`OrganizationBranch/${organizationId}`)
-      .insert(`OrganizationBranch/${organizationId}`)
-      .updateFullModel('Customer')
-      .remove('Customer')
-      .setKey('id')
-      .build();
+    this.loadPath = `OrganizationBranch/${organizationId}`;
   }
 
-  createOrganization = (e: any) => {
-    let organizationId = this.activatedRoute.snapshot.params['organizationId'];
+  createOrganization(): void {
+    const organizationId = this.activatedRoute.snapshot.params['organizationId'];
     this.router.navigate([this.options.createRoute.replace(':organizationId', organizationId)]);
-  }
-
-  onRowUpdated = (e: any) => {
-    this.isUpdate = false;
-  }
-
-  validationCallback = (e: any) => {
-    if (e.value) {
-      return this.organizationService.ExistOrganizationCode(e.value).then((res: CommandResponse<boolean>) => {
-        return !res.aggregatorId;
-      });
-
-    } else {
-      return false;
-    }
   }
 }

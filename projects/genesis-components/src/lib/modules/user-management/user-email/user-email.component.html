@@ -1,12 +1,24 @@
 <div class="w-full max-w-3xl">
-    <dx-form #hotelForm id="form" [formData]="data" labelLocation="top" labelMode="floating">
-        <dxi-item dataField="email">
-            <dxi-validation-rule type="email" [message]="'validation.invalid-emails' | transloco"></dxi-validation-rule>
-            <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-        </dxi-item>
-    </dx-form>
-    <dx-toolbar class="mt-4">
-        <dxi-item location="after" widget="dxButton" [options]="btnSave"></dxi-item>
-        <dxi-item location="before" widget="dxButton" [options]="btnCancel"></dxi-item>
-    </dx-toolbar>
+  <form [formGroup]="form">
+    <p-floatlabel>
+      <input pInputText id="email" formControlName="email" type="email" class="w-full" />
+      <label for="email">Email</label>
+    </p-floatlabel>
+    @if (form.get('email')?.invalid && form.get('email')?.touched) {
+      @if (form.get('email')?.hasError('required')) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      } @else if (form.get('email')?.hasError('email')) {
+        <small class="p-error">{{ 'validation.invalid-emails' | transloco }}</small>
+      }
+    }
+  </form>
+
+  <div class="flex justify-content-between mt-4">
+    <p-button label="Cancel" severity="secondary" (onClick)="cancel()">
+      <ng-template #icon><span data-p-icon="times"></span></ng-template>
+    </p-button>
+    <p-button label="Save" (onClick)="save()">
+      <ng-template #icon><span data-p-icon="check"></span></ng-template>
+    </p-button>
+  </div>
 </div>

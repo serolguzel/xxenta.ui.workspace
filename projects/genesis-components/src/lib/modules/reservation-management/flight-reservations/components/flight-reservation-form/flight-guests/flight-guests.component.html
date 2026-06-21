@@ -1,120 +1,150 @@
-<dx-data-grid id="guestGrid"
-              [dataSource]="guests"
-              keyExpr="id"
-              [remoteOperations]="false"
-              [showColumnLines]="false"
-              [showBorders]="true"
-              [allowColumnResizing]="true"
-              [columnHidingEnabled]="true"
-              [class]="{
-                'redOutline': hasError
-              }">
-    <dxo-editing mode="popup"
-                 [allowUpdating]="true"
-                 [allowAdding]="true"
-                 [allowDeleting]="true"
-                 [useIcons]="true">
-        <dxo-popup title="Yolcu Ekle"
-                   [showTitle]="true"
-                   [width]="600"
-                   [height]="440"
-                   [resizeEnabled]="true"
-                   [position]="{ my: 'center', at: 'center'}">
-        </dxo-popup>
+<div [class.redOutline]="hasError">
+  <p-table
+    [value]="guests"
+    [paginator]="true"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 15]"
+    [showCurrentPageReport]="true"
+    dataKey="id"
+    styleClass="p-datatable-sm">
 
-        <dxo-form [colCount]="1" labelMode="floating" >
-            <dxi-item itemType="group" [colCount]="3">
-                <dxi-item itemType="group" [colCount]="1">
-                    <dxi-item dataField="title" editorType="dxSelectBox" [editorOptions]="{
-                                                    dataSource: guestTitles,
-                                                    displayExpr: getDisplayExprCode,
-                                                    valueExpr: 'code'
-                                                    }">
-                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                        <dxo-label [text]="'labels.title' | transloco"></dxo-label>
-                    </dxi-item>
-                    <dxi-item dataField="guestType" editorType="dxSelectBox" [editorOptions]="{
-                                                dataSource: guestTypes,
-                                                displayExpr: getDisplayExprCode,
-                                                valueExpr: 'code'
-                                            }">
-                    </dxi-item>
-                </dxi-item>
+    <ng-template pTemplate="caption">
+      <div class="flex justify-content-between align-items-center">
+        <div class="text-2xl tracking-tight">{{ 'labels.guest-information' | transloco }}</div>
+        <p-button icon="pi pi-plus" [label]="'labels.add-guest' | transloco" (onClick)="addGuest()" />
+      </div>
+    </ng-template>
 
-                <dxi-item itemType="group" [colCount]="1" [colSpan]="2">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>{{ 'labels.full-name' | transloco }}</th>
+        <th style="width: 80px">{{ 'labels.age' | transloco }}</th>
+        <th>{{ 'labels.id-passport-no' | transloco }}</th>
+        <th>{{ 'labels.phone-number' | transloco }}</th>
+        <th>{{ 'labels.email' | transloco }}</th>
+        <th style="width: 80px">{{ 'labels.nationality' | transloco }}</th>
+        <th style="width: 80px">{{ 'labels.guest-type' | transloco }}</th>
+        <th style="width: 110px"></th>
+      </tr>
+    </ng-template>
 
-                    <dxi-item dataField="firstName">
-                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                        <dxo-label text="Adı"></dxo-label>
-                    </dxi-item>
+    <ng-template pTemplate="body" let-guest let-i="rowIndex">
+      <tr>
+        <td><span class="font-bold">{{ guest.title }}. {{ guest.firstName }} {{ guest.lastName }}</span></td>
+        <td>{{ guest.age }}</td>
+        <td>{{ guest.idOrPassportNo }}</td>
+        <td>{{ guest.phoneAreaCode }}{{ guest.phoneNumber }}</td>
+        <td>{{ guest.email }}</td>
+        <td>{{ guest.nationality }}</td>
+        <td>{{ guest.guestType }}</td>
+        <td>
+          <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" (onClick)="editGuest(guest, i)" />
+          <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" (onClick)="deleteGuest(i)" />
+        </td>
+      </tr>
+    </ng-template>
 
-                    <dxi-item dataField="lastName">
-                        <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                        <dxo-label [text]="'labels.last-name' | transloco"></dxo-label>
-                    </dxi-item>
-                </dxi-item>
-            </dxi-item>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="8" class="text-center">{{ 'labels.no-data' | transloco }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
 
-            <dxi-item itemType="group" [colCount]="3">
-                <dxi-item itemType="group" [colCount]="1">
-                    <dxi-item dataField="nationality" editorType="dxLookup" [editorOptions]="lookupService.countryLookUpOptions">
-                        <dxo-label [text]="'labels.nationality' | transloco"></dxo-label>
-                    </dxi-item>
-
-                    <dxi-item dataField="age" editorType="dxNumberBox" [editorOptions]="{ showSpinButtons: true}">
-                    </dxi-item>
-                    <dxi-item dataField="phoneAreaCode" editorType="dxLookup" [editorOptions]="lookupService.countryPhoneCodesLookUpOptions">
-                        <dxo-label [text]="'labels.phone-country-code' | transloco"></dxo-label>
-                    </dxi-item>
-                </dxi-item>
-
-                <dxi-item itemType="group" [colCount]="1" [colSpan]="2">
-                    <dxi-item dataField="idOrPassportNo">
-                        <dxo-label [text]="'labels.id-passport-no' | transloco"></dxo-label>
-                    </dxi-item>
-
-                    <dxi-item dataField="email">
-                        <dxo-label text="Eposta"></dxo-label>
-                    </dxi-item>
-                    <dxi-item dataField="phoneNumber" editorType="dxNumberBox">
-                        <dxo-label text="Tel No"></dxo-label>
-                    </dxi-item>
-                </dxi-item>
-            </dxi-item>
-        </dxo-form>
-    </dxo-editing>
-    <dxo-toolbar>
-        <dxi-item location="before">
-            <div *dxTemplate>
-                <div class="text-2xl tracking-tight">
-                    Yolcu Bilgileri
-                </div>
-            </div>
-        </dxi-item>
-        <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-    </dxo-toolbar>
-    <dxi-column dataField="title" dataType="string" caption="Ünvan" [visible]="false"></dxi-column>
-    <dxi-column dataField="firstName" dataType="string" caption="Adı Soyadı" cellTemplate="guestName"></dxi-column>
-    <dxi-column dataField="lastName" dataType="string" caption="Soyadı" [visible]="false"></dxi-column>
-    <dxi-column dataField="age" dataType="number" [width]="80" caption="Yaşı"></dxi-column>
-    <dxi-column dataField="idOrPassportNo" dataType="string" caption="ID/Passport No"></dxi-column>
-    <dxi-column dataField="phoneAreaCode" dataType="string" caption="Ülke Kodu" [visible]="false"></dxi-column>
-    <dxi-column dataField="phoneNumber" dataType="string" caption="Tel No" cellTemplate="phoneTemp"></dxi-column>
-    <dxi-column dataField="email" dataType="string" caption="Eposta"></dxi-column>
-    <dxi-column dataField="nationality" dataType="string" [width]="80" caption="Milliyet"></dxi-column>
-    <dxi-column dataField="guestType" dataType="string" [width]="80" caption="Tipi"></dxi-column>
-    <div class="flex-auto" *dxTemplate="let d of 'guestName'">
-        <span class="flex font-bold">
-            {{d.data.title}}. {{d.value}} {{d.data.lastName}}
-        </span>
+<p-dialog [(visible)]="editVisible" [modal]="true" [style]="{ width: '600px' }"
+  [header]="'labels.add-guest' | transloco" (onHide)="cancelEdit()">
+  <form [formGroup]="form" class="grid pt-2">
+    <div class="col-12 md:col-4">
+      <p-floatlabel>
+        <p-select appendTo="body" inputId="title" formControlName="title"
+          [options]="guestTitles" [optionLabel]="titleDisplay" optionValue="code" class="w-full" />
+        <label for="title">{{ 'labels.title' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('title')?.invalid && form.get('title')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
     </div>
 
-    <div class="flex-auto" *dxTemplate="let d of 'phoneTemp'">
-        {{d.data.phoneAreaCode}}{{d.value}}
+    <div class="col-12 md:col-8">
+      <p-floatlabel>
+        <input pInputText id="firstName" formControlName="firstName" class="w-full" />
+        <label for="firstName">{{ 'labels.first-name' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
     </div>
 
-    <dxo-paging [pageSize]="5"></dxo-paging>
-    <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[5, 10, 15]"></dxo-pager>
-</dx-data-grid>
+    <div class="col-12 md:col-4">
+      <p-floatlabel>
+        <p-select appendTo="body" inputId="guestType" formControlName="guestType"
+          [options]="guestTypes" [optionLabel]="titleDisplay" optionValue="code" class="w-full" />
+        <label for="guestType">{{ 'labels.guest-type' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12 md:col-8">
+      <p-floatlabel>
+        <input pInputText id="lastName" formControlName="lastName" class="w-full" />
+        <label for="lastName">{{ 'labels.last-name' | transloco }}</label>
+      </p-floatlabel>
+      @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
+        <small class="p-error">{{ 'messages.required' | transloco }}</small>
+      }
+    </div>
+
+    <div class="col-12 md:col-4">
+      <p-floatlabel>
+        <p-select appendTo="body" inputId="nationality" formControlName="nationality"
+          [options]="countries" optionLabel="name" optionValue="id"
+          [filter]="true" filterBy="name,id" class="w-full" />
+        <label for="nationality">{{ 'labels.nationality' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12 md:col-8">
+      <p-floatlabel>
+        <input pInputText id="idOrPassportNo" formControlName="idOrPassportNo" class="w-full" />
+        <label for="idOrPassportNo">{{ 'labels.id-passport-no' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12 md:col-4">
+      <p-floatlabel>
+        <p-inputnumber inputId="age" formControlName="age" [showButtons]="true" class="w-full" />
+        <label for="age">{{ 'labels.age' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12 md:col-8">
+      <p-floatlabel>
+        <input pInputText id="email" formControlName="email" class="w-full" />
+        <label for="email">{{ 'labels.email' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12 md:col-4">
+      <p-floatlabel>
+        <p-select appendTo="body" inputId="phoneAreaCode" formControlName="phoneAreaCode"
+          [options]="phoneCodes" optionLabel="name" optionValue="phoneCode"
+          [filter]="true" filterBy="name,phoneCode" class="w-full" />
+        <label for="phoneAreaCode">{{ 'labels.phone-country-code' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="col-12 md:col-8">
+      <p-floatlabel>
+        <p-inputnumber inputId="phoneNumber" formControlName="phoneNumber" [useGrouping]="false" class="w-full" />
+        <label for="phoneNumber">{{ 'labels.phone-number' | transloco }}</label>
+      </p-floatlabel>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button [label]="'labels.cancel' | transloco" icon="pi pi-times" severity="secondary" (onClick)="cancelEdit()" />
+    <p-button [label]="'labels.save' | transloco" icon="pi pi-save" (onClick)="saveGuest()" />
+  </ng-template>
+</p-dialog>
+
+<p-confirmdialog />

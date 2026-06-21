@@ -1,69 +1,114 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import {
-    DxFormModule, NestedOptionHost, DxTemplateHost, DxFormComponent,
-} from "devextreme-angular";
-import { MatDividerModule } from "@angular/material/divider";
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from "@angular/material/icon";
-import { NgIf } from "@angular/common";
-import { CreateFlightBookingModel } from '../../../models/flight.models';
-import { LookupService } from '../../../../../../services/lookup.service';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslocoModule } from '@jsverse/transloco';
+import { CoreService } from 'genesis-coreservice';
+import { ButtonModule } from 'primeng/button';
+import { DatePickerModule } from 'primeng/datepicker';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { CreateFlightBookingModel } from '../../../models/flight.models';
 
 @Component({
-    selector: 'app-flight-form',
-    templateUrl: './flight-form.component.html',
-    standalone: true,
-    imports: [
-        NgIf,
-        DxFormModule,
-        MatDividerModule,
-        MatButtonModule,
-        MatIconModule,
-        TranslocoModule
-    ],
-    providers: [
-        LookupService,
-        DxTemplateHost,
-        NestedOptionHost
-    ]
+  selector: 'app-flight-form',
+  templateUrl: './flight-form.component.html',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    TranslocoModule,
+    ButtonModule,
+    DatePickerModule,
+    FloatLabelModule,
+    InputNumberModule,
+    InputTextModule,
+    SelectModule,
+  ]
 })
-export class FlightFormComponent {
-    @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
-    @Input() title: string;
-    @Input() flight: CreateFlightBookingModel;
-    @Input() hasTotalAmountInput: boolean;
-    @Input() onClickRemoveButton?: () => void;
-    @Input() currenciesLookUpOptions: any = {};
-    @Output() onDepartureDateValueChanged: EventEmitter<any>;
-    flightLookUpOptions: any;
+export class FlightFormComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly coreService = inject(CoreService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-    constructor(
-        public lookupService: LookupService,
-    ) {
-        this.onDepartureDateValueChanged = new EventEmitter();
-        this.flightLookUpOptions = {
-            ...this.lookupService.flightLookUpOptions,
-            onSelectionChanged: this.onFlightSelectionChanged.bind(this),
-        };
-    }
+  @Input() title!: string;
+  @Input() flight!: CreateFlightBookingModel;
+  @Input() hasTotalAmountInput: boolean = false;
+  @Input() onClickRemoveButton?: () => void;
+  @Input() currencies: any[] = [];
+  @Output() onDepartureDateValueChanged = new EventEmitter<any>();
 
-    public isValidated() {
-        return this.form.instance.validate().isValid;
-    }
+  form!: FormGroup;
+  flights: any[] = [];
+  airports: any[] = [];
+  operators: any[] = [];
 
-    onFlightSelectionChanged(e: any) {
-        const item = e.selectedItem;
-        this.flight.flightCode = item.code;
-        if (item.fromAirport && item.toAirport) {
-            this.flight.fromAirport = item.fromAirport;
-            this.flight.toAirport = item.toAirport;
-        }
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      pnrNumber: [this.flight?.pnrNumber ?? null, Validators.required],
+      flightCode: [this.flight?.flightCode ?? null, Validators.required],
+      departureDate: [this.toDate(this.flight?.departureDate), Validators.required],
+      departureTime: [this.toDate(this.flight?.departureTime), Validators.required],
+      arrivalTime: [this.toDate(this.flight?.arrivalTime), Validators.required],
+      fromAirport: [this.flight?.fromAirport ?? null, Validators.required],
+      toAirport: [this.flight?.toAirport ?? null, Validators.required],
+      oprVoucher: [this.flight?.oprVoucher ?? null],
+      operatorId: [this.flight?.operatorId ?? null],
+      currency: [this.flight?.currency ?? null],
+      purchaseAmount: [this.flight?.purchaseAmount ?? null],
+      saleAmount: [this.flight?.saleAmount ?? null],
+    });
+
+    // Form değişikliklerini bağlı flight nesnesine yaz; üst bileşen kaydederken
+    // cloneDeep(data) ile bu nesneyi okur.
+    this.form.valueChanges.subscribe(value => {
+      Object.assign(this.flight, value);
+    });
+
+    // Lookup verilerini çek.
+    this.coreService.getCall('FlightRoute/GetFlightsLookup')
+      .then((res: any) => { this.flights = this.toArray(res); this.cdr.detectChanges(); });
+
+    this.coreService.getCall('Airport/GetAirportsLookup')
+      .then((res: any) => { this.airports = this.toArray(res); this.cdr.detectChanges(); });
+
+    this.coreService.getCall('OrganizationPartner/GetPartnersLookup', { requireTotalCount: false })
+      .then((res: any) => { this.operators = this.toArray(res); this.cdr.detectChanges(); });
+  }
+
+  isValidated(): boolean {
+    this.form.markAllAsTouched();
+    return this.form.valid;
+  }
+
+  onFlightSelectionChanged(event: { value: string }): void {
+    const item = this.flights.find(f => f.code === event.value);
+    if (!item) return;
+    this.flight.flightCode = item.code;
+    if (item.fromAirport && item.toAirport) {
+      this.form.patchValue({ fromAirport: item.fromAirport, toAirport: item.toAirport });
     }
-    departureDateValueChanged = (e: any) => {
-        this.onDepartureDateValueChanged.emit({
-            ...e,
-            routeType: this.flight.routeType,
-        });
-    }
+  }
+
+  onDepartureDateChanged(value: Date): void {
+    this.onDepartureDateValueChanged.emit({ value, routeType: this.flight.routeType });
+    // Üst bileşen seçilen uçuşa göre departureTime/arrivalTime'ı asenkron günceller;
+    // güncel değerleri saat alanlarına yansıt.
+    setTimeout(() => {
+      this.form.patchValue({
+        departureTime: this.toDate(this.flight.departureTime),
+        arrivalTime: this.toDate(this.flight.arrivalTime),
+      }, { emitEvent: false });
+      this.cdr.detectChanges();
+    });
+  }
+
+  private toArray(res: any): any[] {
+    return Array.isArray(res) ? res : (res?.data ?? []);
+  }
+
+  private toDate(value: any): Date | null {
+    if (!value) return null;
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? null : d;
+  }
 }

@@ -1,87 +1,62 @@
-<dx-data-grid id="gridContainer" 
-    [dataSource]="dataSource"
-    [remoteOperations]="false"
-    [showColumnLines]="false"
-    [showBorders]="true"
-    [showRowLines]="true"
-    [rowAlternationEnabled]="true"
-    [hoverStateEnabled]="true"
-    [allowColumnResizing]="true"
-    [columnHidingEnabled]="true"
-    (onRowUpdating)="onRowUpdating($event)">
+<div class="p-6">
+  <genesis-data-table
+    [title]="'labels.contact-people' | transloco"
+    [lazy]="false"
+    [editable]="true"
+    [loadPath]="loadPath"
+    [insertPath]="loadPath"
+    updatePath="CompanyContactPerson"
+    deletePath="CompanyContactPerson"
+    updateKey="id"
+    [editorTitle]="'labels.contact-person' | transloco"
+    [pageSize]="20"
+    [columns]="columns"
+    [newRowDefaults]="{ confirmEmail: false, confirmPhone: false, isDefault: false }">
 
-    <dxo-toolbar>
-        <dxi-item location="before">
-            <div *dxTemplate>
-                <div class="text-2xl tracking-tight">
-                    Contact People
-                </div>
-            </div>
-        </dxi-item>
-        <dxi-item name="addRowButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-        <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-    </dxo-toolbar>
+    <ng-template gdtCell="$editor" let-row>
+      <div class="flex flex-col gap-4 pt-2">
+        <p-floatlabel>
+          <p-select appendTo="body" inputId="contactType" [(ngModel)]="row.contactType" [options]="contactTypes"
+            optionLabel="name" optionValue="id" class="w-full" />
+          <label for="contactType">{{ 'labels.contact-type' | transloco }}</label>
+        </p-floatlabel>
 
-    <dxo-search-panel [visible]="true"></dxo-search-panel>
-    <dxo-filter-row [visible]="true"></dxo-filter-row>
-    <dxo-group-panel [visible]="false"></dxo-group-panel>
+        <div class="flex gap-4">
+          <p-floatlabel class="flex-1">
+            <input pInputText id="firstName" [(ngModel)]="row.firstName" class="w-full" />
+            <label for="firstName">{{ 'labels.first-name' | transloco }}</label>
+          </p-floatlabel>
+          <p-floatlabel class="flex-1">
+            <input pInputText id="lastName" [(ngModel)]="row.lastName" class="w-full" />
+            <label for="lastName">{{ 'labels.last-name' | transloco }}</label>
+          </p-floatlabel>
+        </div>
 
-    <dxo-editing 
-        mode="popup"
-        [allowUpdating]="permission.update"
-        [allowAdding]="permission.create"
-        [allowDeleting]="permission.trash"
-        [useIcons]="true">
-        <dxo-popup
-            title="Contact Person"
-            [showTitle]="true"
-            [width]="700"
-            [height]="400"
-            [resizeEnabled]="true"
-            [position]="{ my: 'center', at: 'center'}">
-        </dxo-popup>
-        <dxo-form [colCount]="1" labelMode="floating">
-            <dxi-item itemType="group" [colCount]="2">
-                <dxi-item dataField="contactType">
-                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                </dxi-item>
-                <dxi-item dataField="firstName">
-                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                </dxi-item>
-                <dxi-item dataField="lastName">
-                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                </dxi-item>
+        <p-floatlabel>
+          <input pInputText id="email" [(ngModel)]="row.email" class="w-full" />
+          <label for="email">{{ 'labels.email' | transloco }}</label>
+        </p-floatlabel>
 
-                <dxi-item dataField="email">
-                    <dxi-validation-rule type="email" [message]="'messages.invalid-emails' | transloco"></dxi-validation-rule>
-                </dxi-item>
-                <dxi-item dataField="confirmEmail"></dxi-item>
+        <p-floatlabel>
+          <input pInputText id="phone" [(ngModel)]="row.phone" class="w-full" />
+          <label for="phone">{{ 'labels.phone' | transloco }}</label>
+        </p-floatlabel>
 
-                <dxi-item dataField="phone">
-                    <dxi-validation-rule type="required" [message]="'messages.required' | transloco"></dxi-validation-rule>
-                </dxi-item>
-                <dxi-item dataField="confirmPhone"></dxi-item>
-
-                <dxi-item dataField="isDefault"></dxi-item>
-            </dxi-item>
-        </dxo-form>
-    </dxo-editing>
-
-    <dxi-column dataField="firstName" dataType="string"></dxi-column>
-    <dxi-column dataField="lastName" dataType="string"></dxi-column>
-    <dxi-column dataField="contactType" dataType="string">
-        <dxo-lookup [dataSource]="contactTypes" valueExpr="id" displayExpr="name"></dxo-lookup>
-    </dxi-column>
-    <dxi-column dataField="email" dataType="string"></dxi-column>
-    <dxi-column dataField="confirmEmail" dataType="boolean"></dxi-column>
-    <dxi-column dataField="phone" dataType="string"></dxi-column>
-    <dxi-column dataField="confirmPhone" dataType="boolean"></dxi-column>
-    <dxi-column dataField="isDefault" dataType="boolean"></dxi-column>
-    <dxi-column dataField="isDeleted" dataType="boolean"></dxi-column>
-
-    <dxo-paging [pageSize]="20"></dxo-paging>
-    <dxo-pager [showPageSizeSelector]="true" 
-        [showInfo]="true"
-        [allowedPageSizes]="[10, 20, 30]"></dxo-pager>
-</dx-data-grid>
+        <div class="flex gap-4">
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.confirmEmail" [binary]="true" inputId="confirmEmail" />
+            <label for="confirmEmail">{{ 'labels.confirm-email' | transloco }}</label>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.confirmPhone" [binary]="true" inputId="confirmPhone" />
+            <label for="confirmPhone">{{ 'labels.confirm-phone' | transloco }}</label>
+          </div>
+          <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="row.isDefault" [binary]="true" inputId="isDefault" />
+            <label for="isDefault">{{ 'labels.is-default' | transloco }}</label>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </genesis-data-table>
+</div>

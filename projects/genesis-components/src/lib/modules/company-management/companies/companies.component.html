@@ -1,62 +1,37 @@
 <div class="p-6">
-    <dx-data-grid
-        id="gridContainer"
-        [dataSource]="dataSource"
-        [remoteOperations]="true"
-        [showColumnLines]="false"
-        [showBorders]="true"
-        [showRowLines]="true"
-        [rowAlternationEnabled]="true"
-        [hoverStateEnabled]="true"
-        [allowColumnResizing]="true"
-        [columnHidingEnabled]="true">
-        <dxo-search-panel [visible]="true"></dxo-search-panel>
-        <dxo-filter-row [visible]="true"></dxo-filter-row>
-        <dxo-group-panel [visible]="false"></dxo-group-panel>
+  <genesis-data-table
+    [title]="pageTitle"
+    loadPath="Organization"
+    [extraParams]="{ isTenant: true }"
+    [columns]="columns"
+    [pageSize]="20"
+    [showCreateButton]="true"
+    (createClick)="createAgency()">
 
-        <dxo-toolbar>
-            <dxi-item location="before">
-                <div *dxTemplate>
-                    <div class="text-2xl tracking-tight">
-                        {{ pageTitle }}
-                    </div>
-                </div>
-            </dxi-item>
-            <dxi-item locateInMenu="auto" location="after">
-                <div *dxTemplate>
-                    <dx-button icon="add" (onClick)="createAgency($event)"></dx-button>
-                </div>
-            </dxi-item>
-            <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-            <dxi-item name="searchPanel" locateInMenu="auto"></dxi-item>
-        </dxo-toolbar>
+    <ng-template gdtCell="name" let-company>
+      <a [routerLink]="['detail', company.id]" class="flex flex-col">
+        <span class="font-bold">{{ company.name }}</span>
+        <span class="text-sm">{{ company.code }}</span>
+      </a>
+    </ng-template>
 
-        <dxi-column dataField="name" dataType="string" cellTemplate="nameTemp"></dxi-column>
-        <dxi-column dataField="officialName" dataType="string" cellTemplate="nameTemp"></dxi-column>
-        <dxi-column dataField="code" dataType="string"></dxi-column>
-        <dxi-column dataField="countryId" dataType="string" caption="Country"></dxi-column>
-        <dxi-column dataField="organizationTypes" dataType="array"></dxi-column>
+    <ng-template gdtCell="officialName" let-company>
+      <a [routerLink]="['detail', company.id]" class="flex flex-col">
+        <span class="font-bold">{{ company.officialName }}</span>
+        <span class="text-sm">{{ company.code }}</span>
+      </a>
+    </ng-template>
 
-        <dxi-column type="buttons" [width]="100">
-            <dxi-button icon="edit" [onClick]="editAgency"></dxi-button>
-        </dxi-column>
+    <ng-template gdtCell="organizationTypes" let-company>
+      <div class="flex flex-wrap gap-1">
+        @for (type of company.organizationTypes; track type) {
+          <p-tag [value]="type" severity="info" />
+        }
+      </div>
+    </ng-template>
 
-        <div class="flex-auto" *dxTemplate="let d of 'nameTemp'">
-            <a [routerLink]="['detail', d.data.id]">
-                <span class="flex font-bold">
-                    {{ d.value }}
-                </span>
-                <span class="flex text-sm">
-                    {{ d.data.code }}
-                </span>
-            </a>
-        </div>
-
-        <dxo-paging [pageSize]="20"></dxo-paging>
-        <dxo-pager
-            [showPageSizeSelector]="true"
-            [showInfo]="true"
-            [allowedPageSizes]="[10, 20, 30]"
-        ></dxo-pager>
-    </dx-data-grid>
+    <ng-template gdtCell="$actions" let-company>
+      <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" (onClick)="editAgency(company)" />
+    </ng-template>
+  </genesis-data-table>
 </div>

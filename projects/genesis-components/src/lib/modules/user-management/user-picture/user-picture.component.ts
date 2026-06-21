@@ -1,13 +1,10 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
-import { NgIf } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { DxToolbarModule } from 'devextreme-angular';
 import { ActivatedRoute } from '@angular/router';
 import { CoreService, Utility } from 'genesis-coreservice';
+import { ButtonModule } from 'primeng/button';
+import { CheckIcon } from 'primeng/icons/check';
+import { TimesIcon } from 'primeng/icons/times';
 
 @Component({
   selector: 'user-picture-form',
@@ -15,39 +12,25 @@ import { CoreService, Utility } from 'genesis-coreservice';
   encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
-    NgIf,
-    MatIconModule,
     ImageCropperComponent,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    DxToolbarModule
+    ButtonModule,
+    CheckIcon,
+    TimesIcon,
   ]
 })
 export class UserPictureComponent implements OnInit {
   @ViewChild(ImageCropperComponent, { static: false }) cropper?: ImageCropperComponent;
-  @Output() onCancelClick: EventEmitter<string>;
+  @Output() onCancelClick = new EventEmitter<string>();
 
   imageChangedEvent: any = '';
   croppedImage: any = '';
   cropperReady = false;
   userId: string = '';
-  btnSave = {
-    icon: 'save',
-    text: 'Save',
-    type: "default",
-    onClick: this.save.bind(this)
-  };
-  btnCancel = {
-    icon: 'close',
-    text: 'Cancel',
-    onClick: this.cancel.bind(this)
-  };
+
   constructor(
     private coreService: CoreService,
-    private activatedRoute: ActivatedRoute) {
-    this.onCancelClick = new EventEmitter();
-  }
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.userId = this.activatedRoute.snapshot.params['userId'];
@@ -69,28 +52,18 @@ export class UserPictureComponent implements OnInit {
     }
   }
 
-  onFormSubmit(e: any) {
-    e.preventDefault();
-  }
-
-
-  imageLoadFailed() {
-  }
-
-  loadImageFailed() { }
+  loadImageFailed() {}
 
   save() {
-    if (this.croppedImage != '') {
-      let request = {
+    if (this.croppedImage !== '') {
+      this.coreService.postCall(`User/ChangeProfilePicture/${this.userId}`, {
         picture: this.croppedImage,
         userId: this.userId
-      };
-      this.coreService.postCall(`User/ChangeProfilePicture/${this.userId}`, request);
+      });
     }
   }
 
   cancel() {
     this.onCancelClick.emit(this.croppedImage);
   }
-
 }

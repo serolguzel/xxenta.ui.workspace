@@ -1,189 +1,226 @@
 <div class="overflow-hidden p-6 grow">
-  <dx-data-grid
-        id="gridContainer"
-        #reservationGrid
-        [dataSource]="dataSource"
-        [remoteOperations]="true"
-        [columnAutoWidth]="true"
-        [rowAlternationEnabled]="true"
-        [allowColumnReordering]="true"
-        [showColumnLines]="false"
-        [showBorders]="true"
-        [showRowLines]="true"
-        [allowColumnResizing]="true"
-        [columnHidingEnabled]="false"
-        (onOptionChanged)="onOptionChanged($event)">
-        <dxo-toolbar>
-            <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [visible]="hasOwner" [options]="ownerOptions"></dxi-item>
-            <dxi-item locateInMenu="auto" location="before" widget="dxDateBox" [options]="beginDateOptions"> </dxi-item>
-            <dxi-item locateInMenu="auto" location="before" widget="dxDateBox" [options]="endDateOptions"> </dxi-item>
-            <dxi-item location="before" locateInMenu="auto" widget="dxSelectBox" [options]="transferRouteTypeOptions"></dxi-item>
-            <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [options]="companyOptions"></dxi-item>
-            <dxi-item location="before" locateInMenu="auto" widget="dxLookup" [options]="tansferOptions"></dxi-item>
-           
-            <dxi-item location="after" locateInMenu="auto" widget="dxButton" [options]="changeMultipleTerminalOptions"></dxi-item>
-            <dxi-item location="after" locateInMenu="auto" widget="dxButton" [options]="changeFlightTimeOptions"></dxi-item>
-            <dxi-item location="after" locateInMenu="auto" widget="dxButton" [options]="excelExportOptions"></dxi-item>
-            <dxi-item name="columnChooserButton" locateInMenu="auto"></dxi-item>
-            <dxi-item name="searchPanel" locateInMenu="never"></dxi-item>
-            <dxi-item location="after" locateInMenu="never" widget="dxButton" [options]="refreshButtonOptions"> </dxi-item>
-            <dxi-item location="after" locateInMenu="never" widget="dxButton" [options]="createItemOptions"></dxi-item>
-        </dxo-toolbar>
+  <genesis-data-table
+    [loadPath]="loadPath"
+    [extraParams]="filter"
+    [lazy]="true"
+    [columns]="columns"
+    [summary]="summary"
+    [columnChooser]="true"
+    [pageSize]="20"
+    [pageSizeOptions]="[10, 20, 50, 100]"
+    dataKey="id">
 
-        <dxo-filter-row [visible]="true"></dxo-filter-row>
-        <dxo-search-panel [visible]="true" [placeholder]="'labels.search' | transloco"></dxo-search-panel>
-        <dxo-group-panel [visible]="false"></dxo-group-panel>
-        <dxo-master-detail [enabled]="true" template="masterDetail"></dxo-master-detail>
-        <dxo-column-chooser #columnChooser [enabled]="true" mode="dragAndDrop" [title]="'labels.column-chooser' | transloco">
-            <dxo-position my="right top" at="right bottom" of=".dx-datagrid-column-chooser-button"></dxo-position>
-            <dxo-search [enabled]="true" [editorOptions]="{ placeholder: 'labels.column-search' | transloco }"></dxo-search>
-            <dxo-selection [allowSelectAll]="true" [selectByClick]="true" [recursive]="true"></dxo-selection>
-        </dxo-column-chooser>
+    <!-- Toolbar: sol taraf (filtreler) -->
+    <ng-template gdtCell="$toolbarStart">
+      <div class="flex flex-wrap items-center gap-2">
+        @if (hasOwner) {
+          <p-select
+            appendTo="body"
+            [options]="ownerItems"
+            optionLabel="name"
+            optionValue="id"
+            [(ngModel)]="ownerValue"
+            (ngModelChange)="onOwnerValueChanged($event)"
+            [filter]="true"
+            [showClear]="true"
+            [placeholder]="('labels.owner' | transloco) + ':'"
+            [style]="{ width: '240px' }" />
+        }
 
-        <!-- <dxi-column type="buttons" cellTemplate="customButtons"></dxi-column> -->
-        <dxi-column dataField="sysVoucher" dataType="string" [caption]="'labels.sys-voucher' | transloco" cellTemplate="linkTemplate"></dxi-column>
-        <dxi-column dataField="oprVoucher" dataType="string" [caption]="'labels.opr-voucher' | transloco" cellTemplate="linkTemplate"></dxi-column>
-        <dxi-column dataField="subVoucher" dataType="string" [caption]="'labels.sub-voucher' | transloco" cellTemplate="linkTemplate"></dxi-column>
-        <dxi-column dataField="pickupTime" dataType="string" [caption]="'labels.pickup-time' | transloco" cellTemplate="codeTemplate"></dxi-column>
-        <dxi-column dataField="flight.code" dataType="string" [caption]="'labels.flight-code' | transloco"
-            cellTemplate="codeTemplate" 
-            [allowSorting]="false"
-            [allowFiltering]="false"
-            [allowSearch]="false"
-            [allowGrouping]="false">
-        </dxi-column>
-        <dxi-column dataField="flight.arrivalTime" dataType="time" [caption]="'labels.flight-time' | transloco" cellTemplate="flightTimeTemplate"></dxi-column>
-        
-        <dxi-column dataField="transferDate" dataType="date" 
-            format="dd.MM.yyyy" 
-            [allowFiltering]="false" 
-            [allowSearch]="false"
-            [allowSorting]="false" 
-            [allowGrouping]="false"
-            [caption]="'labels.transfer-date' | transloco">
-        </dxi-column>
+        <p-datepicker
+          appendTo="body"
+          [(ngModel)]="beginDate"
+          (ngModelChange)="onBeginDateValueChanged($event)"
+          dateFormat="dd.mm.yy"
+          [showClear]="true"
+          [placeholder]="'labels.begin-date' | transloco" />
 
-        <dxi-column dataField="saleDate" dataType="date" format="dd.MM.yyyy" [caption]="'labels.sale-date' | transloco" [visible]="false"></dxi-column>
-        <dxi-column dataField="transferRouteType" dataType="string" [caption]="'labels.direction' | transloco" [allowFiltering]="false" [allowSearch]="false" [allowSorting]="false">
-            <dxo-lookup [dataSource]="transferRouteTypes" displayExpr="name" valueExpr="code"></dxo-lookup>
-        </dxi-column>
-        <dxi-column dataField="fromLocation.name" dataType="string" [caption]="'labels.from' | transloco" cellTemplate="fromTemp"></dxi-column>
-        <dxi-column dataField="toLocation.name" dataType="string" [caption]="'labels.to' | transloco" cellTemplate="toTemp"></dxi-column>
-        <dxi-column dataField="adult" dataType="number" [caption]="'labels.adult' | transloco"></dxi-column>
-        <dxi-column dataField="child" dataType="number" [caption]="'labels.child' | transloco"></dxi-column>
-        <dxi-column dataField="infant" dataType="number" [caption]="'labels.infant' | transloco"></dxi-column>
-        <dxi-column dataField="transferType.code" dataType="string" [caption]="'labels.transfer-type' | transloco" cellTemplate="transferTypeTemplate"></dxi-column>
+        <p-datepicker
+          appendTo="body"
+          [(ngModel)]="endDate"
+          (ngModelChange)="onEndDateValueChanged($event)"
+          dateFormat="dd.mm.yy"
+          [showClear]="true"
+          [placeholder]="'labels.end-date' | transloco" />
 
-        <dxi-column dataField="operator.name" 
-            dataType="string" 
-            [caption]="'labels.operator' | transloco"
-            [allowFiltering]="false" 
-            [allowSearch]="false"
-            [allowSorting]="false">
-        </dxi-column>
+        <p-select
+          appendTo="body"
+          [options]="transferRouteTypes"
+          optionLabel="name"
+          optionValue="code"
+          [(ngModel)]="transferRouteTypeValue"
+          (ngModelChange)="onTransferRouteTypeValueChanged($event)"
+          [showClear]="true"
+          [placeholder]="'labels.select-direction' | transloco" />
 
-        <dxi-column 
-            dataField="flight.terminal.id" 
-            dataType="string" 
-            [caption]="'labels.terminal' | transloco" 
-            [allowFiltering]="false"
-            [allowSearch]="false"
-            [allowSorting]="false">
-        </dxi-column>
-            
-        <dxi-column dataField="createDate" dataType="date" format="dd.MM.yyyy" [caption]="'labels.create-date' | transloco" [visible]="false"></dxi-column>
+        <p-select
+          appendTo="body"
+          [options]="operatorItems"
+          optionLabel="name"
+          optionValue="id"
+          [(ngModel)]="operatorValue"
+          (ngModelChange)="onCompanyValueChanged($event)"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="('labels.operator' | transloco) + ':'"
+          [style]="{ width: '240px' }" />
 
-        <div class="flex-auto" *dxTemplate="let d of 'linkTemplate'">
-            <div class="flex justify-start items-center">
-                <a [routerLink]="options.editTransferReservation(d.data.id)" [queryParams]="filter">
-                    <span class="flex font-bold">{{ d.value }}</span>
-                </a>
-                <button [cdkCopyToClipboard]="d.value" class="flex ml-2 hover:bg-blue-50 p-[3px] rounded-full"
-                    (click)="onCopy(d.value)" #tooltip="matTooltip" [matTooltip]="'labels.copy' | transloco"
-                    matTooltipPosition="above">
-                    <mat-icon svgIcon="heroicons_outline:clipboard" *ngIf="compyValue !== d.value"
-                        class="icon-size-5"></mat-icon>
-                    <mat-icon svgIcon="heroicons_outline:clipboard-document-check" *ngIf="compyValue === d.value"
-                        class="icon-size-5 text-green-700"></mat-icon>
-                </button>
-            </div>
-        </div>
+        <p-select
+          appendTo="body"
+          [options]="transferTypeItems"
+          optionLabel="name"
+          optionValue="id"
+          [(ngModel)]="transferTypeValue"
+          (ngModelChange)="onTransferTypeValueChanged($event)"
+          [filter]="true"
+          [showClear]="true"
+          [placeholder]="('labels.transfer-type' | transloco) + ':'"
+          [style]="{ width: '200px' }" />
+      </div>
+    </ng-template>
 
-        <div class="flex-auto" *dxTemplate="let d of 'codeTemplate'">
-            <a [routerLink]="options.editTransferReservation(d.data.id)">
-                <span class="flex font-bold">{{ d.value }}</span>
-            </a>
-        </div>
-        <div class="flex-auto" *dxTemplate="let d of 'transferTypeTemplate'">
-            <span class="font-bold" id="ttype_{{d.data.id}}">{{ d.value }}</span>
-            <dx-tooltip target="#ttype_{{d.data.id}}" showEvent="mouseenter" hideEvent="mouseleave"
-                position="left" [hideOnOutsideClick]="false">
-                <div *dxTemplate="let data = data; of: 'content'">
-                    <div class="flex flex-col">
-                        {{d.data.transferType?.name}}
-                    </div>
-                </div>
-            </dx-tooltip>
-        </div>
-        <div class="flex-auto" *dxTemplate="let d of 'flightTimeTemplate'">
-            <span class="flex font-bold" *ngIf="d.data.transferRouteType == 'Arrival'">{{ d.data.flight?.arrivalTime }}</span>
-            <span class="flex font-bold" *ngIf="d.data.transferRouteType == 'Departure'">{{ d.data.flight?.departureTime }}</span>
-        </div>
+    <!-- Toolbar: sağ taraf (aksiyon butonları) -->
+    <ng-template gdtCell="$toolbarEnd">
+      <p-button
+        icon="pi pi-send"
+        [pTooltip]="'labels.change-terminal' | transloco"
+        tooltipPosition="bottom"
+        (onClick)="onChangeMultipleTerminal()" />
+      <p-button
+        icon="pi pi-clock"
+        [pTooltip]="'labels.change-flight-times' | transloco"
+        tooltipPosition="bottom"
+        (onClick)="onChangeFlightTimes()" />
+      <p-button
+        icon="pi pi-file-excel"
+        [pTooltip]="'labels.excel-export' | transloco"
+        tooltipPosition="bottom"
+        (onClick)="onChangeExcelExport()" />
+      <p-button
+        icon="pi pi-refresh"
+        [pTooltip]="'labels.refresh' | transloco"
+        tooltipPosition="bottom"
+        (onClick)="onRefresh()" />
+      <p-button
+        icon="pi pi-plus"
+        [pTooltip]="'labels.create' | transloco"
+        tooltipPosition="bottom"
+        (onClick)="createItem()" />
+    </ng-template>
 
-         <div class="flex-auto" *dxTemplate="let d of 'fromTemp'">
-             <span class="flex font-bold">
-                    {{ d.value }}
-                </span>
-                <span class="flex text-sm">
-                    @if(d.data.fromLocation?.district && d.data.fromLocation?.town){
-                        {{ d.data.fromLocation?.district }}/{{d.data.fromLocation?.town}}
-                    }
-                </span>
-        </div>
-        <div class="flex-auto" *dxTemplate="let d of 'toTemp'">
-             <span class="flex font-bold">
-                    {{ d.value }}
-                </span>
-                <span class="flex text-sm">
-                    @if(d.data.toLocation?.district && d.data.toLocation?.town){
-                        {{ d.data.toLocation?.district }}/{{d.data.toLocation?.town}}
-                    }
-                </span>
-        </div>
-        <div *dxTemplate="let menu of 'customButtons'">
-            <dx-drop-down-button stylingMode="text" [dropDownOptions]="{ width: 180 }" icon="assets/icons/booking_64.png" [items]="menus"
-                displayExpr="name" keyExpr="id" (onItemClick)="onItemClick($event, menu)">
-            </dx-drop-down-button>
-        </div>
-        <div *dxTemplate="let masterDetailItem of 'masterDetail'">
-            <detail-reservation-view [key]="masterDetailItem.key" [rowData]="masterDetailItem.data"></detail-reservation-view>
-        </div>
+    <!-- Link hücreler (sys/opr/sub voucher) + kopyala-panoya -->
+    <ng-template gdtCell="sysVoucher" let-row>
+      <div class="flex justify-start items-center">
+        <a [routerLink]="options.editTransferReservation(row.id)" [queryParams]="filter">
+          <span class="flex font-bold">{{ row.sysVoucher }}</span>
+        </a>
+        <button [cdkCopyToClipboard]="row.sysVoucher" class="flex ml-2 hover:bg-blue-50 p-[3px] rounded-full"
+          (click)="onCopy(row.sysVoucher)" #tooltip="matTooltip" [matTooltip]="'labels.copy' | transloco"
+          matTooltipPosition="above">
+          <mat-icon svgIcon="heroicons_outline:clipboard" *ngIf="copyValue !== row.sysVoucher" class="icon-size-5"></mat-icon>
+          <mat-icon svgIcon="heroicons_outline:clipboard-document-check" *ngIf="copyValue === row.sysVoucher" class="icon-size-5 text-green-700"></mat-icon>
+        </button>
+      </div>
+    </ng-template>
 
-        <dxo-summary>
-            <dxi-total-item name="oprVoucher" summaryType="count" column="oprVoucher"></dxi-total-item>
-            <dxi-total-item name="adult" summaryType="sum" column="adult"></dxi-total-item>
-            <dxi-total-item name="child" summaryType="sum" column="child"></dxi-total-item>
-            <dxi-total-item name="infant" summaryType="sum" column="infant"></dxi-total-item>
-        </dxo-summary>
+    <ng-template gdtCell="oprVoucher" let-row>
+      <div class="flex justify-start items-center">
+        <a [routerLink]="options.editTransferReservation(row.id)" [queryParams]="filter">
+          <span class="flex font-bold">{{ row.oprVoucher }}</span>
+        </a>
+        <button [cdkCopyToClipboard]="row.oprVoucher" class="flex ml-2 hover:bg-blue-50 p-[3px] rounded-full"
+          (click)="onCopy(row.oprVoucher)" #tooltip="matTooltip" [matTooltip]="'labels.copy' | transloco"
+          matTooltipPosition="above">
+          <mat-icon svgIcon="heroicons_outline:clipboard" *ngIf="copyValue !== row.oprVoucher" class="icon-size-5"></mat-icon>
+          <mat-icon svgIcon="heroicons_outline:clipboard-document-check" *ngIf="copyValue === row.oprVoucher" class="icon-size-5 text-green-700"></mat-icon>
+        </button>
+      </div>
+    </ng-template>
 
-        <dxo-paging [pageSize]="20"></dxo-paging>
-        <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[10, 20, 50, 100]"></dxo-pager>
-    </dx-data-grid>
+    <ng-template gdtCell="subVoucher" let-row>
+      <div class="flex justify-start items-center">
+        <a [routerLink]="options.editTransferReservation(row.id)" [queryParams]="filter">
+          <span class="flex font-bold">{{ row.subVoucher }}</span>
+        </a>
+        <button [cdkCopyToClipboard]="row.subVoucher" class="flex ml-2 hover:bg-blue-50 p-[3px] rounded-full"
+          (click)="onCopy(row.subVoucher)" #tooltip="matTooltip" [matTooltip]="'labels.copy' | transloco"
+          matTooltipPosition="above">
+          <mat-icon svgIcon="heroicons_outline:clipboard" *ngIf="copyValue !== row.subVoucher" class="icon-size-5"></mat-icon>
+          <mat-icon svgIcon="heroicons_outline:clipboard-document-check" *ngIf="copyValue === row.subVoucher" class="icon-size-5 text-green-700"></mat-icon>
+        </button>
+      </div>
+    </ng-template>
+
+    <!-- Salt-okuma link hücreler -->
+    <ng-template gdtCell="pickupTime" let-row>
+      <a [routerLink]="options.editTransferReservation(row.id)">
+        <span class="flex font-bold">{{ row.pickupTime }}</span>
+      </a>
+    </ng-template>
+
+    <ng-template gdtCell="flight.code" let-row>
+      <a [routerLink]="options.editTransferReservation(row.id)">
+        <span class="flex font-bold">{{ row.flight?.code }}</span>
+      </a>
+    </ng-template>
+
+    <!-- Uçuş saati: yöne göre arrival/departure -->
+    <ng-template gdtCell="flight.arrivalTime" let-row>
+      <span class="flex font-bold" *ngIf="row.transferRouteType == 'Arrival'">{{ row.flight?.arrivalTime }}</span>
+      <span class="flex font-bold" *ngIf="row.transferRouteType == 'Departure'">{{ row.flight?.departureTime }}</span>
+    </ng-template>
+
+    <!-- Yön (lookup: code -> name) -->
+    <ng-template gdtCell="transferRouteType" let-row>
+      @for (t of transferRouteTypes; track t.code) {
+        @if (t.code === row.transferRouteType) { {{ t.name }} }
+      }
+    </ng-template>
+
+    <!-- From / To: isim + district/town alt satır -->
+    <ng-template gdtCell="fromLocation.name" let-row>
+      <span class="flex font-bold">{{ row.fromLocation?.name }}</span>
+      <span class="flex text-sm">
+        @if (row.fromLocation?.district && row.fromLocation?.town) {
+          {{ row.fromLocation?.district }}/{{ row.fromLocation?.town }}
+        }
+      </span>
+    </ng-template>
+
+    <ng-template gdtCell="toLocation.name" let-row>
+      <span class="flex font-bold">{{ row.toLocation?.name }}</span>
+      <span class="flex text-sm">
+        @if (row.toLocation?.district && row.toLocation?.town) {
+          {{ row.toLocation?.district }}/{{ row.toLocation?.town }}
+        }
+      </span>
+    </ng-template>
+
+    <!-- Transfer tipi: code + tooltip'te name -->
+    <ng-template gdtCell="transferType.code" let-row>
+      <span class="font-bold" [pTooltip]="row.transferType?.name" tooltipPosition="left">{{ row.transferType?.code }}</span>
+    </ng-template>
+
+    <!-- Master-detail -->
+    <ng-template gdtCell="$expansion" let-row>
+      <detail-reservation-view [key]="row.id" [rowData]="row"></detail-reservation-view>
+    </ng-template>
+  </genesis-data-table>
 </div>
 
 <change-multiple-terminal
-[visible]="changeMultipleTerminalVisible"
-[transferRouteType]="filter.transferRouteType"
-(onCancelClick)="onChangeMultipleTerminalCancel($event)">
+  [visible]="changeMultipleTerminalVisible"
+  [transferRouteType]="filter.transferRouteType"
+  (onCancelClick)="onChangeMultipleTerminalCancel($event)">
 </change-multiple-terminal>
 
 <reservation-excel-export
-    [visible]="excelExportVisible"
-    [transferDate]="filter.transferDate"
-    (onCancelClick)="onExcelExportCancel($event)">
+  [visible]="excelExportVisible"
+  [transferDate]="filter.transferDate"
+  (onCancelClick)="onExcelExportCancel($event)">
 </reservation-excel-export>
 
 <change-flight-times
   [visible]="changeFlightTimeVisible"
-  (onCancelClick)="onChangeFlightTimeCancel($event)"
-></change-flight-times>
+  (onCancelClick)="onChangeFlightTimeCancel($event)">
+</change-flight-times>

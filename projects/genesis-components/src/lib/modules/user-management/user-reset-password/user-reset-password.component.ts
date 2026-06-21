@@ -1,11 +1,22 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { DxButtonModule, DxFormComponent, DxFormModule, DxLoadPanelModule, DxTextBoxModule, DxToolbarModule } from 'devextreme-angular';
-import { ActivatedRoute } from '@angular/router';
 import { NgClass } from '@angular/common';
-import { ChangePasswordAdmin } from '../components/user-form/user-form.models';
-import { CommandResponse, CoreService } from 'genesis-coreservice';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { TranslocoModule } from '@jsverse/transloco';
-import { DxTextBoxTypes } from 'devextreme-angular/ui/text-box';
+import { CommandResponse, CoreService } from 'genesis-coreservice';
+import { ButtonModule } from 'primeng/button';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputGroupModule } from 'primeng/inputgroup';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputTextModule } from 'primeng/inputtext';
+import { ChangePasswordAdmin } from '../components/user-form/user-form.models';
+
+function passwordMatchValidator(group: AbstractControl) {
+  const pwd = group.get('newPassword')?.value;
+  const confirm = group.get('confirmPassword')?.value;
+  if (!pwd || !confirm) return null;
+  return pwd === confirm ? null : { passwordMismatch: true };
+}
 
 @Component({
   selector: 'user-reset-password-form',
@@ -13,132 +24,82 @@ import { DxTextBoxTypes } from 'devextreme-angular/ui/text-box';
   standalone: true,
   imports: [
     NgClass,
-    DxFormModule,
-    DxToolbarModule,
-    DxLoadPanelModule,
-    DxTextBoxModule,
-    DxButtonModule,
-    TranslocoModule
-  ],
+    ReactiveFormsModule,
+    TranslocoModule,
+    ButtonModule,
+    FloatLabelModule,
+    InputGroupModule,
+    InputGroupAddonModule,
+    InputTextModule,
+  ]
 })
 export class UserResetPasswordComponent implements OnInit {
-  @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
-  @Output() onCancelClick: EventEmitter<ChangePasswordAdmin>;
-  loadingVisible: boolean = false;
-  passwordMode: DxTextBoxTypes.TextBoxType = 'password';
-  rePasswordMode: DxTextBoxTypes.TextBoxType = 'password';
+  private readonly fb = inject(FormBuilder);
+  private readonly coreService = inject(CoreService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
-  specialChars = ".-+=_,!@$#*<>[]{}";
-  model: ChangePasswordAdmin = <ChangePasswordAdmin>{};
-  passwordButtonIcon: string = 'eyeopen';
-  rePasswordButtonIcon: string = 'eyeopen';
+  @Output() onCancelClick = new EventEmitter<ChangePasswordAdmin>();
 
-  btnSave = {
-    icon: 'save',
-    text: 'Save',
-    type: "default",
-    disabled: false,
-    onClick: this.save.bind(this)
-  };
-  btnCancel = {
-    icon: 'close',
-    text: 'Cancel',
-    onClick: this.cancel.bind(this)
-  };
-  constructor(
-    private coreService: CoreService,
-    private activatedRoute: ActivatedRoute,
-  ) {
-    this.onCancelClick = new EventEmitter();
-  }
+  form!: FormGroup;
+  saving = false;
+  showPassword = false;
+  showConfirmPassword = false;
+  specialChars = '.-+=_,!@$#*<>[]{}';
 
   ngOnInit() {
-    this.model.userId = this.activatedRoute.snapshot.params['userId'];
+    const userId = this.activatedRoute.snapshot.params['userId'];
+    this.form = this.fb.group({
+      userId: [userId],
+      newPassword: [null, Validators.required],
+      confirmPassword: [null, Validators.required],
+    }, { validators: passwordMatchValidator });
   }
 
-  passwordOnClick = (e: any) => {
-    this.passwordMode = this.passwordMode === 'text' ? 'password' : 'text';
-    this.passwordButtonIcon = this.passwordMode === 'text' ? 'eyeclose' : 'eyeopen';
+  get newPassword(): boolean {
+    const value: string = this.form?.get('newPassword')?.value;
+    return !!value && value.length > 7;
   }
 
-  rePasswordOnClick = (e: any) => {
-    this.rePasswordMode = this.rePasswordMode === 'text' ? 'password' : 'text';
-    this.rePasswordButtonIcon = this.rePasswordMode === 'text' ? 'eyeclose' : 'eyeopen';
+  get upperCase(): boolean {
+    const value: string = this.form?.get('newPassword')?.value;
+    if (!value) return false;
+    return /[A-Z]/.test(value);
   }
 
-  passwordComparison = () => this.model.newPassword;
-
-  get newPassword() {
-    var value = this.model.newPassword;
-    if (value == null) return false;
-    return value.length > 7;
+  get lowerCase(): boolean {
+    const value: string = this.form?.get('newPassword')?.value;
+    if (!value) return false;
+    return /[a-z]/.test(value);
   }
 
-  get upperCase() {
-    var value = this.model.newPassword;
-    if (value == null) return false;
-    var asscii = [];
-    for (let i = 0; i < value.length; i++) {
-      let code = value.charCodeAt(i);
-      asscii.push(code)
-    }
-    var find = asscii.find(x => x >= 65 && x <= 90) ?? 0;
-    return find > 0;
+  get isNumber(): boolean {
+    const value: string = this.form?.get('newPassword')?.value;
+    if (!value) return false;
+    return /[0-9]/.test(value);
   }
 
-  get lowerCase() {
-    var value = this.model.newPassword;
-    if (value == null) return false;
-    var chars = [];
-    for (let i = 0; i < value.length; i++) {
-      let code = value.charCodeAt(i);
-      chars.push(code)
-    }
-    var find = chars.find(x => x >= 97 && x <= 122) ?? 0;
-    return find > 0;
-  }
-
-  get isNumber() {
-    var value = this.model.newPassword;
-    if (value == null) return false;
-    var chars = [];
-    for (let i = 0; i < value.length; i++) {
-      let code = value.charCodeAt(i);
-      chars.push(code)
-    }
-    var find = chars.find(x => x >= 48 && x <= 57) ?? 0;
-    return find > 0;
-  }
-
-  get isSpecialChar() {
-    var value = this.model.newPassword;
-    if (value == null) return false;
-    var result = false;
-    for (let i = 0; i < value.length; i++) {
-      let code = value[i];
-      var exists = this.specialChars.includes(code);
-      if (exists) {
-        result = true;
-        break;
-      }
-    }
-    return result;
+  get isSpecialChar(): boolean {
+    const value: string = this.form?.get('newPassword')?.value;
+    if (!value) return false;
+    return [...value].some(c => this.specialChars.includes(c));
   }
 
   save() {
-    var valid = this.form.instance.validate().isValid;
-    this.btnSave.disabled = true;
-    if (valid) {
-      this.coreService.postCall("User/ChangePasswordAdmin", this.model)
-        .then((x: CommandResponse<string>) => {
-          this.btnSave.disabled = false;
-        });
-    } else {
-      this.btnSave.disabled = false;
-    }
+    this.form.markAllAsTouched();
+    if (!this.form.valid) return;
+
+    this.saving = true;
+    const model: ChangePasswordAdmin = this.form.getRawValue();
+    this.coreService.postCall('User/ChangePasswordAdmin', model)
+      .then((_: CommandResponse<string>) => {
+        this.saving = false;
+      })
+      .catch(() => {
+        this.saving = false;
+      });
   }
 
   cancel() {
-    this.onCancelClick.emit(this.model);
+    this.onCancelClick.emit(this.form.getRawValue());
   }
 }

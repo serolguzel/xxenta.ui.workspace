@@ -1,11 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { DxButtonModule, DxDataGridModule, DxLookupModule, DxTemplateModule } from 'devextreme-angular';
-import CustomStore from 'devextreme/data/custom_store';
+import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
+import { ButtonModule } from 'primeng/button';
+import { GenesisCellDirective, GenesisColumn, GenesisDataTableComponent } from '../../../components/common';
 import { OrganizationService } from '../services/organization.service';
-import { TranslocoModule } from '@jsverse/transloco';
-import { DataSourceBuilder } from '../../../services/data-source-builder';
-
 
 @Component({
   selector: 'app-organization-apps',
@@ -13,61 +11,38 @@ import { DataSourceBuilder } from '../../../services/data-source-builder';
   standalone: true,
   imports: [
     RouterLink,
-    DxDataGridModule,
-    DxLookupModule,
-    DxTemplateModule,
-    DxButtonModule,
-    TranslocoModule
+    TranslocoModule,
+    ButtonModule,
+    GenesisDataTableComponent,
+    GenesisCellDirective
   ],
-  providers: [
-    OrganizationService
-  ]
+  providers: [OrganizationService]
 })
 export class OrganizationAppsComponent implements OnInit {
-  dataSource: CustomStore;
-  priceCalculatorTypes: any;
-  pamentTypes: any;
-  presentationTypes: any;
+  private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly translocoService = inject(TranslocoService);
+
   organizationId: string = '';
-  constructor(
-    private router: Router,
-    private readonly organizationService: OrganizationService,
-    private readonly activatedRoute: ActivatedRoute
-  ) {
-    this.priceCalculatorTypes = this.organizationService.priceCalculatorTypes;
-    this.pamentTypes = this.organizationService.paymentTypes;
-    this.presentationTypes = this.organizationService.presentationTypes;
-  }
+  loadPath: string = '';
+  deletePath: string = '';
 
-  async ngOnInit(): Promise<void> {
+  columns: GenesisColumn[] = [
+    { field: 'app.name', header: this.translocoService.translate('labels.app'), filter: true },
+    { field: 'organization.name', header: this.translocoService.translate('labels.customer'), filter: true },
+    { field: 'registerDate', header: this.translocoService.translate('labels.register-date') },
+    { field: 'price', header: this.translocoService.translate('labels.price') },
+    { field: 'priceCalculatorType', header: this.translocoService.translate('labels.price-calculator-type') },
+    { field: 'paymentType', header: this.translocoService.translate('labels.payment-type') },
+  ];
+
+  ngOnInit(): void {
     this.organizationId = this.activatedRoute.snapshot.params['organizationId'];
-    this.dataSource = new DataSourceBuilder(this.organizationService)
-      .load(`OrganizationApps/${this.organizationId}`)
-      .insert(`OrganizationApps/${this.organizationId}`)
-      .updateFullModel(`OrganizationApps/${this.organizationId}`)
-      .remove(`OrganizationApps/${this.organizationId}`)
-      .setKey('appId')
-      .build();
+    this.loadPath = `OrganizationApps/${this.organizationId}`;
+    this.deletePath = `OrganizationApps/${this.organizationId}`;
   }
 
-  saveApp = (e: any) => {
+  saveApp(): void {
     this.router.navigate([`/tenant/tenants/apps/${this.organizationId}/add-app`], { relativeTo: this.activatedRoute });
-  }
-
-  editAgency = (e: any) => {
-    this.router.navigate([`detail/${e.row.key}`], { relativeTo: this.activatedRoute });
-  }
-
-  onRowUpdating = (e: any) => {
-    const assign = (<any>Object).assign({}, e.oldData, e.newData);
-    e.newData = assign;
-  }
-
-  onRowInserting = (e: any) => {
-    e.data.organizationId = this.activatedRoute.snapshot.params['organizationId'];
-  }
-
-  onInitNewRow = (e: any) => {
-    e.data.organizationId = this.activatedRoute.snapshot.params['organizationId'];
   }
 }

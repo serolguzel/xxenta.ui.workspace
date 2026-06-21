@@ -1,10 +1,15 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DxDataGridComponent, DxDataGridModule, DxFormComponent, DxFormModule, DxToolbarModule } from 'devextreme-angular';
-import { IdNamePair } from 'genesis-coreservice';
-import { CreateOrganizationApp, OrganizationAppsModel } from '../../company.models';
 import { TranslocoModule } from '@jsverse/transloco';
+import { IdNamePair } from 'genesis-coreservice';
+import { ButtonModule } from 'primeng/button';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { TableModule } from 'primeng/table';
+import { CreateOrganizationApp, OrganizationAppsModel } from '../../company.models';
 import { OrganizationService } from '../../services/organization.service';
 
 @Component({
@@ -12,129 +17,118 @@ import { OrganizationService } from '../../services/organization.service';
   templateUrl: './organization-app-save.component.html',
   standalone: true,
   imports: [
-    CommonModule,
-    DxFormModule,
-    DxDataGridModule,
-    DxToolbarModule,
-    TranslocoModule
+    FormsModule,
+    ReactiveFormsModule,
+    TranslocoModule,
+    ButtonModule,
+    FloatLabelModule,
+    InputNumberModule,
+    InputTextModule,
+    SelectModule,
+    TableModule,
   ],
-  providers: [
-    OrganizationService
-  ]
+  providers: [OrganizationService]
 })
 export class OrganizationAppSaveComponent implements OnInit {
-  @ViewChild(DxDataGridComponent, { static: false }) dataGrid: DxDataGridComponent;
-  @ViewChild(DxFormComponent, { static: false }) form: DxFormComponent;
-  model: CreateOrganizationApp = <CreateOrganizationApp><unknown>{
-    subApps: []
-  };
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly organizationService = inject(OrganizationService);
+  private readonly activatedRoute = inject(ActivatedRoute);
+
+  form: FormGroup = this.fb.group({
+    appId: [null, Validators.required],
+    url: [null],
+    price: [null],
+    currency: [null],
+    paymentType: [null],
+    priceCalculatorType: [null],
+  });
+
   apps: IdNamePair[] = [];
   subApps: OrganizationAppsModel[] = [];
-  selectedItems: string[] = [];
-  currenciesDataSoruce: any;
-  priceCalculatorTypes: any;
-  pamentTypes: any;
-  presentationTypes: any;
+  selectedRows: OrganizationAppsModel[] = [];
   organizationId: string = '';
-  btnSave = {
-    icon: 'save',
-    text: 'Save',
-    type: "default",
-    onClick: this.save.bind(this)
-  };
-  btnCancel = {
-    icon: 'close',
-    text: 'Cancel',
-    onClick: this.cancel.bind(this)
-  };
-  constructor(
-    private router: Router,
-    private readonly organizationService: OrganizationService,
-    private readonly activatedRoute: ActivatedRoute
-  ) {
-    this.currenciesDataSoruce = this.organizationService.weOrbisCurrencies;
-    this.priceCalculatorTypes = this.organizationService.priceCalculatorTypes;
-    this.pamentTypes = this.organizationService.paymentTypes;
-    this.presentationTypes = this.organizationService.presentationTypes;
-  }
+
+  currenciesDataSoruce = this.organizationService.weOrbisCurrencies;
+  priceCalculatorTypes = this.organizationService.priceCalculatorTypes;
+  pamentTypes = this.organizationService.paymentTypes;
+  presentationTypes = this.organizationService.presentationTypes;
 
   async ngOnInit(): Promise<void> {
     this.organizationId = this.activatedRoute.snapshot.params['organizationId'];
-    let appId = this.activatedRoute.snapshot.params['appId'];
+    const appId = this.activatedRoute.snapshot.params['appId'];
     this.apps = await this.organizationService.GetAppsLookup();
     if (appId) {
-      let queryRequest = {
-        organizationId: this.organizationId,
-        appId: appId
-      };
-      var app = await this.organizationService.GetOrganizationAppByAppId(queryRequest);
-      this.model = this.CreateMap(app);
+      const queryRequest = { organizationId: this.organizationId, appId };
+      const app = await this.organizationService.GetOrganizationAppByAppId(queryRequest);
+      this.form.patchValue(this.CreateMap(app));
       this.subApps = app.subApps ?? [];
-      this.selectedItems = app.subApps?.filter(x => x.isSelected).map(x => x.appId) ?? [];
+      this.selectedRows = (app.subApps ?? []).filter(x => x.isSelected);
     } else {
-      this.model.organizationId = this.organizationId;
+      this.form.patchValue({ organizationId: this.organizationId } as any);
     }
   }
 
-  save() {
-    let appId = this.activatedRoute.snapshot.params['appId'];
-    var valid = this.form.instance.validate().isValid;
-    if (valid) {
-      var selectted = this.dataGrid.instance.getSelectedRowsData();
-      this.model.subApps = selectted.map(x => <CreateOrganizationApp>{
-        appId: x.appId,
-        organizationId: this.organizationId,
-        price: x.price,
-        currency: x.currency,
-        appType: x.appType,
-        url: x.url,
-        priceCalculatorType: x.priceCalculatorType,
-        paymentType: x.paymentType
-      });
-      if (appId) {
-        this.organizationService.UpdateOrganizationApp(this.model);
-      } else {
-        this.organizationService.CreateOrganizationApp(this.model);
-      }
+  presentationTypeName(value: any): string {
+    return this.presentationTypes.find(x => x.id === value)?.name ?? value;
+  }
 
+  save(): void {
+    this.form.markAllAsTouched();
+    if (!this.form.valid) {
+      return;
+    }
+    const appId = this.activatedRoute.snapshot.params['appId'];
+    const model = { ...this.form.getRawValue(), organizationId: this.organizationId } as CreateOrganizationApp;
+    model.subApps = this.selectedRows.map(x => ({
+      appId: x.appId,
+      organizationId: this.organizationId,
+      price: x.price,
+      currency: x.currency,
+      appType: x.appType,
+      url: x.url,
+      priceCalculatorType: x.priceCalculatorType,
+      paymentType: x.paymentType,
+    } as unknown as CreateOrganizationApp));
+
+    if (appId) {
+      this.organizationService.UpdateOrganizationApp(model);
+    } else {
+      this.organizationService.CreateOrganizationApp(model);
     }
   }
 
-  cancel() {
+  cancel(): void {
     this.router.navigate([`/tenant/tenants/apps/${this.organizationId}`]);
   }
-  onAppValueChanged = (e: any) => {
-    this.getSubApps(e.value);
-    this.dataGrid.instance.refresh();
+
+  onAppValueChanged(event: { value: string }): void {
+    this.getSubApps(event.value);
   }
 
   getSubApps(parentId: string): void {
-    let appId = this.activatedRoute.snapshot.params['appId'];
-    if (!appId) {
-      let queryRequest = {
-        appId: parentId
-      };
-      this.organizationService.GetOrganizationAppByAppId(queryRequest).then((res: OrganizationAppsModel) => {
-        this.subApps = res.subApps?.map(x => {
-          return <OrganizationAppsModel>{
-            appId: x.appId,
-            organizationId: this.organizationId,
-            price: x.price,
-            currency: res?.currency != null ? res.currency : 'EUR',
-            appType: x.appType,
-            app: x.app,
-            presentationType: x.presentationType,
-            organization: <IdNamePair>{
-              id: this.organizationId
-            }
-          }
-        }) ?? [];
-      });
+    const appId = this.activatedRoute.snapshot.params['appId'];
+    if (appId) {
+      return;
     }
+    const queryRequest = { appId: parentId };
+    this.organizationService.GetOrganizationAppByAppId(queryRequest).then((res: OrganizationAppsModel) => {
+      this.subApps = (res.subApps ?? []).map(x => ({
+        appId: x.appId,
+        organizationId: this.organizationId,
+        price: x.price,
+        currency: res?.currency != null ? res.currency : 'EUR',
+        appType: x.appType,
+        app: x.app,
+        presentationType: x.presentationType,
+        organization: { id: this.organizationId } as IdNamePair,
+      } as OrganizationAppsModel));
+      this.selectedRows = [];
+    });
   }
 
   private CreateMap(item: OrganizationAppsModel): CreateOrganizationApp {
-    return <CreateOrganizationApp>{
+    return {
       organizationId: item.organizationId,
       appId: item.appId,
       price: item.price,
@@ -143,7 +137,7 @@ export class OrganizationAppSaveComponent implements OnInit {
       priceCalculatorType: item.priceCalculatorType,
       paymentType: item.paymentType,
       appType: item.appType,
-      subApps: item.subApps != null ? item.subApps.map(x => this.CreateMap(x)) : []
-    };
+      subApps: item.subApps != null ? item.subApps.map(x => this.CreateMap(x)) : [],
+    } as CreateOrganizationApp;
   }
 }
