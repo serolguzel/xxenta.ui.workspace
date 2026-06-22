@@ -1,5 +1,6 @@
-<div [ngClass]="options.paddingCss">
-  <genesis-data-table
+ <genesis-data-table
+    class="w-full"
+    [ngClass]="options.paddingCss"
     [title]="options.pageTitle ?? ''"
     [loadPath]="options.loadPath!"
     [extraParams]="extraParams"
@@ -42,4 +43,3 @@
       <a [routerLink]="detailRoute(user.id)" class="font-bold">{{ user.gender }}</a>
     </ng-template>
   </genesis-data-table>
-</div>

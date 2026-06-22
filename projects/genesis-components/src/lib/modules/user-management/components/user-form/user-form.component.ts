@@ -14,6 +14,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { LookupService } from '../../../../services/lookup.service';
 import { CreateUser, UpdateUser } from './user-form.models';
+import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputGroupModule } from 'primeng/inputgroup';
 
 @Component({
   selector: 'user-form',
@@ -29,6 +31,7 @@ import { CreateUser, UpdateUser } from './user-form.models';
     FloatLabelModule,
     InputMaskModule,
     InputTextModule,
+    InputGroupModule,
     SelectModule,
   ],
   providers: [LookupService, ConfirmationService]

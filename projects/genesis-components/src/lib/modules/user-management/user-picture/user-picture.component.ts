@@ -54,11 +54,44 @@ export class UserPictureComponent implements OnInit {
 
   loadImageFailed() {}
 
+  private resizeImage(dataUrl: string, maxSize: number = 96): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
+        const width = Math.round(img.width * scale);
+        const height = Math.round(img.height * scale);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Canvas context unavailable'));
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => (blob ? resolve(blob) : reject(new Error('Image resize failed'))),
+          'image/jpeg'
+        );
+      };
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
+  }
+
   save() {
     if (this.croppedImage !== '') {
-      this.coreService.postCall(`User/ChangeProfilePicture/${this.userId}`, {
-        picture: this.croppedImage,
-        userId: this.userId
+      this.resizeImage(this.croppedImage, 96).then((blob: Blob) => {
+        const formData = new FormData();
+        formData.append('file', blob, `${this.userId}.jpg`);
+        formData.append('userId', this.userId);
+        debugger;
+
+        this.coreService.fileUpload(`User/ChangeProfilePicture`, formData);
       });
     }
   }
